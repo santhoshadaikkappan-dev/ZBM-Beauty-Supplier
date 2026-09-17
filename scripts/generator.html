@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -469,7 +469,7 @@
 
       ctx.fillStyle = '#dfc090';
       ctx.font = '700 12px system-ui, sans-serif';
-      ctx.fillText(USA PRIVATE LABEL  •  , W/2, 655);
+      ctx.fillText('USA PRIVATE LABEL  •  ISO 22716 CERTIFIED', W/2, 655);
     }
 
     // Clean Unbranded "Logo Here" Physical Label
@@ -516,40 +516,48 @@
       // Specs footer
       ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
       ctx.font = '7px system-ui, sans-serif';
-      ctx.fillText(${product.weight}  •  US FDA • WHO-GMP, cx, cy - h/2 + 69);
+      ctx.fillText(product.weight + ' • US FDA • WHO-GMP', cx, cy - h/2 + 69);
 
       ctx.restore();
     }
 
+    window.onerror = function(msg, url, line) {
+      fetch('/log?err=' + encodeURIComponent(msg + ' at line ' + line));
+    };
+
     async function run() {
+      fetch('/log?msg=run_started');
       if (typeof ZBM_PRODUCTS === 'undefined') {
+        fetch('/log?err=ZBM_PRODUCTS_undefined');
         status.innerText = 'Error: ZBM_PRODUCTS not loaded';
         return;
       }
-      status.innerText = Generating  Unique WebP images...;
+      fetch('/log?msg=products_count_' + ZBM_PRODUCTS.length);
+      status.innerText = 'Generating ' + ZBM_PRODUCTS.length + ' Unique WebP images...';
       for (let i = 0; i < ZBM_PRODUCTS.length; i++) {
         const p = ZBM_PRODUCTS[i];
         renderMockup(p);
-        await new Promise((resolve, reject) => {
-          canvas.toBlob(async (blob) => {
-            try {
-              const res = await fetch(/save?id=, {
-                method: 'POST',
-                body: blob
-              });
-              status.innerText = Saved product_.webp (/);
-              resolve();
-            } catch (err) {
-              reject(err);
-            }
-          }, 'image/webp', 0.92);
-        });
+        const dataUrl = canvas.toDataURL('image/webp', 0.90);
+        try {
+          await fetch('/save?id=' + p.id, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: dataUrl })
+          });
+          status.innerText = 'Saved product_' + p.id + '.webp (' + (i + 1) + '/' + ZBM_PRODUCTS.length + ')';
+        } catch (err) {
+          fetch('/log?err=' + encodeURIComponent('Save_failed_' + p.id + '_' + err.message));
+        }
       }
+      fetch('/log?msg=all_generated_done');
       status.innerText = 'COMPLETE: All 202 Unique Images Generated';
-      await fetch('/done');
+      const finishedEl = document.createElement('div');
+      finishedEl.id = 'generationComplete';
+      finishedEl.innerText = 'DONE';
+      document.body.appendChild(finishedEl);
     }
 
-    window.onload = run;
+    run();
   </script>
 </body>
 </html>

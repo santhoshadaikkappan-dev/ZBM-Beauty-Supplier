@@ -7,6 +7,8 @@ const db = require('./db');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const fs = require('fs');
+
 // Middleware
 app.use(cors({
   origin: '*',
@@ -14,8 +16,28 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
+
+// Mockup image save endpoint
+app.post('/save', (req, res) => {
+  const id = req.query.id;
+  if (!id) return res.status(400).send('Missing id');
+  const raw = req.body.data || '';
+  const base64Data = raw.replace(/^data:image\/\w+;base64,/, '');
+  const buffer = Buffer.from(base64Data, 'base64');
+  const targetDir = path.join(__dirname, '..', 'assets', 'images', 'products');
+  if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
+  const target = path.join(targetDir, 'product_' + id + '.webp');
+  fs.writeFileSync(target, buffer);
+  res.send('OK');
+});
+
+// Browser debug logging endpoint
+app.all('/log', (req, res) => {
+  console.log('[BROWSER LOG]', req.query);
+  res.send('OK');
+});
 
 // Request logger
 app.use((req, res, next) => {
