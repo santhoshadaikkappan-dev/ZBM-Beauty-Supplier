@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Batch Render 202 Products to JSON</title>
+</head>
+<body>
+  <canvas id="c" width="700" height="700"></canvas>
+  <script src="../js/products-data.js"></script>
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+
+    function getProductPalette(p) {
+      const text = ((p.name || '') + ' ' + (p.keyActive || '') + ' ' + (p.aroma || '') + ' ' + (p.category || '')).toLowerCase();
+      
+      if (text.includes('nila') || text.includes('indigo')) {
+        return { name: 'Moroccan Nila', liquid1: '#1e3a8a', liquid2: '#3b82f6', bg1: '#111827', bg2: '#030712', accent: '#60a5fa', lid: '#d4af37', particles: 'crystal' };
+      } else if (text.includes('saffron') || text.includes('24k') || text.includes('gold') || text.includes('kumkumadi') || text.includes('turmeric')) {
+        return { name: 'Golden Saffron', liquid1: '#b45309', liquid2: '#f59e0b', bg1: '#261b0c', bg2: '#0d0903', accent: '#fbbf24', lid: '#e5c07b', particles: 'gold' };
+      } else if (text.includes('charcoal') || text.includes('blackhead') || text.includes('volcanic') || text.includes('kajal')) {
+        return { name: 'Volcanic Charcoal', liquid1: '#18181b', liquid2: '#3f3f46', bg1: '#18181b', bg2: '#09090b', accent: '#e4e4e7', lid: '#27272a', particles: 'mineral' };
+      } else if (text.includes('rose') || text.includes('beetroot') || text.includes('hibiscus') || text.includes('strawberry') || text.includes('pomegranate') || text.includes('red miracle')) {
+        return { name: 'Botanical Rose', liquid1: '#9d174d', liquid2: '#f43f5e', bg1: '#2b0f19', bg2: '#0f0407', accent: '#fb7185', lid: '#fbcfe8', particles: 'petals' };
+      } else if (text.includes('neem') || text.includes('tea tree') || text.includes('aloe') || text.includes('green') || text.includes('mint') || text.includes('tulsi') || text.includes('vetiver') || text.includes('rosemary')) {
+        return { name: 'Herbal Jade', liquid1: '#065f46', liquid2: '#10b981', bg1: '#092116', bg2: '#020d08', accent: '#34d399', lid: '#d4af37', particles: 'leaves' };
+      } else if (text.includes('blue pea') || text.includes('butterfly') || text.includes('flax') || text.includes('blueberry')) {
+        return { name: 'Butterfly Pea', liquid1: '#1e40af', liquid2: '#60a5fa', bg1: '#0c1b33', bg2: '#030814', accent: '#93c5fd', lid: '#e5c07b', particles: 'water' };
+      } else if (text.includes('coffee') || text.includes('chocolate') || text.includes('cocoa') || text.includes('walnut') || text.includes('cinnamon')) {
+        return { name: 'Roasted Espresso', liquid1: '#582900', liquid2: '#92400e', bg1: '#241206', bg2: '#0c0502', accent: '#d97706', lid: '#d4af37', particles: 'gold' };
+      } else if (text.includes('vitamin c') || text.includes('orange') || text.includes('papaya') || text.includes('detan') || text.includes('citrus') || text.includes('shimmer')) {
+        return { name: 'Sunlit Citrus', liquid1: '#c2410c', liquid2: '#fb923c', bg1: '#291406', bg2: '#0d0601', accent: '#fed7aa', lid: '#f59e0b', particles: 'gold' };
+      } else if (text.includes('lavender') || text.includes('orchid') || text.includes('berry') || text.includes('plum') || text.includes('onion')) {
+        return { name: 'Royal Amethyst', liquid1: '#6b21a8', liquid2: '#a855f7', bg1: '#200e33', bg2: '#080312', accent: '#e9d5ff', lid: '#d4af37', particles: 'petals' };
+      } else if (text.includes('milk') || text.includes('glutathione') || text.includes('pearl') || text.includes('shea') || text.includes('white') || text.includes('coconut') || text.includes('bright')) {
+        return { name: 'Porcelain Pearl', liquid1: '#d8dee9', liquid2: '#ffffff', bg1: '#1e2124', bg2: '#0b0c0d', accent: '#e2e8f0', lid: '#e5c07b', particles: 'dew' };
+      } else if (text.includes('hyaluronic') || text.includes('aqua') || text.includes('marine') || text.includes('water') || text.includes('cucumber')) {
+        return { name: 'Hydra Azure', liquid1: '#0e7490', liquid2: '#38bdf8', bg1: '#08232c', bg2: '#020d11', accent: '#bae6fd', lid: '#e5c07b', particles: 'water' };
+      } else if (text.includes('sandalwood') || text.includes('almond') || text.includes('honey') || text.includes('argan') || text.includes('keratin') || text.includes('butter')) {
+        return { name: 'Golden Amber', liquid1: '#92400e', liquid2: '#d97706', bg1: '#261706', bg2: '#0c0701', accent: '#fde68a', lid: '#e5c07b', particles: 'gold' };
+      } else {
+        return { name: 'Luxury Botanical', liquid1: '#374151', liquid2: '#6b7280', bg1: '#1c1e22', bg2: '#090a0c', accent: '#cbd5e1', lid: '#d4af37', particles: 'dew' };
+      }
+    }
+
+    function drawAmbientParticles(ctx, W, H, type, accentColor) {
+      const count = 18;
+      ctx.save();
+      for (let i = 0; i < count; i++) {
+        const angle = (i / count) * Math.PI * 2;
+        const dist = 140 + ((i * 37) % 180);
+        const x = W/2 + Math.cos(angle) * dist;
+        const y = H/2 + Math.sin(angle) * (dist * 0.8) - 20;
+        const size = 3 + (i % 6) * 1.5;
+
+        if (type === 'gold' || type === 'crystal') {
+          ctx.fillStyle = i % 2 === 0 ? accentColor : '#ffffff';
+          ctx.beginPath();
+          ctx.arc(x, y, size * 0.6, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (type === 'petals') {
+          ctx.fillStyle = i % 2 === 0 ? accentColor : 'rgba(251, 113, 133, 0.7)';
+          ctx.beginPath();
+          ctx.ellipse(x, y, size * 1.8, size * 0.9, (i * 0.6), 0, Math.PI * 2);
+          ctx.fill();
+        } else if (type === 'leaves') {
+          ctx.fillStyle = i % 2 === 0 ? accentColor : 'rgba(52, 211, 153, 0.65)';
+          ctx.beginPath();
+          ctx.ellipse(x, y, size * 2.2, size * 0.8, (i * 0.8), 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          const dropGrad = ctx.createRadialGradient(x - size*0.3, y - size*0.3, size*0.1, x, y, size);
+          dropGrad.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+          dropGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.25)');
+          dropGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+          ctx.fillStyle = dropGrad;
+          ctx.beginPath();
+          ctx.arc(x, y, size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    }
+
+    function renderMockup(product) {
+      const W = 700, H = 700;
+      ctx.clearRect(0, 0, W, H);
+
+      const pal = getProductPalette(product);
+      const pkg = (product.packaging || 'jar').toLowerCase();
+
+      // 1. Studio Radial Backdrop (Anti-Gravity Void)
+      const bg = ctx.createRadialGradient(W/2, H/2 - 40, 60, W/2, H/2, 460);
+      bg.addColorStop(0, pal.bg1);
+      bg.addColorStop(0.65, pal.bg2);
+      bg.addColorStop(1, '#050608');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, W, H);
+
+      // Studio Ambient Glow
+      const ambientGlow = ctx.createRadialGradient(W/2, H/2 - 20, 20, W/2, H/2 - 20, 260);
+      ambientGlow.addColorStop(0, 'rgba(255, 255, 255, 0.12)');
+      ambientGlow.addColorStop(0.6, 'rgba(223, 192, 144, 0.05)');
+      ambientGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = ambientGlow;
+      ctx.fillRect(0, 0, W, H);
+
+      // Particles behind
+      drawAmbientParticles(ctx, W, H, pal.particles, pal.accent);
+
+      // 2. Floating Podium Base & Soft Contact Shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+      ctx.beginPath();
+      ctx.ellipse(W/2, 575, 185, 30, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Floating marble podium disc
+      const podiumGrad = ctx.createLinearGradient(W/2 - 170, 520, W/2 + 170, 555);
+      podiumGrad.addColorStop(0, '#27292f');
+      podiumGrad.addColorStop(0.5, '#40434b');
+      podiumGrad.addColorStop(1, '#1b1d22');
+      ctx.fillStyle = podiumGrad;
+      ctx.beginPath();
+      ctx.ellipse(W/2, 532, 170, 24, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      const podiumTop = ctx.createRadialGradient(W/2, 528, 10, W/2, 528, 160);
+      podiumTop.addColorStop(0, 'rgba(255, 255, 255, 0.15)');
+      podiumTop.addColorStop(1, 'rgba(0, 0, 0, 0.2)');
+      ctx.fillStyle = podiumTop;
+      ctx.beginPath();
+      ctx.ellipse(W/2, 530, 165, 20, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 3. Packaging Body Rendering
+      if (pkg === 'jar') {
+        const jarW = 270, jarH = 190;
+        const jarX = W/2 - jarW/2, jarY = 320;
+
+        const innerGrad = ctx.createLinearGradient(jarX + 16, jarY + 20, jarX + jarW - 16, jarY + jarH - 16);
+        innerGrad.addColorStop(0, pal.liquid1);
+        innerGrad.addColorStop(0.5, pal.liquid2);
+        innerGrad.addColorStop(1, pal.liquid1);
+        ctx.fillStyle = innerGrad;
+        ctx.beginPath();
+        ctx.roundRect(jarX + 14, jarY + 16, jarW - 28, jarH - 32, [10, 10, 24, 24]);
+        ctx.fill();
+
+        const glassGrad = ctx.createLinearGradient(jarX, 0, jarX + jarW, 0);
+        glassGrad.addColorStop(0, 'rgba(255, 255, 255, 0.42)');
+        glassGrad.addColorStop(0.12, 'rgba(255, 255, 255, 0.14)');
+        glassGrad.addColorStop(0.48, 'rgba(255, 255, 255, 0.05)');
+        glassGrad.addColorStop(0.85, 'rgba(255, 255, 255, 0.12)');
+        glassGrad.addColorStop(1, 'rgba(255, 255, 255, 0.45)');
+        ctx.fillStyle = glassGrad;
+        ctx.beginPath();
+        ctx.roundRect(jarX, jarY, jarW, jarH, [14, 14, 28, 28]);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+        ctx.beginPath();
+        ctx.roundRect(jarX + 4, jarY + jarH - 26, jarW - 8, 22, [4, 4, 26, 26]);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+        ctx.fillRect(jarX + 14, jarY + 10, 3, jarH - 30);
+
+        const lidW = jarW + 18, lidH = 58;
+        const lidX = W/2 - lidW/2, lidY = jarY - 50;
+        const lidGrad = ctx.createLinearGradient(lidX, 0, lidX + lidW, 0);
+        lidGrad.addColorStop(0, '#785b1e');
+        lidGrad.addColorStop(0.2, '#d4af37');
+        lidGrad.addColorStop(0.48, '#fff0c7');
+        lidGrad.addColorStop(0.75, '#c59b27');
+        lidGrad.addColorStop(1, '#614813');
+        ctx.fillStyle = lidGrad;
+        ctx.beginPath();
+        ctx.roundRect(lidX, lidY, lidW, lidH, [12, 12, 4, 4]);
+        ctx.fill();
+
+        ctx.fillStyle = '#fef08a';
+        ctx.fillRect(lidX + 6, lidY + lidH - 6, lidW - 12, 4);
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(jarX, jarY, jarW, jarH, [14, 14, 28, 28]);
+        ctx.stroke();
+
+        drawMinimalLabel(ctx, W/2, jarY + 70, 180, 85, product, pal);
+
+      } else if (pkg === 'dropper') {
+        const botW = 180, botH = 245;
+        const botX = W/2 - botW/2, botY = 275;
+
+        const innerGrad = ctx.createLinearGradient(botX + 14, botY + 16, botX + botW - 14, botY + botH - 16);
+        innerGrad.addColorStop(0, pal.liquid1);
+        innerGrad.addColorStop(0.5, pal.liquid2);
+        innerGrad.addColorStop(1, pal.liquid1);
+        ctx.fillStyle = innerGrad;
+        ctx.beginPath();
+        ctx.roundRect(botX + 12, botY + 22, botW - 24, botH - 36, [14, 14, 22, 22]);
+        ctx.fill();
+
+        const glassGrad = ctx.createLinearGradient(botX, 0, botX + botW, 0);
+        glassGrad.addColorStop(0, 'rgba(255, 255, 255, 0.45)');
+        glassGrad.addColorStop(0.14, 'rgba(255, 255, 255, 0.16)');
+        glassGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.06)');
+        glassGrad.addColorStop(0.86, 'rgba(255, 255, 255, 0.15)');
+        glassGrad.addColorStop(1, 'rgba(255, 255, 255, 0.45)');
+        ctx.fillStyle = glassGrad;
+        ctx.beginPath();
+        ctx.roundRect(botX, botY, botW, botH, [24, 24, 26, 26]);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.28)';
+        ctx.beginPath();
+        ctx.roundRect(botX + 4, botY + botH - 24, botW - 8, 20, [4, 4, 22, 22]);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.beginPath();
+        ctx.roundRect(botX + 25, botY - 14, botW - 50, 20, [8, 8, 0, 0]);
+        ctx.fill();
+
+        const collarW = 86, collarH = 46;
+        const collarX = W/2 - collarW/2, collarY = botY - 54;
+        const collarGrad = ctx.createLinearGradient(collarX, 0, collarX + collarW, 0);
+        collarGrad.addColorStop(0, '#785b1e');
+        collarGrad.addColorStop(0.3, '#ffd97d');
+        collarGrad.addColorStop(0.5, '#fff5db');
+        collarGrad.addColorStop(0.8, '#c59b27');
+        collarGrad.addColorStop(1, '#5c4311');
+        ctx.fillStyle = collarGrad;
+        ctx.beginPath();
+        ctx.roundRect(collarX, collarY, collarW, collarH, 4);
+        ctx.fill();
+
+        const bulbW = 68, bulbH = 64;
+        const bulbX = W/2 - bulbW/2, bulbY = collarY - 60;
+        const bulbGrad = ctx.createLinearGradient(bulbX, 0, bulbX + bulbW, 0);
+        bulbGrad.addColorStop(0, '#1c1c1e');
+        bulbGrad.addColorStop(0.45, '#3a3a3c');
+        bulbGrad.addColorStop(0.55, '#48484a');
+        bulbGrad.addColorStop(1, '#1c1c1e');
+        ctx.fillStyle = bulbGrad;
+        ctx.beginPath();
+        ctx.roundRect(bulbX, bulbY, bulbW, bulbH, [22, 22, 4, 4]);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        ctx.fillRect(botX + 12, botY + 18, 3, botH - 45);
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(botX, botY, botW, botH, [24, 24, 26, 26]);
+        ctx.stroke();
+
+        drawMinimalLabel(ctx, W/2, botY + 95, 140, 95, product, pal);
+
+      } else if (pkg === 'tube') {
+        const tubeW = 185, tubeH = 285;
+        const tubeX = W/2 - tubeW/2, tubeY = 230;
+
+        const tubeGrad = ctx.createLinearGradient(tubeX, 0, tubeX + tubeW, 0);
+        tubeGrad.addColorStop(0, pal.liquid1);
+        tubeGrad.addColorStop(0.3, pal.liquid2);
+        tubeGrad.addColorStop(0.5, pal.accent);
+        tubeGrad.addColorStop(0.7, pal.liquid2);
+        tubeGrad.addColorStop(1, pal.liquid1);
+        ctx.fillStyle = tubeGrad;
+        ctx.beginPath();
+        ctx.moveTo(tubeX + 14, tubeY);
+        ctx.lineTo(tubeX + tubeW - 14, tubeY);
+        ctx.lineTo(tubeX + tubeW, tubeY + tubeH);
+        ctx.lineTo(tubeX, tubeY + tubeH);
+        ctx.closePath();
+        ctx.fill();
+
+        const crimpGrad = ctx.createLinearGradient(tubeX + 10, 0, tubeX + tubeW - 10, 0);
+        crimpGrad.addColorStop(0, '#1c1917');
+        crimpGrad.addColorStop(0.5, '#44403c');
+        crimpGrad.addColorStop(1, '#1c1917');
+        ctx.fillStyle = crimpGrad;
+        ctx.fillRect(tubeX + 10, tubeY - 14, tubeW - 20, 16);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.strokeRect(tubeX + 10, tubeY - 14, tubeW - 20, 16);
+
+        const capW = 110, capH = 46;
+        const capX = W/2 - capW/2, capY = tubeY + tubeH;
+        const capGrad = ctx.createLinearGradient(capX, 0, capX + capW, 0);
+        capGrad.addColorStop(0, '#292524');
+        capGrad.addColorStop(0.4, '#ffd97d');
+        capGrad.addColorStop(0.6, '#fef08a');
+        capGrad.addColorStop(1, '#292524');
+        ctx.fillStyle = capGrad;
+        ctx.beginPath();
+        ctx.roundRect(capX, capY, capW, capH, [4, 4, 10, 10]);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.fillRect(tubeX + 18, tubeY + 12, 4, tubeH - 24);
+
+        drawMinimalLabel(ctx, W/2, tubeY + 115, 140, 100, product, pal);
+
+      } else if (pkg === 'soap') {
+        const barW = 290, barH = 195;
+        const barX = W/2 - barW/2, barY = 320;
+
+        const soapGrad = ctx.createLinearGradient(barX, barY, barX + barW, barY + barH);
+        soapGrad.addColorStop(0, pal.liquid1);
+        soapGrad.addColorStop(0.5, pal.liquid2);
+        soapGrad.addColorStop(1, pal.accent);
+        ctx.fillStyle = soapGrad;
+        ctx.beginPath();
+        ctx.roundRect(barX, barY, barW, barH, 20);
+        ctx.fill();
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(barX + 30, barY + 40);
+        ctx.bezierCurveTo(barX + 90, barY + 70, barX + 130, barY + 30, barX + 220, barY + 80);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
+        ctx.beginPath();
+        ctx.moveTo(barX + 50, barY + 130);
+        ctx.bezierCurveTo(barX + 140, barY + 110, barX + 190, barY + 160, barX + 250, barY + 130);
+        ctx.stroke();
+
+        const bandH = 86;
+        const bandY = barY + barH/2 - bandH/2;
+        ctx.fillStyle = '#17191d';
+        ctx.fillRect(barX, bandY, barW, bandH);
+
+        ctx.fillStyle = '#dfc090';
+        ctx.fillRect(barX, bandY, barW, 2);
+        ctx.fillRect(barX, bandY + bandH - 2, barW, 2);
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(barX, barY, barW, barH, 20);
+        ctx.stroke();
+
+        drawMinimalLabel(ctx, W/2, bandY + bandH/2, 220, 68, product, pal, true);
+
+      } else {
+        // pump
+        const botW = 190, botH = 290;
+        const botX = W/2 - botW/2, botY = 240;
+
+        const innerGrad = ctx.createLinearGradient(botX + 12, botY + 16, botX + botW - 12, botY + botH - 16);
+        innerGrad.addColorStop(0, pal.liquid1);
+        innerGrad.addColorStop(0.5, pal.liquid2);
+        innerGrad.addColorStop(1, pal.liquid1);
+        ctx.fillStyle = innerGrad;
+        ctx.beginPath();
+        ctx.roundRect(botX + 10, botY + 20, botW - 20, botH - 30, [26, 26, 22, 22]);
+        ctx.fill();
+
+        const glassGrad = ctx.createLinearGradient(botX, 0, botX + botW, 0);
+        glassGrad.addColorStop(0, 'rgba(255, 255, 255, 0.4)');
+        glassGrad.addColorStop(0.15, 'rgba(255, 255, 255, 0.12)');
+        glassGrad.addColorStop(0.5, 'rgba(255, 255, 255, 0.04)');
+        glassGrad.addColorStop(0.85, 'rgba(255, 255, 255, 0.12)');
+        glassGrad.addColorStop(1, 'rgba(255, 255, 255, 0.4)');
+        ctx.fillStyle = glassGrad;
+        ctx.beginPath();
+        ctx.roundRect(botX, botY, botW, botH, [30, 30, 24, 24]);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.fillRect(W/2 - 28, botY - 18, 56, 20);
+
+        const collarW = 80, collarH = 34;
+        const collarX = W/2 - collarW/2, collarY = botY - 50;
+        const collarGrad = ctx.createLinearGradient(collarX, 0, collarX + collarW, 0);
+        collarGrad.addColorStop(0, '#785b1e');
+        collarGrad.addColorStop(0.35, '#ffd97d');
+        collarGrad.addColorStop(0.65, '#fef08a');
+        collarGrad.addColorStop(1, '#5c4311');
+        ctx.fillStyle = collarGrad;
+        ctx.beginPath();
+        ctx.roundRect(collarX, collarY, collarW, collarH, [6, 6, 2, 2]);
+        ctx.fill();
+
+        ctx.fillStyle = '#27272a';
+        ctx.beginPath();
+        ctx.roundRect(W/2 - 20, collarY - 32, 40, 34, 4);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(W/2 - 18, collarY - 26);
+        ctx.lineTo(W/2 - 58, collarY - 18);
+        ctx.lineTo(W/2 - 58, collarY - 10);
+        ctx.lineTo(W/2 - 18, collarY - 14);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+        ctx.fillRect(botX + 14, botY + 16, 3, botH - 35);
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.roundRect(botX, botY, botW, botH, [30, 30, 24, 24]);
+        ctx.stroke();
+
+        drawMinimalLabel(ctx, W/2, botY + 115, 145, 105, product, pal);
+      }
+
+      // Particles in front
+      drawAmbientParticles(ctx, W, H, pal.particles, '#ffffff');
+
+      // Top Category & Bottom Specs
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.55)';
+      ctx.font = '600 13px system-ui, sans-serif';
+      ctx.letterSpacing = '2px';
+      ctx.textAlign = 'center';
+      ctx.fillText(product.category.toUpperCase(), W/2, 55);
+
+      ctx.fillStyle = '#dfc090';
+      ctx.font = '700 12px system-ui, sans-serif';
+      ctx.fillText("USA PRIVATE LABEL • " + product.weight.toUpperCase(), W/2, 655);
+    }
+
+    function drawMinimalLabel(ctx, cx, cy, w, h, product, pal, isSoap = false) {
+      ctx.save();
+      if (!isSoap) {
+        ctx.fillStyle = 'rgba(18, 19, 23, 0.94)';
+        ctx.beginPath();
+        ctx.roundRect(cx - w/2, cy - h/2, w, h, 6);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(223, 192, 144, 0.7)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#dfc090';
+      ctx.font = 'bold 13px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.letterSpacing = '1px';
+      ctx.fillText('LOGO HERE', cx, cy - h/2 + 20);
+
+      ctx.fillStyle = 'rgba(223, 192, 144, 0.5)';
+      ctx.fillRect(cx - w/3, cy - h/2 + 27, (w * 2)/3, 1);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '600 10.5px system-ui, sans-serif';
+      let title = product.name;
+      if (title.length > 28) title = title.substring(0, 26) + '...';
+      ctx.fillText(title, cx, cy - h/2 + 42);
+
+      ctx.fillStyle = pal.accent;
+      ctx.font = '500 8.5px system-ui, sans-serif';
+      let sub = product.keyActive || pal.name;
+      if (sub.length > 32) sub = sub.substring(0, 30) + '..';
+      ctx.fillText(sub, cx, cy - h/2 + 56);
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+      ctx.font = '7px system-ui, sans-serif';
+      ctx.fillText(product.weight + " • US FDA • WHO-GMP", cx, cy - h/2 + 69);
+      ctx.restore();
+    }
+
+    // Get URL parameters for batching: ?start=1&end=50
+    const params = new URLSearchParams(window.location.search);
+    const startId = parseInt(params.get('start') || '1', 10);
+    const endId = parseInt(params.get('end') || '202', 10);
+
+    const results = {};
+    const subset = ZBM_PRODUCTS.filter(p => p.id >= startId && p.id <= endId);
+
+    for (let i = 0; i < subset.length; i++) {
+      const p = subset[i];
+      renderMockup(p);
+      results[p.id] = canvas.toDataURL('image/webp', 0.88);
+    }
+
+    const outputDiv = document.createElement('div');
+    outputDiv.id = 'renderOutput';
+    outputDiv.textContent = JSON.stringify(results);
+    document.body.appendChild(outputDiv);
+  </script>
+</body>
+</html>

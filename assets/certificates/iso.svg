@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <defs>
+    <linearGradient id="isoGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFDF73"/>
+      <stop offset="50%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#997A15"/>
+    </linearGradient>
+    <linearGradient id="isoDark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141E30"/>
+      <stop offset="100%" stop-color="#243B55"/>
+    </linearGradient>
+  </defs>
+  <!-- Outer Ring -->
+  <circle cx="80" cy="80" r="74" fill="none" stroke="url(#isoGold)" stroke-width="3" stroke-dasharray="4,2"/>
+  <circle cx="80" cy="80" r="68" fill="url(#isoDark)" stroke="url(#isoGold)" stroke-width="2"/>
+  
+  <!-- Inner Content -->
+  <path d="M 80 20 A 60 60 0 0 1 140 80" fill="none" id="curveTop" />
+  <text font-family="'Cinzel', serif, Arial" font-size="11" font-weight="bold" fill="#FFDF73" letter-spacing="2">
+    <textPath href="#curveTop" startOffset="50%" text-anchor="middle">CERTIFIED</textPath>
+  </text>
+  
+  <circle cx="80" cy="80" r="44" fill="none" stroke="url(#isoGold)" stroke-width="1.5"/>
+  
+  <text x="80" y="72" font-family="'Cinzel', serif, Arial" font-size="20" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="1.5">ISO</text>
+  <text x="80" y="90" font-family="sans-serif" font-size="10" font-weight="700" fill="#FFDF73" text-anchor="middle" letter-spacing="1">9001:2015</text>
+  <text x="80" y="104" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#E2E8F0" text-anchor="middle" letter-spacing="0.8">QUALITY SYSTEM</text>
+  
+  <!-- Stars -->
+  <polygon points="80,116 82,121 87,121 83,124 85,129 80,126 75,129 77,124 73,121 78,121" fill="#FFDF73"/>
+  <polygon points="62,116 63.5,120 67.5,120 64.5,122 66,126 62,123.5 58,126 59.5,122 56.5,120 60.5,120" fill="#FFDF73"/>
+  <polygon points="98,116 99.5,120 103.5,120 100.5,122 102,126 98,123.5 94,126 95.5,122 92.5,120 96.5,120" fill="#FFDF73"/>
+</svg>

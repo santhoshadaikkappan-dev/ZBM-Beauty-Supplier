@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# SQLite database and logs
+server/data/*.db
+server/data/*.db-journal
+server/data/*.sqlite
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment variables
+.env
+.env.local
+
+# Vercel deployment folder
+.vercel/
