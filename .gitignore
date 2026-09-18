@@ -1,21 +1,19 @@
+# Local development folders
+server/
+scripts/
+PUSH_TO_GITHUB.bat
+.vercelignore
+vercel.json
+
 # Dependencies
 node_modules/
 */node_modules/
-
-# SQLite database and logs
-server/data/*.db
-server/data/*.db-journal
-server/data/*.sqlite
-*.log
 
 # OS generated files
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Environment variables
-.env
-.env.local
-
-# Vercel deployment folder
+# Logs & temp
+*.log
 .vercel/
