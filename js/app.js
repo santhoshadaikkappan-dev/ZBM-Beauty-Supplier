@@ -330,7 +330,7 @@
       `<span class="star-tag">✦ ${feat}</span>`
     ).join('');
 
-    const imgPath = p.image || `assets/images/products/product_${p.id}.webp`;
+    const imgPath = p.image || `assets/images/mockups/${p.packaging || 'jar'}.jpg`;
 
     return `
       <article class="product-card" data-id="${p.id}">
@@ -904,7 +904,7 @@
     const starList = (prod.starFeatures || []).map(f => `<li><i class="fa-solid fa-sparkles"></i> ${f}</li>`).join('');
     const certList = (prod.certificates || []).map(c => `<span class="modal-cert-tag"><i class="fa-solid fa-shield-check"></i> ${c}</span>`).join('');
 
-    const imgPath = prod.image || `assets/images/products/product_${prod.id}.webp`;
+    const imgPath = prod.image || `assets/images/mockups/${prod.packaging || 'jar'}.jpg`;
 
     modalContent.innerHTML = `
       <div class="modal-image-col">
