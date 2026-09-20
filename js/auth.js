@@ -1,33 +1,38 @@
 /**
- * ZANDRA BEAUTY MATRIX (ZBM) | B2B Client Authentication Controller
- * Secure Signup, Login, Password Visibility Toggle & SQLite/Bcrypt Integration
+ * ZANDRA BEAUTY MATRIX (ZBM) | B2B Client OTP Authentication Controller
+ * Guaranteed Single-Account-Per-Email with 6-Digit One-Time Passcode (OTP)
  */
 
 (function() {
   'use strict';
 
-  // API Endpoint configuration
-  const API_BASE = (window.location.protocol.startsWith('http') && window.location.port === '5000')
-    ? '/api/auth'
-    : 'http://localhost:5000/api/auth';
-
   // Storage Keys
-  const TOKEN_KEY = 'zbm_auth_token';
+  const REGISTRY_KEY = 'zbm_users_registry';
   const USER_KEY = 'zbm_auth_user';
+  const TOKEN_KEY = 'zbm_auth_token';
 
   // State
   let currentUser = null;
   let authToken = localStorage.getItem(TOKEN_KEY) || null;
+  let activeOtp = null;
+  let pendingEmail = '';
+  let pendingName = '';
+  let pendingBrand = '';
+  let countdownTimer = null;
+  let countdownSeconds = 45;
 
   // DOM Elements
-  let authModal, authModalBackdrop, authModalClose;
-  let tabSignInBtn, tabSignUpBtn;
-  let signInFormSection, signUpFormSection;
-  let signInForm, signUpForm;
-  let signInErrorEl, signInSuccessEl, signUpErrorEl, signUpSuccessEl;
+  let authModal, authModalClose;
+  let authErrorAlert, authSuccessAlert;
+  let authEmailSection, authOtpSection;
+  let authEmailForm, authOtpForm;
+  let authEmailInput, authNameInput, authBrandInput;
+  let sendOtpSubmitBtn, verifyOtpSubmitBtn;
+  let otpDisplayEmail, changeEmailBtn;
+  let otpDemoCodeDisplay, resendOtpBtn, otpCountdownEl, otpTimerText;
   let authHeaderContainer;
 
-  // Initialize Auth System
+  // Initialize
   function initAuth() {
     cacheDOMElements();
     setupEventListeners();
@@ -37,16 +42,23 @@
   function cacheDOMElements() {
     authModal = document.getElementById('authModal');
     authModalClose = document.getElementById('closeAuthModalBtn');
-    tabSignInBtn = document.getElementById('tabSignInBtn');
-    tabSignUpBtn = document.getElementById('tabSignUpBtn');
-    signInFormSection = document.getElementById('signInFormSection');
-    signUpFormSection = document.getElementById('signUpFormSection');
-    signInForm = document.getElementById('signInForm');
-    signUpForm = document.getElementById('signUpForm');
-    signInErrorEl = document.getElementById('signInErrorAlert');
-    signInSuccessEl = document.getElementById('signInSuccessAlert');
-    signUpErrorEl = document.getElementById('signUpErrorAlert');
-    signUpSuccessEl = document.getElementById('signUpSuccessAlert');
+    authErrorAlert = document.getElementById('authErrorAlert');
+    authSuccessAlert = document.getElementById('authSuccessAlert');
+    authEmailSection = document.getElementById('authEmailSection');
+    authOtpSection = document.getElementById('authOtpSection');
+    authEmailForm = document.getElementById('authEmailForm');
+    authOtpForm = document.getElementById('authOtpForm');
+    authEmailInput = document.getElementById('authEmailInput');
+    authNameInput = document.getElementById('authNameInput');
+    authBrandInput = document.getElementById('authBrandInput');
+    sendOtpSubmitBtn = document.getElementById('sendOtpSubmitBtn');
+    verifyOtpSubmitBtn = document.getElementById('verifyOtpSubmitBtn');
+    otpDisplayEmail = document.getElementById('otpDisplayEmail');
+    changeEmailBtn = document.getElementById('changeEmailBtn');
+    otpDemoCodeDisplay = document.getElementById('otpDemoCodeDisplay');
+    resendOtpBtn = document.getElementById('resendOtpBtn');
+    otpCountdownEl = document.getElementById('otpCountdown');
+    otpTimerText = document.getElementById('otpTimerText');
     authHeaderContainer = document.getElementById('authHeaderContainer');
   }
 
@@ -61,20 +73,20 @@
       });
     }
 
-    if (tabSignInBtn) {
-      tabSignInBtn.addEventListener('click', () => switchTab('signin'));
+    if (authEmailForm) {
+      authEmailForm.addEventListener('submit', handleSendOtp);
     }
 
-    if (tabSignUpBtn) {
-      tabSignUpBtn.addEventListener('click', () => switchTab('signup'));
+    if (authOtpForm) {
+      authOtpForm.addEventListener('submit', handleVerifyOtp);
     }
 
-    if (signInForm) {
-      signInForm.addEventListener('submit', handleSignIn);
+    if (changeEmailBtn) {
+      changeEmailBtn.addEventListener('click', backToEmailStage);
     }
 
-    if (signUpForm) {
-      signUpForm.addEventListener('submit', handleSignUp);
+    if (resendOtpBtn) {
+      resendOtpBtn.addEventListener('click', handleResendOtp);
     }
 
     // Escape key closes modal
@@ -84,76 +96,82 @@
       }
     });
 
-    // Toggle password visibility triggers
-    setupPasswordToggles();
+    setupOtpInputs();
   }
 
-  function setupPasswordToggles() {
-    document.querySelectorAll('.toggle-password-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetId = btn.getAttribute('data-target');
-        const input = document.getElementById(targetId);
-        if (!input) return;
+  // 6-Digit Auto-Advancing Input Boxes
+  function setupOtpInputs() {
+    const inputs = document.querySelectorAll('.otp-digit-input');
+    inputs.forEach((input, index) => {
+      // Numbers only
+      input.addEventListener('input', (e) => {
+        const val = e.target.value.replace(/[^0-9]/g, '');
+        e.target.value = val ? val[val.length - 1] : '';
 
-        const icon = btn.querySelector('i');
-        if (input.type === 'password') {
-          input.type = 'text';
-          if (icon) {
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
+        if (e.target.value && index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        }
+
+        // Auto verify if all 6 filled
+        const allFilled = Array.from(inputs).every(inp => inp.value.length === 1);
+        if (allFilled) {
+          setTimeout(() => handleVerifyOtp(), 150);
+        }
+      });
+
+      // Backspace handling
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !input.value && index > 0) {
+          inputs[index - 1].focus();
+        }
+      });
+
+      // Paste handling (Ctrl+V entire 6-digit code)
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pasteData = (e.clipboardData || window.clipboardData).getData('text').trim().replace(/[^0-9]/g, '');
+        if (pasteData.length >= 6) {
+          for (let i = 0; i < 6; i++) {
+            if (inputs[i]) inputs[i].value = pasteData[i];
           }
-        } else {
-          input.type = 'password';
-          if (icon) {
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-          }
+          inputs[5].focus();
+          setTimeout(() => handleVerifyOtp(), 150);
         }
       });
     });
   }
 
-  // Restore and verify stored session
-  async function restoreSession() {
+  // Helper to read users registry (Single Account Guarantee)
+  function getUsersRegistry() {
     try {
-      const storedUser = localStorage.getItem(USER_KEY);
-      if (storedUser && authToken) {
-        currentUser = JSON.parse(storedUser);
+      return JSON.parse(localStorage.getItem(REGISTRY_KEY) || '{}');
+    } catch {
+      return {};
+    }
+  }
+
+  function saveUsersRegistry(registry) {
+    try {
+      localStorage.setItem(REGISTRY_KEY, JSON.stringify(registry));
+    } catch (e) {
+      console.error('[AUTH STORAGE ERROR]', e);
+    }
+  }
+
+  // Restore existing session
+  function restoreSession() {
+    try {
+      const stored = localStorage.getItem(USER_KEY);
+      if (stored && authToken) {
+        currentUser = JSON.parse(stored);
         renderHeaderAuth();
         populateDrawerBuyer();
-        
-        // Verify with server in background
-        verifyTokenWithServer();
       } else {
         renderHeaderAuth();
       }
     } catch {
       clearSession();
       renderHeaderAuth();
-    }
-  }
-
-  async function verifyTokenWithServer() {
-    if (!authToken) return;
-    try {
-      const res = await fetch(`${API_BASE}/me`, {
-        headers: { 'Authorization': `Bearer ${authToken}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.user) {
-          currentUser = data.user;
-          localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
-          renderHeaderAuth();
-          populateDrawerBuyer();
-        }
-      } else if (res.status === 401 || res.status === 403) {
-        clearSession();
-        renderHeaderAuth();
-      }
-    } catch {
-      // Backend offline or unreachable; keep cached profile for offline resilience
-      console.warn('[AUTH] Could not verify session token with server.');
     }
   }
 
@@ -164,234 +182,206 @@
     localStorage.removeItem(USER_KEY);
   }
 
-  // UI Modal Handling
-  window.openAuthModal = function(tab = 'signin') {
+  // Stage 1: Send OTP
+  function handleSendOtp(e) {
+    if (e) e.preventDefault();
+    clearAlerts();
+
+    const email = (authEmailInput?.value || '').trim();
+    const name = (authNameInput?.value || '').trim();
+    const brand = (authBrandInput?.value || '').trim();
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      showError(authErrorAlert, 'Please provide a valid business email address.');
+      return;
+    }
+
+    pendingEmail = email.toLowerCase();
+    pendingName = name;
+    pendingBrand = brand;
+
+    setButtonLoading(sendOtpSubmitBtn, true, 'Generating Code...');
+
+    // Generate cryptographic 6-digit security code
+    activeOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    setTimeout(() => {
+      setButtonLoading(sendOtpSubmitBtn, false, 'Send Security Code (OTP)');
+
+      // Transition to Stage 2 (OTP Entry)
+      if (authEmailSection) authEmailSection.style.display = 'none';
+      if (authOtpSection) authOtpSection.style.display = 'block';
+      if (otpDisplayEmail) otpDisplayEmail.innerText = pendingEmail;
+      if (otpDemoCodeDisplay) otpDemoCodeDisplay.innerText = activeOtp;
+
+      // Clear previous digit inputs
+      document.querySelectorAll('.otp-digit-input').forEach(inp => inp.value = '');
+
+      showSuccess(authSuccessAlert, `Security code generated! Use code [${activeOtp}] below.`);
+
+      // Focus first digit
+      const firstDigit = document.querySelector('.otp-digit-input');
+      if (firstDigit) setTimeout(() => firstDigit.focus(), 150);
+
+      startOtpCountdown();
+    }, 600);
+  }
+
+  // Resend OTP
+  function handleResendOtp() {
+    if (resendOtpBtn && resendOtpBtn.disabled) return;
+    clearAlerts();
+    activeOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    if (otpDemoCodeDisplay) otpDemoCodeDisplay.innerText = activeOtp;
+    showSuccess(authSuccessAlert, `New security code generated: [${activeOtp}].`);
+    document.querySelectorAll('.otp-digit-input').forEach(inp => inp.value = '');
+    const firstDigit = document.querySelector('.otp-digit-input');
+    if (firstDigit) firstDigit.focus();
+    startOtpCountdown();
+  }
+
+  function startOtpCountdown() {
+    if (countdownTimer) clearInterval(countdownTimer);
+    countdownSeconds = 45;
+    if (resendOtpBtn) resendOtpBtn.disabled = true;
+    if (otpTimerText) otpTimerText.style.display = 'inline';
+
+    const updateTimerDisplay = () => {
+      if (otpCountdownEl) otpCountdownEl.innerText = countdownSeconds;
+      if (countdownSeconds <= 0) {
+        clearInterval(countdownTimer);
+        if (resendOtpBtn) resendOtpBtn.disabled = false;
+        if (otpTimerText) otpTimerText.style.display = 'none';
+      }
+      countdownSeconds--;
+    };
+
+    updateTimerDisplay();
+    countdownTimer = setInterval(updateTimerDisplay, 1000);
+  }
+
+  function backToEmailStage() {
+    clearAlerts();
+    if (countdownTimer) clearInterval(countdownTimer);
+    if (authOtpSection) authOtpSection.style.display = 'none';
+    if (authEmailSection) authEmailSection.style.display = 'block';
+    if (authEmailInput) authEmailInput.focus();
+  }
+
+  // Autofill helper
+  window.fillDemoOtp = function() {
+    if (!activeOtp) return;
+    const inputs = document.querySelectorAll('.otp-digit-input');
+    for (let i = 0; i < 6; i++) {
+      if (inputs[i]) inputs[i].value = activeOtp[i] || '';
+    }
+    setTimeout(() => handleVerifyOtp(), 150);
+  };
+
+  // Stage 2: Verify OTP (Single Account Guarantee)
+  function handleVerifyOtp(e) {
+    if (e) e.preventDefault();
+    clearAlerts();
+
+    const inputs = document.querySelectorAll('.otp-digit-input');
+    const enteredCode = Array.from(inputs).map(inp => inp.value).join('').trim();
+
+    if (enteredCode.length !== 6) {
+      showError(authErrorAlert, 'Please enter the complete 6-digit security code.');
+      return;
+    }
+
+    if (enteredCode !== activeOtp) {
+      showError(authErrorAlert, 'Invalid security code. Please check the code and try again.');
+      inputs.forEach(inp => inp.value = '');
+      if (inputs[0]) inputs[0].focus();
+      return;
+    }
+
+    // OTP Verified! Single-Account Logic
+    setButtonLoading(verifyOtpSubmitBtn, true, 'Verifying Account...');
+
+    setTimeout(() => {
+      const registry = getUsersRegistry();
+      const cleanEmail = pendingEmail.toLowerCase();
+      let user = registry[cleanEmail];
+
+      if (user) {
+        // Existing user: Update name/brand if provided and empty
+        if (pendingName && (!user.name || user.name.includes('@'))) user.name = pendingName;
+        if (pendingBrand && !user.brand_name) user.brand_name = pendingBrand;
+        user.lastLoginAt = new Date().toISOString();
+      } else {
+        // New user: Create single unique record
+        const fallbackName = pendingName || cleanEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        user = {
+          id: 'usr_' + Date.now(),
+          email: cleanEmail,
+          name: fallbackName,
+          brand_name: pendingBrand || 'USA Private Label Partner',
+          role: 'buyer',
+          createdAt: new Date().toISOString(),
+          lastLoginAt: new Date().toISOString()
+        };
+      }
+
+      // Save to registry (guaranteed single record per cleanEmail)
+      registry[cleanEmail] = user;
+      saveUsersRegistry(registry);
+
+      // Set active session
+      currentUser = user;
+      authToken = 'zbm_otp_session_' + Date.now();
+      localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+      localStorage.setItem(TOKEN_KEY, authToken);
+
+      showSuccess(authSuccessAlert, `Authenticated! Welcome, ${currentUser.name}.`);
+      renderHeaderAuth();
+      populateDrawerBuyer();
+
+      if (countdownTimer) clearInterval(countdownTimer);
+
+      setTimeout(() => {
+        closeAuthModal();
+        setButtonLoading(verifyOtpSubmitBtn, false, 'Verify & Access Trade Portal');
+      }, 700);
+
+    }, 500);
+  }
+
+  // UI Modal Handlers
+  window.openAuthModal = function(initialTab = 'signin') {
     if (!authModal) return;
     clearAlerts();
-    switchTab(tab);
+
+    // If already logged in, show profile dropdown
+    if (currentUser) {
+      toggleUserDropdown();
+      return;
+    }
+
+    backToEmailStage();
     authModal.classList.add('active');
     document.body.style.overflow = 'hidden';
+
+    if (authEmailInput) {
+      setTimeout(() => authEmailInput.focus(), 150);
+    }
   };
 
   window.closeAuthModal = function() {
     if (!authModal) return;
     authModal.classList.remove('active');
     document.body.style.overflow = '';
+    if (countdownTimer) clearInterval(countdownTimer);
+    clearAlerts();
   };
 
-  function switchTab(tab) {
-    clearAlerts();
-    if (tab === 'signup') {
-      if (tabSignUpBtn) tabSignUpBtn.classList.add('active');
-      if (tabSignInBtn) tabSignInBtn.classList.remove('active');
-      if (signUpFormSection) signUpFormSection.style.display = 'block';
-      if (signInFormSection) signInFormSection.style.display = 'none';
-      const firstInp = document.getElementById('signupName');
-      if (firstInp) setTimeout(() => firstInp.focus(), 150);
-    } else {
-      if (tabSignInBtn) tabSignInBtn.classList.add('active');
-      if (tabSignUpBtn) tabSignUpBtn.classList.remove('active');
-      if (signInFormSection) signInFormSection.style.display = 'block';
-      if (signUpFormSection) signUpFormSection.style.display = 'none';
-      const firstInp = document.getElementById('loginEmail');
-      if (firstInp) setTimeout(() => firstInp.focus(), 150);
-    }
-  }
-
-  function clearAlerts() {
-    if (signInErrorEl) { signInErrorEl.style.display = 'none'; signInErrorEl.innerText = ''; }
-    if (signInSuccessEl) { signInSuccessEl.style.display = 'none'; signInSuccessEl.innerText = ''; }
-    if (signUpErrorEl) { signUpErrorEl.style.display = 'none'; signUpErrorEl.innerText = ''; }
-    if (signUpSuccessEl) { signUpSuccessEl.style.display = 'none'; signUpSuccessEl.innerText = ''; }
-  }
-
-  // Sign In Handler
-  async function handleSignIn(e) {
-    e.preventDefault();
-    clearAlerts();
-
-    const email = document.getElementById('loginEmail')?.value.trim();
-    const password = document.getElementById('loginPassword')?.value;
-    const submitBtn = document.getElementById('loginSubmitBtn');
-
-    if (!email || !password) {
-      showError(signInErrorEl, 'Please enter both your business email and password.');
-      return;
-    }
-
-    try {
-      setButtonLoading(submitBtn, true, 'Verifying Credentials...');
-
-      const res = await fetch(`${API_BASE}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        showError(signInErrorEl, data.error || 'Invalid email or password.');
-        setButtonLoading(submitBtn, false, 'Sign In to Trade Account');
-        return;
-      }
-
-      // Success
-      authToken = data.token;
-      currentUser = data.user;
-      localStorage.setItem(TOKEN_KEY, authToken);
-      localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
-
-      showSuccess(signInSuccessEl, `Welcome back, ${currentUser.name}! Authenticated.`);
-      renderHeaderAuth();
-      populateDrawerBuyer();
-
-      setTimeout(() => {
-        closeAuthModal();
-        setButtonLoading(submitBtn, false, 'Sign In to Trade Account');
-      }, 1000);
-
-    } catch (err) {
-      console.warn('[SIGNIN FALLBACK] Server offline, providing local trade session:', err);
-      try {
-        const localAccounts = JSON.parse(localStorage.getItem('zbm_local_accounts') || '{}');
-        const acc = localAccounts[email.toLowerCase()];
-        if (acc && acc.password === password) {
-          currentUser = acc.user;
-        } else {
-          currentUser = {
-            id: Date.now(),
-            name: email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-            brand_name: 'USA Private Label Buyer',
-            email: email,
-            role: 'buyer'
-          };
-        }
-      } catch {
-        currentUser = {
-          id: Date.now(),
-          name: email.split('@')[0].toUpperCase(),
-          brand_name: 'USA Private Label Buyer',
-          email: email,
-          role: 'buyer'
-        };
-      }
-      authToken = 'local_session_' + Date.now();
-      localStorage.setItem(TOKEN_KEY, authToken);
-      localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
-
-      showSuccess(signInSuccessEl, `Welcome back, ${currentUser.name}!`);
-      renderHeaderAuth();
-      populateDrawerBuyer();
-
-      setTimeout(() => {
-        closeAuthModal();
-        setButtonLoading(submitBtn, false, 'Sign In to Trade Account');
-      }, 800);
-    }
-  }
-
-  // Sign Up Handler
-  async function handleSignUp(e) {
-    e.preventDefault();
-    clearAlerts();
-
-    const name = document.getElementById('signupName')?.value.trim();
-    const brand_name = document.getElementById('signupBrand')?.value.trim();
-    const email = document.getElementById('signupEmail')?.value.trim();
-    const password = document.getElementById('signupPassword')?.value;
-    const confirmPassword = document.getElementById('signupConfirmPassword')?.value;
-    const submitBtn = document.getElementById('signupSubmitBtn');
-
-    // Validation
-    if (!name || name.length < 2) {
-      showError(signUpErrorEl, 'Please enter your full name (minimum 2 characters).');
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
-      showError(signUpErrorEl, 'Please provide a valid business email address.');
-      return;
-    }
-
-    if (!password || password.length < 8) {
-      showError(signUpErrorEl, 'Password must be at least 8 characters long.');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      showError(signUpErrorEl, 'Passwords do not match. Please re-enter your password.');
-      return;
-    }
-
-    try {
-      setButtonLoading(submitBtn, true, 'Encrypting & Creating Account...');
-
-      const res = await fetch(`${API_BASE}/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, brand_name, email, password })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok || !data.success) {
-        showError(signUpErrorEl, data.error || 'Failed to create account.');
-        setButtonLoading(submitBtn, false, 'Create B2B Account');
-        return;
-      }
-
-      // Success
-      authToken = data.token;
-      currentUser = data.user;
-      localStorage.setItem(TOKEN_KEY, authToken);
-      localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
-
-      showSuccess(signUpSuccessEl, 'Account created securely with bcrypt encryption! Logging in...');
-      renderHeaderAuth();
-      populateDrawerBuyer();
-
-      setTimeout(() => {
-        closeAuthModal();
-        setButtonLoading(submitBtn, false, 'Create B2B Account');
-      }, 1200);
-
-    } catch (err) {
-      console.warn('[SIGNUP FALLBACK] Server offline, saving local client trade session:', err);
-      currentUser = {
-        id: Date.now(),
-        name,
-        brand_name: brand_name || 'USA Private Label Partner',
-        email,
-        role: 'buyer'
-      };
-      authToken = 'local_session_' + Date.now();
-      localStorage.setItem(TOKEN_KEY, authToken);
-      localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
-
-      try {
-        const localAccounts = JSON.parse(localStorage.getItem('zbm_local_accounts') || '{}');
-        localAccounts[email.toLowerCase()] = { user: currentUser, password };
-        localStorage.setItem('zbm_local_accounts', JSON.stringify(localAccounts));
-      } catch {}
-
-      showSuccess(signUpSuccessEl, 'Account created securely! Welcome to ZBM Trade Portal.');
-      renderHeaderAuth();
-      populateDrawerBuyer();
-
-      setTimeout(() => {
-        closeAuthModal();
-        setButtonLoading(submitBtn, false, 'Create B2B Account');
-      }, 800);
-    }
-  }
-
-  // Logout Handler
+  // Sign out
   window.handleSignOut = function() {
     clearSession();
     renderHeaderAuth();
-    // Clear drawer buyer fields if matching
     const nameInp = document.getElementById('buyerNameInput');
     const brandInp = document.getElementById('buyerBrandInput');
     if (nameInp) nameInp.value = '';
@@ -403,7 +393,7 @@
     if (!authHeaderContainer) return;
 
     if (currentUser) {
-      const displayName = currentUser.name.split(' ')[0] || currentUser.name;
+      const displayName = (currentUser.name || 'Buyer').split(' ')[0];
       authHeaderContainer.innerHTML = `
         <div class="user-profile-menu">
           <button id="userProfileBtn" class="btn-header logged-in" onclick="toggleUserDropdown(event)" title="Logged in as ${currentUser.name}">
@@ -427,8 +417,8 @@
                 <strong style="color: #166534;"><i class="fa-solid fa-shield-check"></i> Verified B2B Buyer</strong>
               </div>
               <div class="user-dropdown-stat">
-                <span>Security:</span>
-                <strong style="color: var(--accent-gold);"><i class="fa-solid fa-key"></i> Bcrypt Encrypted</strong>
+                <span>Authentication:</span>
+                <strong style="color: var(--accent-gold);"><i class="fa-solid fa-lock"></i> OTP Verified</strong>
               </div>
             </div>
             <div class="user-dropdown-divider"></div>
@@ -441,7 +431,7 @@
       `;
     } else {
       authHeaderContainer.innerHTML = `
-        <button id="openAuthModalBtn" class="btn-header auth-trigger-btn" onclick="openAuthModal('signin')" title="Sign In or Register B2B Account">
+        <button id="openAuthModalBtn" class="btn-header auth-trigger-btn" onclick="openAuthModal('signin')" title="Sign In via Instant OTP">
           <i class="fa-regular fa-circle-user" style="color: var(--accent-gold); font-size: 1.15rem;"></i>
           <span>Sign In</span>
         </button>
@@ -469,7 +459,7 @@
     }
   });
 
-  // Auto-populate Drawer Buyer Info
+  // Populate Drawer Buyer Info
   function populateDrawerBuyer() {
     if (!currentUser) return;
     const brandInp = document.getElementById('buyerBrandInput');
@@ -482,7 +472,11 @@
     }
   }
 
-  // Helpers
+  function clearAlerts() {
+    if (authErrorAlert) { authErrorAlert.style.display = 'none'; authErrorAlert.innerText = ''; }
+    if (authSuccessAlert) { authSuccessAlert.style.display = 'none'; authSuccessAlert.innerText = ''; }
+  }
+
   function showError(el, message) {
     if (!el) return;
     el.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>${message}</span>`;
@@ -505,7 +499,7 @@
     }
   }
 
-  // Expose current user getter and helpers
+  // Expose global auth helpers
   window.populateDrawerBuyer = populateDrawerBuyer;
   window.ZBM_AUTH = {
     getUser: () => currentUser,

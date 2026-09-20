@@ -866,11 +866,41 @@
       }
     }
 
+    // Dynamic Payment Preference Recommendation based on Cart Value
+    const achBadgeText = document.getElementById('achBadgeText');
+    if (achBadgeText) {
+      if (totals.rawSubtotal >= 500) {
+        achBadgeText.innerText = '★ Recommended (0% Fee)';
+        achBadgeText.style.background = '#166534';
+        achBadgeText.style.color = '#ffffff';
+      } else {
+        achBadgeText.innerText = '0% Fee (Wholesale)';
+        achBadgeText.style.background = '#e0f2fe';
+        achBadgeText.style.color = '#0369a1';
+      }
+    }
+
     // Enable WhatsApp Order Button
     if (whatsappOrderBtn) {
       whatsappOrderBtn.classList.remove('disabled-btn');
     }
   }
+
+  // Payment preference radio state toggle
+  window.handlePaymentPrefChange = function() {
+    const cardRadio = document.getElementById('payMethodPayoneerCard');
+    const achRadio = document.getElementById('payMethodAchWire');
+    const cardLabel = document.getElementById('cardOptionLabel');
+    const achLabel = document.getElementById('achOptionLabel');
+
+    if (cardRadio && cardRadio.checked) {
+      if (cardLabel) cardLabel.classList.add('active');
+      if (achLabel) achLabel.classList.remove('active');
+    } else if (achRadio && achRadio.checked) {
+      if (achLabel) achLabel.classList.add('active');
+      if (cardLabel) cardLabel.classList.remove('active');
+    }
+  };
 
   function openInquiryDrawer() {
     if (inquiryDrawer) {
@@ -950,6 +980,22 @@
       msg += `• Estimated Total: *$${totals.finalTotal.toFixed(2)} USD*\n`;
     }
     msg += `----------------------------------------\n\n`;
+
+    // Payment Preference
+    const selectedPayPref = document.querySelector('input[name="paymentPreference"]:checked')?.value || 'payoneer_card';
+    msg += `💳 *PAYMENT PREFERENCE:*\n`;
+    if (selectedPayPref === 'ach_wire') {
+      msg += `• Selected Method: *USA Local Bank ACH / Domestic Wire Transfer (0% Fee)*\n`;
+      msg += `• Commercial Invoice Request: Please issue an official B2B Commercial Proforma Invoice with Citi Bank USA routing & account details.\n`;
+      if (totals.rawSubtotal >= 500) {
+        msg += `• Tier Qualification: Qualified for fee-free wholesale settlement ($500+ order)\n`;
+      }
+    } else {
+      msg += `• Selected Method: *Payoneer Digital Card / Secure Payment Link*\n`;
+      msg += `• Action Required: Please dispatch secure digital invoice link (Visa, Mastercard, AMEX, or Payoneer checkout).\n`;
+    }
+    msg += `----------------------------------------\n\n`;
+
     msg += `💬 *NEXT STEPS:*\n`;
     msg += `Please confirm formulation batch availability, physical unbranded sample dispatch, label artwork customization with my logo, and manufacturing turnaround.`;
 
