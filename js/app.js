@@ -98,6 +98,9 @@
   // DOM Elements Cache
   const productsGrid = document.getElementById('productsGrid');
   const categoryBar = document.getElementById('categoryBar');
+  const categoryNavWrapper = document.getElementById('categoryNavWrapper');
+  const catScrollLeftBtn = document.getElementById('catScrollLeftBtn');
+  const catScrollRightBtn = document.getElementById('catScrollRightBtn');
   const searchInput = document.getElementById('searchInput');
   const clearSearchBtn = document.getElementById('clearSearchBtn');
   const visibleCountEl = document.getElementById('visibleCount');
@@ -289,6 +292,89 @@
         applyFilters();
       });
     });
+
+    setupCategoryScrollNavigation();
+  }
+
+  function setupCategoryScrollNavigation() {
+    if (!categoryNavWrapper) return;
+
+    const updateArrows = () => {
+      if (!catScrollLeftBtn || !catScrollRightBtn) return;
+      const maxScroll = categoryNavWrapper.scrollWidth - categoryNavWrapper.clientWidth;
+      const current = categoryNavWrapper.scrollLeft;
+
+      if (current <= 5) {
+        catScrollLeftBtn.classList.add('disabled');
+      } else {
+        catScrollLeftBtn.classList.remove('disabled');
+      }
+
+      if (current >= maxScroll - 5 || maxScroll <= 0) {
+        catScrollRightBtn.classList.add('disabled');
+      } else {
+        catScrollRightBtn.classList.remove('disabled');
+      }
+    };
+
+    if (catScrollLeftBtn && !catScrollLeftBtn.dataset.bound) {
+      catScrollLeftBtn.dataset.bound = 'true';
+      catScrollLeftBtn.addEventListener('click', () => {
+        categoryNavWrapper.scrollBy({ left: -300, behavior: 'smooth' });
+      });
+    }
+
+    if (catScrollRightBtn && !catScrollRightBtn.dataset.bound) {
+      catScrollRightBtn.dataset.bound = 'true';
+      catScrollRightBtn.addEventListener('click', () => {
+        categoryNavWrapper.scrollBy({ left: 300, behavior: 'smooth' });
+      });
+    }
+
+    if (!categoryNavWrapper.dataset.bound) {
+      categoryNavWrapper.dataset.bound = 'true';
+
+      // Scroll listener to update arrow opacity
+      categoryNavWrapper.addEventListener('scroll', updateArrows);
+      window.addEventListener('resize', updateArrows);
+
+      // Mouse wheel horizontal scroll support
+      categoryNavWrapper.addEventListener('wheel', (e) => {
+        if (e.deltaY !== 0) {
+          e.preventDefault();
+          categoryNavWrapper.scrollBy({ left: e.deltaY * 1.6, behavior: 'smooth' });
+        }
+      }, { passive: false });
+
+      // Click and drag to scroll support
+      let isDown = false;
+      let startX = 0;
+      let scrollStart = 0;
+
+      categoryNavWrapper.addEventListener('mousedown', (e) => {
+        isDown = true;
+        startX = e.pageX - categoryNavWrapper.offsetLeft;
+        scrollStart = categoryNavWrapper.scrollLeft;
+      });
+
+      categoryNavWrapper.addEventListener('mouseleave', () => {
+        isDown = false;
+      });
+
+      categoryNavWrapper.addEventListener('mouseup', () => {
+        isDown = false;
+      });
+
+      categoryNavWrapper.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - categoryNavWrapper.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        categoryNavWrapper.scrollLeft = scrollStart - walk;
+      });
+    }
+
+    setTimeout(updateArrows, 150);
   }
 
   window.filterByCategory = function(categoryOrDeptId) {
@@ -419,7 +505,7 @@
               <button class="btn-card-specs" onclick="openProductModal(${p.id})" title="View Specs & INCI">
                 <i class="fa-solid fa-flask"></i>
               </button>
-              <button class="btn-card-specs" onclick="sendProductWhatsApp(${p.id})" title="Direct WhatsApp DM (+91 9344087944)">
+              <button class="btn-card-specs" onclick="sendProductWhatsApp(${p.id})" title="Direct WhatsApp DM (ZBM)">
                 <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i>
               </button>
             </div>

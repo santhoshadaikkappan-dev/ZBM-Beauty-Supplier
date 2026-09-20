@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    AURA LABS | HIGH-END ANTI-GRAVITY B2B WHITE-LABEL COSMETICS
    Inspired by selfnamed.com | Scandinavian Minimalist Luxury Aesthetic
    Target Audience: USA Business Buyers & Private Label Retailers
@@ -643,19 +643,88 @@ input, select {
 }
 
 /* ==========================================================================
-   CATEGORY NAVIGATION PILLS
+   CATEGORY NAVIGATION PILLS & SMOOTH SCROLL CONTROLS
    ========================================================================== */
-.category-nav-wrapper {
+.category-nav-outer {
   max-width: 1520px;
-  margin: 0 auto;
-  padding: 0 32px 20px;
+  margin: 0 auto 20px;
+  padding: 0 32px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cat-scroll-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 5;
+  user-select: none;
+}
+
+.cat-scroll-arrow:hover {
+  background: #1C1B1A;
+  color: #DFC090;
+  border-color: #DFC090;
+  transform: scale(1.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+}
+
+.cat-scroll-arrow:active {
+  transform: scale(0.94);
+}
+
+.cat-scroll-arrow.disabled,
+.cat-scroll-arrow[disabled] {
+  opacity: 0.25;
+  cursor: default;
+  pointer-events: none;
+  box-shadow: none;
+  transform: none;
+}
+
+.category-nav-wrapper {
+  flex: 1;
   overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(223, 192, 144, 0.25) transparent;
+  padding: 6px 4px 10px;
+  cursor: grab;
+}
+
+.category-nav-wrapper:active {
+  cursor: grabbing;
 }
 
 .category-nav-wrapper::-webkit-scrollbar {
-  display: none;
+  height: 4px;
+}
+
+.category-nav-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.category-nav-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(223, 192, 144, 0.3);
+  border-radius: 4px;
+}
+
+.category-nav-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-gold);
 }
 
 .category-bar {
