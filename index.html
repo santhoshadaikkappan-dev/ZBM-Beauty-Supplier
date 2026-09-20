@@ -15,6 +15,9 @@
   
   <!-- Main Anti-Gravity Stylesheet -->
   <link rel="stylesheet" href="css/styles.css">
+
+  <!-- EmailJS Official SDK for Real B2B Email OTP Dispatch -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -607,15 +610,12 @@
           </button>
         </div>
 
-        <!-- Simulated B2B Trade Desk OTP Notification Banner -->
-        <div class="otp-banner-notice" id="otpNoticeBanner">
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <i class="fa-solid fa-key"></i>
-            <span>Security Code:</span>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <span class="otp-demo-badge" id="otpDemoCodeDisplay" onclick="fillDemoOtp()" title="Click to auto-fill code">------</span>
-            <span style="font-size: 0.68rem; color: #166534; cursor: pointer; text-decoration: underline;" onclick="fillDemoOtp()">Auto-Fill</span>
+        <!-- Real B2B Email Dispatch Confirmation Notice -->
+        <div class="otp-delivery-notice" id="otpDeliveryNotice">
+          <i class="fa-solid fa-envelope-circle-check" style="color: #166534; font-size: 1.35rem; flex-shrink: 0;"></i>
+          <div>
+            <span style="font-weight: 700; color: #166534; display: block; margin-bottom: 2px;">Passcode dispatched to your inbox!</span>
+            <span style="font-size: 0.76rem; color: #14532D; line-height: 1.35; display: block;">Please check your Gmail inbox (and spam folder) for the 6-digit code sent by <strong>ZANDRA BEAUTY MATRIX</strong>.</span>
           </div>
         </div>
 

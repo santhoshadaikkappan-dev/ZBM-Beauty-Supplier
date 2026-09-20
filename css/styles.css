@@ -2847,35 +2847,16 @@ input, select {
 /* ==========================================================================
    OTP VERIFICATION INPUTS & NOTIFICATION BANNER
    ========================================================================== */
-.otp-banner-notice {
+.otp-delivery-notice {
   background: #F0FDF4;
   border: 1px solid #BBF7D0;
   border-radius: var(--radius-xs);
-  padding: 10px 14px;
-  font-size: 0.8rem;
-  color: #166534;
+  padding: 12px 14px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   width: 100%;
-  margin-bottom: 4px;
-}
-
-.otp-demo-badge {
-  background: #166534;
-  color: #FFFFFF;
-  font-family: monospace;
-  font-size: 0.88rem;
-  font-weight: 800;
-  padding: 3px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  letter-spacing: 2px;
-  transition: transform 0.15s ease;
-}
-
-.otp-demo-badge:hover {
-  transform: scale(1.05);
+  margin-bottom: 8px;
 }
 
 .otp-inputs-row {

@@ -11,6 +11,11 @@
   const USER_KEY = 'zbm_auth_user';
   const TOKEN_KEY = 'zbm_auth_token';
 
+  // EmailJS Production Credentials (Official ZBM B2B OTP Dispatch)
+  const EMAILJS_SERVICE_ID = 'service_28jrb1r';
+  const EMAILJS_TEMPLATE_ID = 'template_tdrqlb8';
+  const EMAILJS_PUBLIC_KEY = 'Q3kNqFZ1HzHAVaRul';
+
   // State
   let currentUser = null;
   let authToken = localStorage.getItem(TOKEN_KEY) || null;
@@ -29,11 +34,20 @@
   let authEmailInput, authNameInput, authBrandInput;
   let sendOtpSubmitBtn, verifyOtpSubmitBtn;
   let otpDisplayEmail, changeEmailBtn;
-  let otpDemoCodeDisplay, resendOtpBtn, otpCountdownEl, otpTimerText;
+  let resendOtpBtn, otpCountdownEl, otpTimerText;
   let authHeaderContainer;
 
   // Initialize
   function initAuth() {
+    if (window.emailjs) {
+      try {
+        emailjs.init({
+          publicKey: EMAILJS_PUBLIC_KEY
+        });
+      } catch (e) {
+        console.warn('[EMAILJS INIT WARNING]', e);
+      }
+    }
     cacheDOMElements();
     setupEventListeners();
     restoreSession();
@@ -55,7 +69,6 @@
     verifyOtpSubmitBtn = document.getElementById('verifyOtpSubmitBtn');
     otpDisplayEmail = document.getElementById('otpDisplayEmail');
     changeEmailBtn = document.getElementById('changeEmailBtn');
-    otpDemoCodeDisplay = document.getElementById('otpDemoCodeDisplay');
     resendOtpBtn = document.getElementById('resendOtpBtn');
     otpCountdownEl = document.getElementById('otpCountdown');
     otpTimerText = document.getElementById('otpTimerText');
@@ -182,7 +195,7 @@
     localStorage.removeItem(USER_KEY);
   }
 
-  // Stage 1: Send OTP
+  // Stage 1: Send OTP via Official EmailJS
   function handleSendOtp(e) {
     if (e) e.preventDefault();
     clearAlerts();
@@ -201,54 +214,100 @@
     pendingName = name;
     pendingBrand = brand;
 
-    setButtonLoading(sendOtpSubmitBtn, true, 'Generating Code...');
+    setButtonLoading(sendOtpSubmitBtn, true, 'Dispatching Code to Email...');
 
     // Generate cryptographic 6-digit security code
     activeOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiryTime = new Date(Date.now() + 10 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    setTimeout(() => {
+    const templateParams = {
+      email: pendingEmail,
+      passcode: activeOtp,
+      time: expiryTime
+    };
+
+    const onDispatchSuccess = () => {
       setButtonLoading(sendOtpSubmitBtn, false, 'Send Security Code (OTP)');
 
       // Transition to Stage 2 (OTP Entry)
       if (authEmailSection) authEmailSection.style.display = 'none';
       if (authOtpSection) authOtpSection.style.display = 'block';
       if (otpDisplayEmail) otpDisplayEmail.innerText = pendingEmail;
-      if (otpDemoCodeDisplay) otpDemoCodeDisplay.innerText = activeOtp;
 
       // Clear previous digit inputs
       document.querySelectorAll('.otp-digit-input').forEach(inp => inp.value = '');
 
-      showSuccess(authSuccessAlert, `Security code generated! Use code [${activeOtp}] below.`);
+      showSuccess(authSuccessAlert, `Security code dispatched! Please check your Gmail inbox (${pendingEmail}).`);
 
       // Focus first digit
       const firstDigit = document.querySelector('.otp-digit-input');
       if (firstDigit) setTimeout(() => firstDigit.focus(), 150);
 
       startOtpCountdown();
-    }, 600);
+    };
+
+    if (window.emailjs) {
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY)
+        .then(function(res) {
+          console.log('[EMAILJS DISPATCH SUCCESS]', res.status, res.text);
+          onDispatchSuccess();
+        })
+        .catch(function(err) {
+          console.error('[EMAILJS ERROR]', err);
+          setButtonLoading(sendOtpSubmitBtn, false, 'Send Security Code (OTP)');
+          showError(authErrorAlert, 'Could not send verification email. Please verify your email address or try again.');
+        });
+    } else {
+      setButtonLoading(sendOtpSubmitBtn, false, 'Send Security Code (OTP)');
+      showError(authErrorAlert, 'Email service initialization failed. Please reload and try again.');
+    }
   }
 
-  // Resend OTP
+  // Resend OTP via EmailJS
   function handleResendOtp() {
     if (resendOtpBtn && resendOtpBtn.disabled) return;
     clearAlerts();
     activeOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    if (otpDemoCodeDisplay) otpDemoCodeDisplay.innerText = activeOtp;
-    showSuccess(authSuccessAlert, `New security code generated: [${activeOtp}].`);
-    document.querySelectorAll('.otp-digit-input').forEach(inp => inp.value = '');
-    const firstDigit = document.querySelector('.otp-digit-input');
-    if (firstDigit) firstDigit.focus();
-    startOtpCountdown();
+    const expiryTime = new Date(Date.now() + 10 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    if (resendOtpBtn) resendOtpBtn.disabled = true;
+    if (otpTimerText) otpTimerText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Dispatching code...';
+
+    const templateParams = {
+      email: pendingEmail,
+      passcode: activeOtp,
+      time: expiryTime
+    };
+
+    if (window.emailjs) {
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY)
+        .then(() => {
+          showSuccess(authSuccessAlert, `New security code sent to ${pendingEmail}.`);
+          document.querySelectorAll('.otp-digit-input').forEach(inp => inp.value = '');
+          const firstDigit = document.querySelector('.otp-digit-input');
+          if (firstDigit) firstDigit.focus();
+          startOtpCountdown();
+        })
+        .catch((err) => {
+          console.error('[RESEND ERROR]', err);
+          showError(authErrorAlert, 'Error resending code. Please try again in 1 minute.');
+          if (resendOtpBtn) resendOtpBtn.disabled = false;
+        });
+    }
   }
 
   function startOtpCountdown() {
     if (countdownTimer) clearInterval(countdownTimer);
     countdownSeconds = 45;
     if (resendOtpBtn) resendOtpBtn.disabled = true;
-    if (otpTimerText) otpTimerText.style.display = 'inline';
+    if (otpTimerText) {
+      otpTimerText.style.display = 'inline';
+      otpTimerText.innerHTML = `Resend available in <strong id="otpCountdown">45</strong>s`;
+    }
 
     const updateTimerDisplay = () => {
-      if (otpCountdownEl) otpCountdownEl.innerText = countdownSeconds;
+      const countdownEl = document.getElementById('otpCountdown');
+      if (countdownEl) countdownEl.innerText = countdownSeconds;
       if (countdownSeconds <= 0) {
         clearInterval(countdownTimer);
         if (resendOtpBtn) resendOtpBtn.disabled = false;
@@ -268,16 +327,6 @@
     if (authEmailSection) authEmailSection.style.display = 'block';
     if (authEmailInput) authEmailInput.focus();
   }
-
-  // Autofill helper
-  window.fillDemoOtp = function() {
-    if (!activeOtp) return;
-    const inputs = document.querySelectorAll('.otp-digit-input');
-    for (let i = 0; i < 6; i++) {
-      if (inputs[i]) inputs[i].value = activeOtp[i] || '';
-    }
-    setTimeout(() => handleVerifyOtp(), 150);
-  };
 
   // Stage 2: Verify OTP (Single Account Guarantee)
   function handleVerifyOtp(e) {
