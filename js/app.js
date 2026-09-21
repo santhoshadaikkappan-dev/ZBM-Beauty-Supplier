@@ -884,21 +884,98 @@
     if (whatsappOrderBtn) {
       whatsappOrderBtn.classList.remove('disabled-btn');
     }
+
+    // Refresh active payment preference UI
+    if (typeof window.handlePaymentPrefChange === 'function') {
+      window.handlePaymentPrefChange();
+    }
   }
+
+  // PayPal Smart Buttons Renderer
+  let currentPayPalAmount = null;
+  window.renderPayPalButtons = function() {
+    const container = document.getElementById('paypal-button-container');
+    if (!container) return;
+
+    if (!window.paypal) {
+      container.innerHTML = `
+        <div style="background: rgba(0, 121, 193, 0.08); border: 1px solid rgba(0, 121, 193, 0.25); border-radius: 6px; padding: 10px; font-size: 0.78rem; color: #0079C1; text-align: center;">
+          <i class="fa-brands fa-paypal"></i> Instant PayPal & Card Checkout Ready.<br>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">Please use the WhatsApp order desk below if buttons are blocked by browser ad-blocker.</span>
+        </div>
+      `;
+      return;
+    }
+
+    const totals = calculateCartTotals();
+    const amountStr = totals.finalTotal.toFixed(2);
+
+    if (currentPayPalAmount === amountStr && container.children.length > 0) {
+      return;
+    }
+    currentPayPalAmount = amountStr;
+    container.innerHTML = '';
+
+    try {
+      window.paypal.Buttons({
+        style: {
+          layout: 'vertical',
+          color: 'gold',
+          shape: 'rect',
+          label: 'paypal'
+        },
+        createOrder: function(data, actions) {
+          const liveTotals = calculateCartTotals();
+          return actions.order.create({
+            purchase_units: [{
+              description: `ZANDRA BEAUTY MATRIX (ZBM) B2B Wholesale Order (${inquiryCart.length} formulations)`,
+              amount: {
+                currency_code: 'USD',
+                value: liveTotals.finalTotal.toFixed(2)
+              }
+            }]
+          });
+        },
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(details) {
+            const payerName = details.payer?.name?.given_name || 'Valued Client';
+            alert(`Payment of $${amountStr} USD completed successfully by ${payerName}! Transaction ID: ${details.id}. Trade desk confirmation dispatching on WhatsApp.`);
+            window.submitOrderViaWhatsApp(details.id);
+          });
+        },
+        onError: function(err) {
+          console.error('[PAYPAL BUTTON ERROR]', err);
+        }
+      }).render('#paypal-button-container');
+    } catch (e) {
+      console.error('[PAYPAL BUTTON EXCEPTION]', e);
+    }
+  };
 
   // Payment preference radio state toggle
   window.handlePaymentPrefChange = function() {
-    const cardRadio = document.getElementById('payMethodPayoneerCard');
+    const paypalRadio = document.getElementById('payMethodPayPal');
     const achRadio = document.getElementById('payMethodAchWire');
     const cardLabel = document.getElementById('cardOptionLabel');
     const achLabel = document.getElementById('achOptionLabel');
+    const paypalSection = document.getElementById('paypalButtonsSection');
+    const whatsappBtn = document.getElementById('whatsappOrderBtn');
 
-    if (cardRadio && cardRadio.checked) {
+    if (paypalRadio && paypalRadio.checked) {
       if (cardLabel) cardLabel.classList.add('active');
       if (achLabel) achLabel.classList.remove('active');
+      if (paypalSection) paypalSection.style.display = 'block';
+      if (whatsappBtn) {
+        whatsappBtn.innerHTML = `<i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i> <span>Inquire / Send Draft to WhatsApp</span>`;
+      }
+      window.renderPayPalButtons();
     } else if (achRadio && achRadio.checked) {
       if (achLabel) achLabel.classList.add('active');
       if (cardLabel) cardLabel.classList.remove('active');
+      if (paypalSection) paypalSection.style.display = 'none';
+      if (whatsappBtn) {
+        whatsappBtn.innerHTML = `<i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i> <span>Request Official Commercial Invoice (ACH)</span>`;
+      }
     }
   };
 
@@ -922,7 +999,7 @@
   // ========================================================================
   // 8. DIRECT WHATSAPP ORDER ENGINE (+91 9344087944)
   // ========================================================================
-  window.submitOrderViaWhatsApp = function() {
+  window.submitOrderViaWhatsApp = function(onlineTxId = null) {
     if (!inquiryCart || inquiryCart.length === 0) {
       alert('Your sample basket is empty. Please select formulations before submitting.');
       return;
@@ -982,17 +1059,21 @@
     msg += `----------------------------------------\n\n`;
 
     // Payment Preference
-    const selectedPayPref = document.querySelector('input[name="paymentPreference"]:checked')?.value || 'payoneer_card';
+    const selectedPayPref = document.querySelector('input[name="paymentPreference"]:checked')?.value || 'paypal_card';
     msg += `💳 *PAYMENT PREFERENCE:*\n`;
-    if (selectedPayPref === 'ach_wire') {
+    if (onlineTxId) {
+      msg += `• Selected Method: *PayPal & Credit/Debit Card*\n`;
+      msg += `• Payment Status: *PAID ONLINE VIA PAYPAL* (Trans ID: ${onlineTxId})\n`;
+      msg += `• Settlement: Confirmed via PayPal Smart Gateway\n`;
+    } else if (selectedPayPref === 'ach_wire') {
       msg += `• Selected Method: *USA Local Bank ACH / Domestic Wire Transfer (0% Fee)*\n`;
       msg += `• Commercial Invoice Request: Please issue an official B2B Commercial Proforma Invoice with Citi Bank USA routing & account details.\n`;
       if (totals.rawSubtotal >= 500) {
         msg += `• Tier Qualification: Qualified for fee-free wholesale settlement ($500+ order)\n`;
       }
     } else {
-      msg += `• Selected Method: *Payoneer Digital Card / Secure Payment Link*\n`;
-      msg += `• Action Required: Please dispatch secure digital invoice link (Visa, Mastercard, AMEX, or Payoneer checkout).\n`;
+      msg += `• Selected Method: *PayPal & Credit/Debit Card Online Checkout*\n`;
+      msg += `• Action Required: Online card processing active via PayPal smart gateway.\n`;
     }
     msg += `----------------------------------------\n\n`;
 

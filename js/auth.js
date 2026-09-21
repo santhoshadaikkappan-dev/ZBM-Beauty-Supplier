@@ -1,6 +1,6 @@
 /**
- * ZANDRA BEAUTY MATRIX (ZBM) | B2B Client OTP Authentication Controller
- * Guaranteed Single-Account-Per-Email with 6-Digit One-Time Passcode (OTP)
+ * ZANDRA BEAUTY MATRIX (ZBM) | B2B Client Authentication Controller
+ * Direct Email & Password Sign-In with Strict Single-Account-Per-Email Enforcement
  */
 
 (function() {
@@ -11,45 +11,27 @@
   const USER_KEY = 'zbm_auth_user';
   const TOKEN_KEY = 'zbm_auth_token';
 
-  // EmailJS Production Credentials (Official ZBM B2B OTP Dispatch)
-  const EMAILJS_SERVICE_ID = 'service_28jrb1r';
-  const EMAILJS_TEMPLATE_ID = 'template_tdrqlb8';
-  const EMAILJS_PUBLIC_KEY = 'Q3kNqFZ1HzHAVaRul';
-
   // State
   let currentUser = null;
   let authToken = localStorage.getItem(TOKEN_KEY) || null;
-  let activeOtp = null;
-  let pendingEmail = '';
-  let pendingName = '';
-  let pendingBrand = '';
-  let countdownTimer = null;
-  let countdownSeconds = 45;
+  let currentTab = 'signin'; // 'signin' or 'signup'
 
   // DOM Elements
   let authModal, authModalClose;
   let authErrorAlert, authSuccessAlert;
-  let authEmailSection, authOtpSection;
-  let authEmailForm, authOtpForm;
-  let authEmailInput, authNameInput, authBrandInput;
-  let sendOtpSubmitBtn, verifyOtpSubmitBtn;
-  let otpDisplayEmail, changeEmailBtn;
-  let resendOtpBtn, otpCountdownEl, otpTimerText;
+  let authTabSignIn, authTabSignUp;
+  let signInFormSection, signUpFormSection;
+  let signInForm, signUpForm;
+  let signInEmail, signInPassword;
+  let signUpName, signUpBrand, signUpEmail, signUpPassword, signUpConfirmPassword;
+  let signInSubmitBtn, signUpSubmitBtn;
   let authHeaderContainer;
 
   // Initialize
   function initAuth() {
-    if (window.emailjs) {
-      try {
-        emailjs.init({
-          publicKey: EMAILJS_PUBLIC_KEY
-        });
-      } catch (e) {
-        console.warn('[EMAILJS INIT WARNING]', e);
-      }
-    }
     cacheDOMElements();
     setupEventListeners();
+    setupPasswordToggles();
     restoreSession();
   }
 
@@ -58,20 +40,21 @@
     authModalClose = document.getElementById('closeAuthModalBtn');
     authErrorAlert = document.getElementById('authErrorAlert');
     authSuccessAlert = document.getElementById('authSuccessAlert');
-    authEmailSection = document.getElementById('authEmailSection');
-    authOtpSection = document.getElementById('authOtpSection');
-    authEmailForm = document.getElementById('authEmailForm');
-    authOtpForm = document.getElementById('authOtpForm');
-    authEmailInput = document.getElementById('authEmailInput');
-    authNameInput = document.getElementById('authNameInput');
-    authBrandInput = document.getElementById('authBrandInput');
-    sendOtpSubmitBtn = document.getElementById('sendOtpSubmitBtn');
-    verifyOtpSubmitBtn = document.getElementById('verifyOtpSubmitBtn');
-    otpDisplayEmail = document.getElementById('otpDisplayEmail');
-    changeEmailBtn = document.getElementById('changeEmailBtn');
-    resendOtpBtn = document.getElementById('resendOtpBtn');
-    otpCountdownEl = document.getElementById('otpCountdown');
-    otpTimerText = document.getElementById('otpTimerText');
+    authTabSignIn = document.getElementById('authTabSignIn');
+    authTabSignUp = document.getElementById('authTabSignUp');
+    signInFormSection = document.getElementById('signInFormSection');
+    signUpFormSection = document.getElementById('signUpFormSection');
+    signInForm = document.getElementById('signInForm');
+    signUpForm = document.getElementById('signUpForm');
+    signInEmail = document.getElementById('signInEmail');
+    signInPassword = document.getElementById('signInPassword');
+    signUpName = document.getElementById('signUpName');
+    signUpBrand = document.getElementById('signUpBrand');
+    signUpEmail = document.getElementById('signUpEmail');
+    signUpPassword = document.getElementById('signUpPassword');
+    signUpConfirmPassword = document.getElementById('signUpConfirmPassword');
+    signInSubmitBtn = document.getElementById('signInSubmitBtn');
+    signUpSubmitBtn = document.getElementById('signUpSubmitBtn');
     authHeaderContainer = document.getElementById('authHeaderContainer');
   }
 
@@ -86,20 +69,12 @@
       });
     }
 
-    if (authEmailForm) {
-      authEmailForm.addEventListener('submit', handleSendOtp);
+    if (signInForm) {
+      signInForm.addEventListener('submit', handleSignIn);
     }
 
-    if (authOtpForm) {
-      authOtpForm.addEventListener('submit', handleVerifyOtp);
-    }
-
-    if (changeEmailBtn) {
-      changeEmailBtn.addEventListener('click', backToEmailStage);
-    }
-
-    if (resendOtpBtn) {
-      resendOtpBtn.addEventListener('click', handleResendOtp);
+    if (signUpForm) {
+      signUpForm.addEventListener('submit', handleSignUp);
     }
 
     // Escape key closes modal
@@ -108,53 +83,35 @@
         closeAuthModal();
       }
     });
-
-    setupOtpInputs();
   }
 
-  // 6-Digit Auto-Advancing Input Boxes
-  function setupOtpInputs() {
-    const inputs = document.querySelectorAll('.otp-digit-input');
-    inputs.forEach((input, index) => {
-      // Numbers only
-      input.addEventListener('input', (e) => {
-        const val = e.target.value.replace(/[^0-9]/g, '');
-        e.target.value = val ? val[val.length - 1] : '';
+  // Password Visibility Toggle Button Handler
+  function setupPasswordToggles() {
+    document.querySelectorAll('.toggle-password-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        if (!input) return;
 
-        if (e.target.value && index < inputs.length - 1) {
-          inputs[index + 1].focus();
-        }
-
-        // Auto verify if all 6 filled
-        const allFilled = Array.from(inputs).every(inp => inp.value.length === 1);
-        if (allFilled) {
-          setTimeout(() => handleVerifyOtp(), 150);
-        }
-      });
-
-      // Backspace handling
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && !input.value && index > 0) {
-          inputs[index - 1].focus();
-        }
-      });
-
-      // Paste handling (Ctrl+V entire 6-digit code)
-      input.addEventListener('paste', (e) => {
-        e.preventDefault();
-        const pasteData = (e.clipboardData || window.clipboardData).getData('text').trim().replace(/[^0-9]/g, '');
-        if (pasteData.length >= 6) {
-          for (let i = 0; i < 6; i++) {
-            if (inputs[i]) inputs[i].value = pasteData[i];
+        const icon = this.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          if (icon) {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
           }
-          inputs[5].focus();
-          setTimeout(() => handleVerifyOtp(), 150);
+        } else {
+          input.type = 'password';
+          if (icon) {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+          }
         }
       });
     });
   }
 
-  // Helper to read users registry (Single Account Guarantee)
+  // Helper to read users registry (Strict Single Account Guarantee)
   function getUsersRegistry() {
     try {
       return JSON.parse(localStorage.getItem(REGISTRY_KEY) || '{}');
@@ -195,207 +152,174 @@
     localStorage.removeItem(USER_KEY);
   }
 
-  // Stage 1: Send OTP via Official EmailJS
-  function handleSendOtp(e) {
+  // Switch between Sign In and Sign Up Tabs
+  window.switchAuthTab = function(tab) {
+    currentTab = tab;
+    clearAlerts();
+
+    if (tab === 'signin') {
+      if (authTabSignIn) authTabSignIn.classList.add('active');
+      if (authTabSignUp) authTabSignUp.classList.remove('active');
+      if (signInFormSection) signInFormSection.style.display = 'block';
+      if (signUpFormSection) signUpFormSection.style.display = 'none';
+      if (signInEmail) setTimeout(() => signInEmail.focus(), 100);
+    } else {
+      if (authTabSignUp) authTabSignUp.classList.add('active');
+      if (authTabSignIn) authTabSignIn.classList.remove('active');
+      if (signUpFormSection) signUpFormSection.style.display = 'block';
+      if (signInFormSection) signInFormSection.style.display = 'none';
+      if (signUpName) setTimeout(() => signUpName.focus(), 100);
+    }
+  };
+
+  // Sign In Handler
+  function handleSignIn(e) {
     if (e) e.preventDefault();
     clearAlerts();
 
-    const email = (authEmailInput?.value || '').trim();
-    const name = (authNameInput?.value || '').trim();
-    const brand = (authBrandInput?.value || '').trim();
+    const email = (signInEmail?.value || '').trim();
+    const password = (signInPassword?.value || '').trim();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
-      showError(authErrorAlert, 'Please provide a valid business email address.');
+      showError(authErrorAlert, 'Please enter a valid business email address.');
       return;
     }
 
-    pendingEmail = email.toLowerCase();
-    pendingName = name;
-    pendingBrand = brand;
-
-    setButtonLoading(sendOtpSubmitBtn, true, 'Dispatching Code to Email...');
-
-    // Generate cryptographic 6-digit security code
-    activeOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiryTime = new Date(Date.now() + 10 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    const templateParams = {
-      email: pendingEmail,
-      passcode: activeOtp,
-      time: expiryTime
-    };
-
-    const onDispatchSuccess = () => {
-      setButtonLoading(sendOtpSubmitBtn, false, 'Send Security Code (OTP)');
-
-      // Transition to Stage 2 (OTP Entry)
-      if (authEmailSection) authEmailSection.style.display = 'none';
-      if (authOtpSection) authOtpSection.style.display = 'block';
-      if (otpDisplayEmail) otpDisplayEmail.innerText = pendingEmail;
-
-      // Clear previous digit inputs
-      document.querySelectorAll('.otp-digit-input').forEach(inp => inp.value = '');
-
-      showSuccess(authSuccessAlert, `Security code dispatched! Please check your Gmail inbox (${pendingEmail}).`);
-
-      // Focus first digit
-      const firstDigit = document.querySelector('.otp-digit-input');
-      if (firstDigit) setTimeout(() => firstDigit.focus(), 150);
-
-      startOtpCountdown();
-    };
-
-    if (window.emailjs) {
-      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY)
-        .then(function(res) {
-          console.log('[EMAILJS DISPATCH SUCCESS]', res.status, res.text);
-          onDispatchSuccess();
-        })
-        .catch(function(err) {
-          console.error('[EMAILJS ERROR]', err);
-          setButtonLoading(sendOtpSubmitBtn, false, 'Send Security Code (OTP)');
-          showError(authErrorAlert, 'Could not send verification email. Please verify your email address or try again.');
-        });
-    } else {
-      setButtonLoading(sendOtpSubmitBtn, false, 'Send Security Code (OTP)');
-      showError(authErrorAlert, 'Email service initialization failed. Please reload and try again.');
-    }
-  }
-
-  // Resend OTP via EmailJS
-  function handleResendOtp() {
-    if (resendOtpBtn && resendOtpBtn.disabled) return;
-    clearAlerts();
-    activeOtp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiryTime = new Date(Date.now() + 10 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    if (resendOtpBtn) resendOtpBtn.disabled = true;
-    if (otpTimerText) otpTimerText.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Dispatching code...';
-
-    const templateParams = {
-      email: pendingEmail,
-      passcode: activeOtp,
-      time: expiryTime
-    };
-
-    if (window.emailjs) {
-      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY)
-        .then(() => {
-          showSuccess(authSuccessAlert, `New security code sent to ${pendingEmail}.`);
-          document.querySelectorAll('.otp-digit-input').forEach(inp => inp.value = '');
-          const firstDigit = document.querySelector('.otp-digit-input');
-          if (firstDigit) firstDigit.focus();
-          startOtpCountdown();
-        })
-        .catch((err) => {
-          console.error('[RESEND ERROR]', err);
-          showError(authErrorAlert, 'Error resending code. Please try again in 1 minute.');
-          if (resendOtpBtn) resendOtpBtn.disabled = false;
-        });
-    }
-  }
-
-  function startOtpCountdown() {
-    if (countdownTimer) clearInterval(countdownTimer);
-    countdownSeconds = 45;
-    if (resendOtpBtn) resendOtpBtn.disabled = true;
-    if (otpTimerText) {
-      otpTimerText.style.display = 'inline';
-      otpTimerText.innerHTML = `Resend available in <strong id="otpCountdown">45</strong>s`;
+    if (!password) {
+      showError(authErrorAlert, 'Please enter your password.');
+      return;
     }
 
-    const updateTimerDisplay = () => {
-      const countdownEl = document.getElementById('otpCountdown');
-      if (countdownEl) countdownEl.innerText = countdownSeconds;
-      if (countdownSeconds <= 0) {
-        clearInterval(countdownTimer);
-        if (resendOtpBtn) resendOtpBtn.disabled = false;
-        if (otpTimerText) otpTimerText.style.display = 'none';
+    const cleanEmail = email.toLowerCase();
+    const registry = getUsersRegistry();
+    const user = registry[cleanEmail];
+
+    if (!user) {
+      showError(authErrorAlert, 'No account found with this email. Please click "Create Account" tab above.');
+      return;
+    }
+
+    // Verify Password
+    if (user.password !== password) {
+      showError(authErrorAlert, 'Incorrect password. Please verify your credentials and try again.');
+      if (signInPassword) {
+        signInPassword.value = '';
+        signInPassword.focus();
       }
-      countdownSeconds--;
-    };
-
-    updateTimerDisplay();
-    countdownTimer = setInterval(updateTimerDisplay, 1000);
-  }
-
-  function backToEmailStage() {
-    clearAlerts();
-    if (countdownTimer) clearInterval(countdownTimer);
-    if (authOtpSection) authOtpSection.style.display = 'none';
-    if (authEmailSection) authEmailSection.style.display = 'block';
-    if (authEmailInput) authEmailInput.focus();
-  }
-
-  // Stage 2: Verify OTP (Single Account Guarantee)
-  function handleVerifyOtp(e) {
-    if (e) e.preventDefault();
-    clearAlerts();
-
-    const inputs = document.querySelectorAll('.otp-digit-input');
-    const enteredCode = Array.from(inputs).map(inp => inp.value).join('').trim();
-
-    if (enteredCode.length !== 6) {
-      showError(authErrorAlert, 'Please enter the complete 6-digit security code.');
       return;
     }
 
-    if (enteredCode !== activeOtp) {
-      showError(authErrorAlert, 'Invalid security code. Please check the code and try again.');
-      inputs.forEach(inp => inp.value = '');
-      if (inputs[0]) inputs[0].focus();
-      return;
-    }
-
-    // OTP Verified! Single-Account Logic
-    setButtonLoading(verifyOtpSubmitBtn, true, 'Verifying Account...');
+    // Password Match! Log in user
+    setButtonLoading(signInSubmitBtn, true, 'Signing In...');
 
     setTimeout(() => {
-      const registry = getUsersRegistry();
-      const cleanEmail = pendingEmail.toLowerCase();
-      let user = registry[cleanEmail];
-
-      if (user) {
-        // Existing user: Update name/brand if provided and empty
-        if (pendingName && (!user.name || user.name.includes('@'))) user.name = pendingName;
-        if (pendingBrand && !user.brand_name) user.brand_name = pendingBrand;
-        user.lastLoginAt = new Date().toISOString();
-      } else {
-        // New user: Create single unique record
-        const fallbackName = pendingName || cleanEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        user = {
-          id: 'usr_' + Date.now(),
-          email: cleanEmail,
-          name: fallbackName,
-          brand_name: pendingBrand || 'USA Private Label Partner',
-          role: 'buyer',
-          createdAt: new Date().toISOString(),
-          lastLoginAt: new Date().toISOString()
-        };
-      }
-
-      // Save to registry (guaranteed single record per cleanEmail)
+      user.lastLoginAt = new Date().toISOString();
       registry[cleanEmail] = user;
       saveUsersRegistry(registry);
 
-      // Set active session
-      currentUser = user;
-      authToken = 'zbm_otp_session_' + Date.now();
+      currentUser = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        brand_name: user.brand_name,
+        role: user.role || 'buyer'
+      };
+      authToken = 'zbm_auth_token_' + Date.now();
       localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
       localStorage.setItem(TOKEN_KEY, authToken);
 
-      showSuccess(authSuccessAlert, `Authenticated! Welcome, ${currentUser.name}.`);
+      showSuccess(authSuccessAlert, `Welcome back, ${currentUser.name}!`);
       renderHeaderAuth();
       populateDrawerBuyer();
 
-      if (countdownTimer) clearInterval(countdownTimer);
+      setTimeout(() => {
+        closeAuthModal();
+        setButtonLoading(signInSubmitBtn, false, 'Sign In to Trade Account');
+      }, 600);
+    }, 400);
+  }
+
+  // Sign Up Handler (Strict Single-Account Enforcement)
+  function handleSignUp(e) {
+    if (e) e.preventDefault();
+    clearAlerts();
+
+    const name = (signUpName?.value || '').trim();
+    const brand = (signUpBrand?.value || '').trim();
+    const email = (signUpEmail?.value || '').trim();
+    const password = (signUpPassword?.value || '').trim();
+    const confirmPassword = (signUpConfirmPassword?.value || '').trim();
+
+    if (!name) {
+      showError(authErrorAlert, 'Please enter your full legal name.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      showError(authErrorAlert, 'Please enter a valid business email address.');
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      showError(authErrorAlert, 'Password must be at least 6 characters long.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      showError(authErrorAlert, 'Passwords do not match. Please re-enter your password.');
+      return;
+    }
+
+    const cleanEmail = email.toLowerCase();
+    const registry = getUsersRegistry();
+
+    // STRICT CHECK: Does account with this email already exist?
+    if (registry[cleanEmail]) {
+      showError(authErrorAlert, 'An account with this email address already exists. Please switch to "Sign In" tab.');
+      return;
+    }
+
+    // Create New Unique Account
+    setButtonLoading(signUpSubmitBtn, true, 'Creating B2B Account...');
+
+    setTimeout(() => {
+      const newUser = {
+        id: 'usr_' + Date.now(),
+        email: cleanEmail,
+        name: name,
+        brand_name: brand || 'USA Private Label Partner',
+        password: password,
+        role: 'buyer',
+        createdAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString()
+      };
+
+      // Save to registry
+      registry[cleanEmail] = newUser;
+      saveUsersRegistry(registry);
+
+      // Auto Login
+      currentUser = {
+        id: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+        brand_name: newUser.brand_name,
+        role: newUser.role
+      };
+      authToken = 'zbm_auth_token_' + Date.now();
+      localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+      localStorage.setItem(TOKEN_KEY, authToken);
+
+      showSuccess(authSuccessAlert, `Account created successfully! Welcome, ${currentUser.name}.`);
+      renderHeaderAuth();
+      populateDrawerBuyer();
 
       setTimeout(() => {
         closeAuthModal();
-        setButtonLoading(verifyOtpSubmitBtn, false, 'Verify & Access Trade Portal');
-      }, 700);
-
+        setButtonLoading(signUpSubmitBtn, false, 'Create B2B Account');
+      }, 600);
     }, 500);
   }
 
@@ -404,26 +328,21 @@
     if (!authModal) return;
     clearAlerts();
 
-    // If already logged in, show profile dropdown
+    // If already logged in, toggle profile dropdown
     if (currentUser) {
       toggleUserDropdown();
       return;
     }
 
-    backToEmailStage();
+    switchAuthTab(initialTab);
     authModal.classList.add('active');
     document.body.style.overflow = 'hidden';
-
-    if (authEmailInput) {
-      setTimeout(() => authEmailInput.focus(), 150);
-    }
   };
 
   window.closeAuthModal = function() {
     if (!authModal) return;
     authModal.classList.remove('active');
     document.body.style.overflow = '';
-    if (countdownTimer) clearInterval(countdownTimer);
     clearAlerts();
   };
 
@@ -467,7 +386,7 @@
               </div>
               <div class="user-dropdown-stat">
                 <span>Authentication:</span>
-                <strong style="color: var(--accent-gold);"><i class="fa-solid fa-lock"></i> OTP Verified</strong>
+                <strong style="color: var(--accent-gold);"><i class="fa-solid fa-key"></i> Password Protected</strong>
               </div>
             </div>
             <div class="user-dropdown-divider"></div>
@@ -480,7 +399,7 @@
       `;
     } else {
       authHeaderContainer.innerHTML = `
-        <button id="openAuthModalBtn" class="btn-header auth-trigger-btn" onclick="openAuthModal('signin')" title="Sign In via Instant OTP">
+        <button id="openAuthModalBtn" class="btn-header auth-trigger-btn" onclick="openAuthModal('signin')" title="Sign In or Register B2B Account">
           <i class="fa-regular fa-circle-user" style="color: var(--accent-gold); font-size: 1.15rem;"></i>
           <span>Sign In</span>
         </button>

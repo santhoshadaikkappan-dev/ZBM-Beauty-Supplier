@@ -2845,71 +2845,57 @@ input, select {
 }
 
 /* ==========================================================================
-   OTP VERIFICATION INPUTS & NOTIFICATION BANNER
+   AUTHENTICATION TABS & PASSWORD CONTROLS
    ========================================================================== */
-.otp-delivery-notice {
-  background: #F0FDF4;
-  border: 1px solid #BBF7D0;
-  border-radius: var(--radius-xs);
-  padding: 12px 14px;
+.auth-tabs-nav {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  margin-bottom: 8px;
+  gap: 6px;
+  background: var(--bg-subtle);
+  padding: 4px;
+  border-radius: var(--radius-xs);
+  margin-bottom: 16px;
 }
 
-.otp-inputs-row {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin: 8px 0;
-}
-
-.otp-digit-input {
-  width: 44px;
-  height: 50px;
-  font-size: 1.35rem;
-  font-weight: 800;
-  text-align: center;
-  border: 2px solid var(--border-medium);
+.auth-tab-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: none;
+  border: none;
   border-radius: var(--radius-xs);
-  background: #FFFFFF;
-  color: var(--text-primary);
-  font-family: monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
   transition: all var(--transition-fast);
 }
 
-.otp-digit-input:focus {
-  outline: none;
-  border-color: #1C1B1A;
-  box-shadow: 0 0 0 3px rgba(28, 27, 26, 0.14);
+.auth-tab-btn:hover {
+  color: var(--text-primary);
 }
 
-.otp-timer-row {
-  font-size: 0.76rem;
-  color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin: 6px 0;
+.auth-tab-btn.active {
+  background: #FFFFFF;
+  color: var(--text-primary);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
-.otp-resend-btn {
+.toggle-password-btn {
   background: none;
   border: none;
-  color: var(--accent-gold);
-  font-weight: 700;
+  color: var(--text-muted);
   cursor: pointer;
-  text-decoration: underline;
-  font-size: 0.76rem;
-  padding: 0;
+  padding: 0 10px;
+  font-size: 0.95rem;
+  transition: color var(--transition-fast);
 }
 
-.otp-resend-btn[disabled] {
-  color: var(--text-muted);
-  cursor: not-allowed;
-  text-decoration: none;
+.toggle-password-btn:hover {
+  color: var(--accent-gold);
+}
+
+.paypal-buttons-wrapper {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-light);
 }
 
