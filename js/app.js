@@ -1,6 +1,6 @@
 /**
- * ZANDRA BEAUTY MATRIX (ZBM) | High-End Anti-Gravity B2B Platform
- * 202 Master Formulations • 8 Structured Departments • WhatsApp Direct Ordering
+ * ZANDRA BEAUTY MATRIX (ZBM) | Turnkey USA Private Label & Custom Rebranding Platform
+ * Curated Target Audience Sample Discovery Kits ($99.00 USD + $29.00 Insured Freight)
  * Direct WhatsApp / Trade Desk: +91 9344087944 (https://wa.me/919344087944)
  */
 
@@ -9,231 +9,37 @@
 
   // Core Trade Configuration
   const WHATSAPP_PHONE = '919344087944';
-  const MIN_SHIPPING_CART_VALUE = 150.00;
+  const KIT_PRICE = 99.00;
+  const SHIPPING_FEE = 29.00;
 
   // State Management
-  const allProducts = typeof ZBM_PRODUCTS !== 'undefined' ? ZBM_PRODUCTS : [];
-  let filteredProducts = [...allProducts];
-  let currentCategory = 'all';
-  let currentMoqTier = '1'; // '1', '50', '250', '500', '1000'
-  let currentViewMode = 'categorized'; // 'categorized', 'list'
-  let inquiryCart = JSON.parse(localStorage.getItem('aura_inquiry_cart') || '[]');
-  let currentModalProduct = null;
+  const allKits = typeof ZBM_SAMPLE_KITS !== 'undefined' ? ZBM_SAMPLE_KITS : [];
+  let filteredKits = [...allKits];
+  let currentAudienceFilter = 'all';
+  let inquiryCart = JSON.parse(localStorage.getItem('zbm_sample_kit_cart') || '[]');
 
   // Visualizer Studio State
   let visualizerPkg = 'dropper';
-  let visualizerEffect = 'petals';
-  let currentBrandPreset = 'zbm'; // 'zbm', 'zandra', 'custom'
+  let visualizerEffect = 'gold';
+  let currentBrandPreset = 'zbm';
   let customLogoImg = null;
   let visualizerAnimFrame = null;
   let animTime = 0;
 
-  // Pre-load ZBM Brand Logos
-  const zbmLogoImg = new Image();
-  zbmLogoImg.src = 'assets/images/brand/zbm_emblem_logo.png';
-
-  const zandraLogoImg = new Image();
-  zandraLogoImg.src = 'assets/images/brand/zandra_full_logo.png';
-
-  // ========================================================================
-  // 8 FLAGSHIP DEPARTMENTS CONFIGURATION (202 Master Formulations)
-  // ========================================================================
-  const DEPARTMENTS_CONFIG = {
-    'celebrity-range': {
-      id: 'celebrity-range',
-      page: 'celebrity-range.html',
-      name: 'Celebrity Range',
-      fullName: 'Celebrity Luxury Range',
-      icon: 'fa-crown',
-      desc: 'Pharma-grade L-Glutathione, 24K gold flakes, and high-potency celebrity secrets.',
-      subcategories: [
-        { id: 'all', name: 'All Celebrity Formulations', filter: p => p.category === 'Celebrity Range' },
-        { id: 'celebrity', name: 'Celebrity Range Products', filter: p => p.category === 'Celebrity Range' }
-      ]
-    },
-    'face-care': {
-      id: 'face-care',
-      page: 'face-care.html',
-      name: 'Face Care',
-      fullName: 'Advanced Dermal Face Care',
-      icon: 'fa-spa',
-      desc: 'Clinical face washes, gentle cleansers, restorative creams, soothing gels, micro-molecular active serums, brightening packs, and botanical scrubs.',
-      subcategories: [
-        { id: 'all', name: 'All Face Care', filter: p => [
-          'Face Wash', 'Face Cleanser', 'Face Cream', 'Face Gel',
-          'Face Serum: Oil Based-Natural', 'Face Serum Water Based (Non Fragrance)',
-          'Face Pack', 'Face Scrub', 'Eye Care (Non Fragrance)'
-        ].includes(p.category) },
-        { id: 'face-wash', name: 'Face Wash', filter: p => p.category === 'Face Wash' },
-        { id: 'face-cleanser', name: 'Face Cleanser', filter: p => p.category === 'Face Cleanser' },
-        { id: 'face-cream', name: 'Face Cream', filter: p => p.category === 'Face Cream' },
-        { id: 'face-gel', name: 'Face Gel', filter: p => p.category === 'Face Gel' },
-        { id: 'face-serum-oil', name: 'Face Serum: Oil Based-Natural', filter: p => p.category === 'Face Serum: Oil Based-Natural' },
-        { id: 'face-serum-water', name: 'Face Serum Water Based (Non Fragrance)', filter: p => p.category === 'Face Serum Water Based (Non Fragrance)' },
-        { id: 'face-pack', name: 'Face Pack', filter: p => p.category === 'Face Pack' },
-        { id: 'face-scrub', name: 'Face Scrub', filter: p => p.category === 'Face Scrub' },
-        { id: 'eye-care', name: 'Eye Care (Non Fragrance)', filter: p => p.category === 'Eye Care (Non Fragrance)' }
-      ]
-    },
-    'body-care': {
-      id: 'body-care',
-      page: 'body-care.html',
-      name: 'Body Care',
-      fullName: 'Botanical & Mineral Body Care',
-      icon: 'fa-soap',
-      desc: 'Cold-processed botanical artisanal soaps, hydrating body lotions, exfoliating body scrubs, foot crack balms, intimate care, and mineral bath salts.',
-      subcategories: [
-        { id: 'all', name: 'All Body Care', filter: p => [
-          'Soaps', 'Body Lotion', 'Body Scrub', 'Foot Care', 'Inti Care', 'Bath Salt'
-        ].includes(p.category) },
-        { id: 'soaps', name: 'Soaps', filter: p => p.category === 'Soaps' },
-        { id: 'body-lotion', name: 'Body Lotion', filter: p => p.category === 'Body Lotion' },
-        { id: 'body-scrub', name: 'Body Scrub', filter: p => p.category === 'Body Scrub' },
-        { id: 'foot-care', name: 'Foot Care', filter: p => p.category === 'Foot Care' },
-        { id: 'inti-care', name: 'Inti Care', filter: p => p.category === 'Inti Care' },
-        { id: 'bath-salt', name: 'Bath Salt', filter: p => p.category === 'Bath Salt' }
-      ]
-    },
-    'hair-care': {
-      id: 'hair-care',
-      page: 'hair-care.html',
-      name: 'Hair Care',
-      fullName: 'Trichology Scalp & Hair Formulations',
-      icon: 'fa-wind',
-      desc: 'Non-fragrance herbal hair oils, sulfate-free clarified shampoos, restorative conditioners, herbal hair dye, oil & water serums, hair packs, rich butters, and styling gels.',
-      subcategories: [
-        { id: 'all', name: 'All Hair Care', filter: p => [
-          'Hair Oil (Non Fragrance)', 'Shampoo', 'Hair Conditioner', 'Hair Dye (Non Fragrance)',
-          'Hair Serum (Oil Based)', 'Hair Serum (Water Based)', 'Hair Pack', 'Hair Butter', 'Hair Gel'
-        ].includes(p.category) },
-        { id: 'hair-oil', name: 'Hair Oil (Non Fragrance)', filter: p => p.category === 'Hair Oil (Non Fragrance)' },
-        { id: 'shampoo', name: 'Shampoo', filter: p => p.category === 'Shampoo' },
-        { id: 'hair-conditioner', name: 'Hair Conditioner', filter: p => p.category === 'Hair Conditioner' },
-        { id: 'hair-dye', name: 'Hair Dye (Non Fragrance)', filter: p => p.category === 'Hair Dye (Non Fragrance)' },
-        { id: 'hair-serum-oil', name: 'Hair Serum (Oil Based)', filter: p => p.category === 'Hair Serum (Oil Based)' },
-        { id: 'hair-serum-water', name: 'Hair Serum (Water Based)', filter: p => p.category === 'Hair Serum (Water Based)' },
-        { id: 'hair-pack', name: 'Hair Pack', filter: p => p.category === 'Hair Pack' },
-        { id: 'hair-butter', name: 'Hair Butter', filter: p => p.category === 'Hair Butter' },
-        { id: 'hair-gel', name: 'Hair Gel', filter: p => p.category === 'Hair Gel' }
-      ]
-    },
-    'lip-care': {
-      id: 'lip-care',
-      page: 'lip-care.html',
-      name: 'Lip Care',
-      fullName: 'Nourishing & Tinted Lip Formulations',
-      icon: 'fa-kiss-wink-heart',
-      desc: 'Targeted lip lightening serums, deeply moisturizing beeswax & beetroot balms, and exfoliating sugarcane lip scrubs.',
-      subcategories: [
-        { id: 'all', name: 'All Lip Care', filter: p => [
-          'Lip Care (Non Fragrance)', 'Lip Balm', 'Lip Scrub'
-        ].includes(p.category) },
-        { id: 'lip-care-serum', name: 'Lip Care (Non Fragrance)', filter: p => p.category === 'Lip Care (Non Fragrance)' },
-        { id: 'lip-balm', name: 'Lip Balm', filter: p => p.category === 'Lip Balm' },
-        { id: 'lip-scrub', name: 'Lip Scrub', filter: p => p.category === 'Lip Scrub' }
-      ]
-    },
-    'sunscreen': {
-      id: 'sunscreen',
-      page: 'sunscreen.html',
-      name: 'Sunscreen',
-      fullName: 'Broad Spectrum SPF 50 Dermal Shield',
-      icon: 'fa-sun',
-      desc: 'Mineral and organic broad-spectrum SPF 50 sunscreen formulation with zero white-cast and non-fragrance finish.',
-      subcategories: [
-        { id: 'all', name: 'All Sunscreen', filter: p => p.category === 'Sunscreen (Non Fragrance)' },
-        { id: 'sunscreen-spf50', name: 'Sunscreen (Non Fragrance)', filter: p => p.category === 'Sunscreen (Non Fragrance)' }
-      ]
-    },
-    'wax-powder': {
-      id: 'wax-powder',
-      page: 'wax-powder.html',
-      name: 'Wax Powder',
-      fullName: 'Herbal Hair Removal Wax Powders',
-      icon: 'fa-feather',
-      desc: 'Pain-free, natural herbal waxing formulations for gentle facial hair removal and whole body depilation.',
-      subcategories: [
-        { id: 'all', name: 'All Wax Powders', filter: p => p.category === 'Wax Powder' },
-        { id: 'facial-wax', name: 'Facial Wax Powder', filter: p => p.category === 'Wax Powder' && p.name.toLowerCase().includes('facial') },
-        { id: 'hair-wax', name: 'Hair / Body Wax Powder', filter: p => p.category === 'Wax Powder' && !p.name.toLowerCase().includes('facial') }
-      ]
-    },
-    'special-products': {
-      id: 'special-products',
-      page: 'special-products.html',
-      name: 'Special Products',
-      fullName: 'Special Clinical Formulations & Balms',
-      icon: 'fa-wand-magic-sparkles',
-      desc: 'Feminine hygiene napkins, dark neck & underarm treatments, rash balms, shimmer lotions, Moroccan Nila collection, day creams, Bobba creams, and Herbal Kajal.',
-      subcategories: [
-        { id: 'all', name: 'All Special Formulations (37)', filter: p => p.category === 'Special Products' || p.category === 'Herbal Kajal' },
-        { id: 'napkins', name: 'Sanitary Napkins (L, XL, XXL)', filter: p => p.name.includes('NAPKIN') },
-        { id: 'underarm', name: 'Dark Neck & Underarm Series', filter: p => p.name.includes('Dark neck') },
-        { id: 'rash-care', name: 'Rash Free Series', filter: p => p.name.includes('Rash free') },
-        { id: 'moroccan-nila', name: 'Moroccan Nila Collection', filter: p => p.name.includes('Moroccan Nila') },
-        { id: 'shimmer', name: 'Shimmer & Glow Series', filter: p => p.name.includes('Shimmer') },
-        { id: 'face-gels-creams', name: 'Specialty Face Gels & Creams', filter: p => ['All in one day cream', '3 in 1 Moisturizer', 'Magic face gel', 'Bridal face cream', 'Bobba cream', 'Turmeric cream'].some(k => p.name.includes(k)) },
-        { id: 'specialty-other', name: 'Balms, Scalp, Beard & Kajal', filter: p => p.name.includes('KAJAL') || p.name.includes('scalp lotion') || p.name.includes('Peel off') || p.name.includes('Themal') || p.name.includes('Beard') || p.name.includes('Men lip') || p.name.includes('Cover up') || p.name.includes('Rosemary hair spray') || p.name.includes('Rose water') || p.name.includes('Golden tan') }
-      ]
-    }
-  };
-
-  // Convert to Array for easy iteration
-  const DEPARTMENTS = Object.keys(DEPARTMENTS_CONFIG).map(k => ({
-    id: k,
-    name: DEPARTMENTS_CONFIG[k].name,
-    fullName: DEPARTMENTS_CONFIG[k].fullName,
-    page: DEPARTMENTS_CONFIG[k].page,
-    icon: DEPARTMENTS_CONFIG[k].icon,
-    desc: DEPARTMENTS_CONFIG[k].desc,
-    filter: DEPARTMENTS_CONFIG[k].subcategories[0].filter
-  }));
-
-  // Detect Active Department Page
-  const activeDeptKey = (function() {
-    const bodyDept = document.body.getAttribute('data-dept');
-    if (bodyDept && DEPARTMENTS_CONFIG[bodyDept]) return bodyDept;
-
-    const path = window.location.pathname.toLowerCase();
-    for (const key of Object.keys(DEPARTMENTS_CONFIG)) {
-      if (path.includes(key) || path.includes(DEPARTMENTS_CONFIG[key].page)) return key;
-    }
-    const params = new URLSearchParams(window.location.search);
-    const qDept = params.get('dept');
-    if (qDept && DEPARTMENTS_CONFIG[qDept]) return qDept;
-
-    return null;
-  })();
-
-  let currentSubcategory = 'all';
-  if (activeDeptKey) {
-    currentCategory = activeDeptKey;
-  }
-
-
   // DOM Elements Cache
-  const productsGrid = document.getElementById('productsGrid');
-  const categoryBar = document.getElementById('categoryBar');
-  const categoryNavWrapper = document.getElementById('categoryNavWrapper');
-  const catScrollLeftBtn = document.getElementById('catScrollLeftBtn');
-  const catScrollRightBtn = document.getElementById('catScrollRightBtn');
+  const kitsGrid = document.getElementById('kitsGrid');
   const searchInput = document.getElementById('searchInput');
   const clearSearchBtn = document.getElementById('clearSearchBtn');
+  const mobileSearchInput = document.getElementById('mobileSearchInput');
+  const mobileClearSearchBtn = document.getElementById('mobileClearSearchBtn');
+  const audienceFilterBar = document.getElementById('audienceFilterBar');
   const visibleCountEl = document.getElementById('visibleCount');
-  const concernFilter = document.getElementById('concernFilter');
-  const skinTypeFilter = document.getElementById('skinTypeFilter');
-  const sortFilter = document.getElementById('sortFilter');
-  const emptyState = document.getElementById('emptyState');
-  const viewGridBtn = document.getElementById('viewGridBtn');
-  const viewListBtn = document.getElementById('viewListBtn');
-  const moqPills = document.querySelectorAll('.moq-pill-btn');
 
-  // Modal Elements
-  const productModal = document.getElementById('productModal');
-  const closeModalBtn = document.getElementById('closeModalBtn');
-  const modalContent = document.getElementById('modalContent');
+  // Modals & Drawers
+  const kitSpecsModal = document.getElementById('kitSpecsModal');
+  const closeKitSpecsModalBtn = document.getElementById('closeKitSpecsModalBtn');
+  const kitSpecsContent = document.getElementById('kitSpecsContent');
 
-  // Drawer Elements
   const inquiryDrawer = document.getElementById('inquiryDrawer');
   const openDrawerBtn = document.getElementById('openDrawerBtn');
   const closeDrawerBtn = document.getElementById('closeDrawerBtn');
@@ -241,11 +47,8 @@
   const inquiryCountBadge = document.getElementById('inquiryCount');
   const drawerTotalCount = document.getElementById('drawerTotalCount');
   const drawerSubtotal = document.getElementById('drawerSubtotal');
-  const drawerDiscountRow = document.getElementById('drawerDiscountRow');
-  const drawerDiscountRate = document.getElementById('drawerDiscountRate');
-  const drawerDiscountVal = document.getElementById('drawerDiscountVal');
+  const drawerShippingVal = document.getElementById('drawerShippingVal');
   const drawerTotalValue = document.getElementById('drawerTotalValue');
-  const drawerShippingAlert = document.getElementById('drawerShippingAlert');
   const whatsappOrderBtn = document.getElementById('whatsappOrderBtn');
   const clearInquiryBtn = document.getElementById('clearInquiryBtn');
 
@@ -259,99 +62,605 @@
   const downloadMockupBtn = document.getElementById('downloadMockupBtn');
   const resetVisualizerBtn = document.getElementById('resetVisualizerBtn');
 
-  // Cert Modal Elements
+  // Cert Modal
   const certModal = document.getElementById('certModal');
   const closeCertModalBtn = document.getElementById('closeCertModalBtn');
   const certModalContent = document.getElementById('certModalContent');
 
   // ========================================================================
-  // 1. DYNAMIC WHOLESALE MOQ UNIT PRICING ENGINE
-  // ========================================================================
-  window.calculateItemUnitPrice = function(product, qty) {
-    if (!product) return { price: 0, discount: 'Base', tier: 1 };
-    qty = parseInt(qty, 10) || 1;
-    const basePrice = product.pricing ? product.pricing.sample : (product.usdPrice || 24);
-
-    if (qty >= 1000) {
-      const p = (product.pricing && product.pricing.tier5_price) || (basePrice * 0.35);
-      return { price: Math.round(p * 100) / 100, discount: '65% OFF (1000+ pcs)', tier: 5 };
-    } else if (qty >= 500) {
-      const p = (product.pricing && product.pricing.tier4_price) || (basePrice * 0.50);
-      return { price: Math.round(p * 100) / 100, discount: '50% OFF (500 pcs)', tier: 4 };
-    } else if (qty >= 250) {
-      const p = (product.pricing && product.pricing.tier3_price) || (basePrice * 0.65);
-      return { price: Math.round(p * 100) / 100, discount: '35% OFF (250 pcs)', tier: 3 };
-    } else if (qty >= 50) {
-      const p = (product.pricing && product.pricing.tier2_price) || (basePrice * 0.80);
-      return { price: Math.round(p * 100) / 100, discount: '20% OFF (50 pcs)', tier: 2 };
-    } else {
-      return { price: basePrice, discount: 'Sample (No MOQ)', tier: 1 };
-    }
-  };
-
-  // ========================================================================
-  // 2. CART TIERED DISCOUNT ENGINE & FREE SHIPPING
+  // 1. CART ENGINE (Fixed $99 Kit + $29 Freight)
   // ========================================================================
   window.calculateCartTotals = function() {
-    let rawSubtotal = 0;
-    let totalItems = 0;
-
+    let totalKits = 0;
     inquiryCart.forEach(item => {
-      const prod = allProducts.find(x => x.id === item.id);
-      const tierInfo = calculateItemUnitPrice(prod, item.qty);
-      rawSubtotal += (tierInfo.price * item.qty);
-      totalItems += item.qty;
+      totalKits += (parseInt(item.qty, 10) || 1);
     });
 
-    rawSubtotal = Math.round(rawSubtotal * 100) / 100;
-    let discountRate = 0;
-    let discountLabel = '';
-    let isBulkCapped = false;
-
-    // Cart Tiered Discounts
-    if (rawSubtotal > 1000) {
-      isBulkCapped = true;
-      discountRate = 0.35;
-      discountLabel = '35% Enterprise Wholesale Quote';
-    } else if (rawSubtotal === 1000) {
-      discountRate = 0.35;
-      discountLabel = '35% Bulk Discount';
-    } else if (rawSubtotal > 500) {
-      discountRate = 0.28;
-      discountLabel = '28% Wholesale Tier Discount';
-    } else if (rawSubtotal > 100) {
-      discountRate = 0.20;
-      discountLabel = '20% Volume Tier Discount';
-    }
-
-    const discountAmount = Math.round((rawSubtotal * discountRate) * 100) / 100;
-    const finalTotal = Math.round((rawSubtotal - discountAmount) * 100) / 100;
-
-    const meetsMinShipping = rawSubtotal >= MIN_SHIPPING_CART_VALUE;
-    const amountNeededForShipping = meetsMinShipping ? 0 : Math.round((MIN_SHIPPING_CART_VALUE - rawSubtotal) * 100) / 100;
+    const rawSubtotal = Math.round(totalKits * KIT_PRICE * 100) / 100;
+    const shippingFee = totalKits > 0 ? SHIPPING_FEE : 0.00;
+    const finalTotal = Math.round((rawSubtotal + shippingFee) * 100) / 100;
 
     return {
       rawSubtotal,
-      totalQty: totalItems,
-      discountRate,
-      discountAmount,
-      discountLabel,
+      shippingFee,
       finalTotal,
-      isBulkCapped,
-      meetsMinShipping,
-      amountNeededForShipping,
-      shippingFee: 0.00
+      totalQty: totalKits
     };
   };
 
+  window.addKitToCart = function(kitId) {
+    const kit = allKits.find(k => k.id === kitId);
+    if (!kit) return;
+
+    const existingIdx = inquiryCart.findIndex(item => item.id === kitId);
+    if (existingIdx > -1) {
+      inquiryCart[existingIdx].qty += 1;
+    } else {
+      inquiryCart.push({
+        id: kit.id,
+        name: kit.title,
+        price: KIT_PRICE,
+        image: kit.image,
+        itemCount: kit.itemCount,
+        audience: kit.audience,
+        qty: 1
+      });
+    }
+
+    saveCart();
+    updateInquiryUI();
+    openInquiryDrawer();
+  };
+
+  window.changeCartQty = function(idx, delta) {
+    if (!inquiryCart[idx]) return;
+    inquiryCart[idx].qty += delta;
+    if (inquiryCart[idx].qty <= 0) {
+      inquiryCart.splice(idx, 1);
+    }
+    saveCart();
+    updateInquiryUI();
+  };
+
+  window.setCartItemQuantity = function(idx, val) {
+    const q = parseInt(val, 10);
+    if (!inquiryCart[idx]) return;
+    if (isNaN(q) || q <= 0) {
+      inquiryCart.splice(idx, 1);
+    } else {
+      inquiryCart[idx].qty = q;
+    }
+    saveCart();
+    updateInquiryUI();
+  };
+
+  window.removeCartItem = function(idx) {
+    inquiryCart.splice(idx, 1);
+    saveCart();
+    updateInquiryUI();
+  };
+
+  window.clearAllCart = function() {
+    inquiryCart = [];
+    saveCart();
+    updateInquiryUI();
+  };
+
+  function saveCart() {
+    localStorage.setItem('zbm_sample_kit_cart', JSON.stringify(inquiryCart));
+  }
+
   // ========================================================================
-  // 3. AMBIENT PARTICLES (ANTI-GRAVITY BACKGROUND)
+  // 2. DRAWER & UI UPDATES
+  // ========================================================================
+  function updateInquiryUI() {
+    const totals = calculateCartTotals();
+
+    // Badge
+    if (inquiryCountBadge) {
+      inquiryCountBadge.innerText = totals.totalQty;
+      inquiryCountBadge.style.display = totals.totalQty > 0 ? 'inline-flex' : 'none';
+    }
+
+    if (drawerTotalCount) {
+      drawerTotalCount.innerText = `${totals.totalQty} Discovery Kit(s)`;
+    }
+
+    // Drawer Body
+    if (!drawerBody) return;
+
+    if (inquiryCart.length === 0) {
+      drawerBody.innerHTML = `
+        <div class="drawer-empty-state">
+          <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
+          <h4>Your Sample Discovery Basket is Empty</h4>
+          <p>Select any of the 8 curated target audience discovery kits ($99.00 each) to test unbranded laboratory formulations before scaling your private label.</p>
+          <button class="btn-primary" onclick="closeInquiryDrawer()">Browse 8 Discovery Kits</button>
+        </div>
+      `;
+      if (drawerSubtotal) drawerSubtotal.innerText = '$0.00';
+      if (drawerShippingVal) drawerShippingVal.innerText = '$0.00';
+      if (drawerTotalValue) drawerTotalValue.innerText = '$0.00';
+      renderPayPalButtons();
+      return;
+    }
+
+    drawerBody.innerHTML = inquiryCart.map((item, idx) => {
+      const lineTotal = item.qty * KIT_PRICE;
+      return `
+        <div class="drawer-item">
+          <img src="${item.image}" alt="${item.name}" class="drawer-item-img">
+          <div class="drawer-item-info">
+            <div class="drawer-item-title">${item.name}</div>
+            <div class="drawer-item-sub"><i class="fa-solid fa-users-viewfinder"></i> ${item.audience}</div>
+            <div class="drawer-item-badge"><i class="fa-solid fa-flask"></i> ${item.itemCount} Physical Formulations Included</div>
+            <div class="drawer-item-pricing-row">
+              <span class="drawer-unit-price">$${KIT_PRICE.toFixed(2)} USD</span>
+              <span class="drawer-tier-badge">Sample Discovery Box</span>
+            </div>
+            <div class="drawer-item-subtotal">Line Total: <strong>$${lineTotal.toFixed(2)} USD</strong></div>
+          </div>
+
+          <div class="drawer-item-actions">
+            <div class="qty-stepper">
+              <button onclick="changeCartQty(${idx}, -1)" title="Decrease">-</button>
+              <input 
+                type="number" 
+                value="${item.qty}" 
+                min="1" 
+                class="qty-input" 
+                onchange="setCartItemQuantity(${idx}, this.value)"
+              >
+              <button onclick="changeCartQty(${idx}, 1)" title="Increase">+</button>
+            </div>
+            <button onclick="removeCartItem(${idx})" class="btn-remove-item" title="Remove Kit">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Totals
+    if (drawerSubtotal) drawerSubtotal.innerText = `$${totals.rawSubtotal.toFixed(2)}`;
+    if (drawerShippingVal) drawerShippingVal.innerText = `$${totals.shippingFee.toFixed(2)}`;
+    if (drawerTotalValue) drawerTotalValue.innerText = `$${totals.finalTotal.toFixed(2)}`;
+
+    renderPayPalButtons();
+  }
+
+  // ========================================================================
+  // 3. PAYPAL & DIRECT CARD CHECKOUT ENGINE ($99 + $29 = $128)
+  // ========================================================================
+  let currentPayPalAmount = null;
+  window.renderPayPalButtons = function() {
+    const container = document.getElementById('paypal-button-container');
+    if (!container) return;
+
+    if (!window.paypal) {
+      container.innerHTML = `
+        <div style="background: rgba(0, 121, 193, 0.08); border: 1px solid rgba(0, 121, 193, 0.25); border-radius: 6px; padding: 10px; font-size: 0.78rem; color: #0079C1; text-align: center;">
+          <i class="fa-brands fa-paypal"></i> PayPal & Card Checkout Ready.<br>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">Ad-blocker detected? Use the WhatsApp Trade Desk below to complete order.</span>
+        </div>
+      `;
+      return;
+    }
+
+    if (!inquiryCart || inquiryCart.length === 0) {
+      container.innerHTML = `
+        <div style="background: rgba(223, 192, 144, 0.1); border: 1px dashed rgba(223, 192, 144, 0.4); border-radius: 6px; padding: 12px; font-size: 0.76rem; color: var(--text-secondary); text-align: center;">
+          <i class="fa-solid fa-box-open" style="color: var(--accent-gold); margin-bottom: 4px; display: block; font-size: 1.1rem;"></i>
+          Add a Discovery Sample Kit ($99.00) to activate instant checkout.
+        </div>
+      `;
+      currentPayPalAmount = null;
+      return;
+    }
+
+    const totals = calculateCartTotals();
+    if (currentPayPalAmount === totals.finalTotal && container.children.length > 0) {
+      return;
+    }
+
+    container.innerHTML = '';
+    currentPayPalAmount = totals.finalTotal;
+
+    try {
+      window.paypal.Buttons({
+        style: {
+          layout: 'vertical',
+          color: 'gold',
+          shape: 'rect',
+          label: 'paypal',
+          height: 44
+        },
+        createOrder: function(data, actions) {
+          const liveTotals = calculateCartTotals();
+          const itemsPayload = inquiryCart.map(item => ({
+            name: `${item.name} (${item.itemCount} Formulations)`,
+            unit_amount: {
+              currency_code: 'USD',
+              value: KIT_PRICE.toFixed(2)
+            },
+            quantity: item.qty.toString(),
+            category: 'PHYSICAL_GOODS'
+          }));
+
+          return actions.order.create({
+            intent: 'CAPTURE',
+            purchase_units: [{
+              description: `ZANDRA BEAUTY MATRIX (ZBM) USA Private Label Sample Discovery Kit Order`,
+              amount: {
+                currency_code: 'USD',
+                value: liveTotals.finalTotal.toFixed(2),
+                breakdown: {
+                  item_total: {
+                    currency_code: 'USD',
+                    value: liveTotals.rawSubtotal.toFixed(2)
+                  },
+                  shipping: {
+                    currency_code: 'USD',
+                    value: liveTotals.shippingFee.toFixed(2)
+                  }
+                }
+              },
+              items: itemsPayload
+            }]
+          });
+        },
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(details) {
+            const payerName = details.payer && details.payer.name ? details.payer.name.given_name : 'Valued Partner';
+            alert(`Payment Successful! Thank you, ${payerName}.\n\nTransaction ID: ${details.id}\nYour unbranded Discovery Sample Box with Certificate of Analysis (COA) is being prepared for express dispatch.`);
+            
+            // Forward confirmation to WhatsApp
+            submitOrderViaWhatsApp(`PAYPAL_PAID (Transaction: ${details.id})`);
+            clearAllCart();
+            closeInquiryDrawer();
+          });
+        },
+        onError: function(err) {
+          console.error('PayPal Checkout Notice:', err);
+          alert('PayPal popup closed or authorization in progress. You can also finalize order immediately via WhatsApp Trade Desk with Citi Bank ACH / Wire.');
+        }
+      }).render('#paypal-button-container');
+    } catch (e) {
+      console.error('PayPal Render Error:', e);
+    }
+  };
+
+  // WhatsApp B2B Dispatch
+  window.submitOrderViaWhatsApp = function(paymentStatus) {
+    const totals = calculateCartTotals();
+    if (inquiryCart.length === 0) {
+      alert('Your Sample Basket is empty. Please add at least one Discovery Kit.');
+      return;
+    }
+
+    const buyerName = (document.getElementById('buyerName') && document.getElementById('buyerName').value.trim()) || 'Prospective Brand Partner';
+    const buyerBrand = (document.getElementById('buyerBrand') && document.getElementById('buyerBrand').value.trim()) || 'Private Label Beauty LLC';
+
+    let msg = `*NEW SAMPLE DISCOVERY KIT ORDER — ZANDRA BEAUTY MATRIX (ZBM)*\n`;
+    msg += `--------------------------------------------------\n`;
+    msg += `*Buyer Name:* ${buyerName}\n`;
+    msg += `*Brand / LLC:* ${buyerBrand}\n`;
+    msg += `*Status:* ${paymentStatus || 'INVOICE_REQUEST (Unpaid)'}\n`;
+    msg += `--------------------------------------------------\n`;
+    msg += `*SELECTED SAMPLE KITS ($99 USD Each):*\n\n`;
+
+    inquiryCart.forEach((item, idx) => {
+      msg += `${idx + 1}. *${item.name}*\n`;
+      msg += `   • Audience: ${item.audience}\n`;
+      msg += `   • Contents: ${item.itemCount} Physical Formulations\n`;
+      msg += `   • Quantity: ${item.qty} kit(s) x $${KIT_PRICE} = $${(item.qty * KIT_PRICE).toFixed(2)} USD\n\n`;
+    });
+
+    msg += `--------------------------------------------------\n`;
+    msg += `*Kits Subtotal:* $${totals.rawSubtotal.toFixed(2)} USD\n`;
+    msg += `*Insured Express Worldwide Freight:* $${totals.shippingFee.toFixed(2)} USD\n`;
+    msg += `*TOTAL PAYABLE:* $${totals.finalTotal.toFixed(2)} USD\n`;
+    msg += `--------------------------------------------------\n`;
+    msg += `*Included in Every Discovery Box:*\n`;
+    msg += `✓ Unbranded pre-filled physical formulations ready for custom label testing\n`;
+    msg += `✓ Quad-Certified Facility Dossier (US FDA Registered & WHO-GMP)\n`;
+    msg += `✓ Full INCI Ingredient Disclosure & Certificate of Analysis (COA)\n`;
+    msg += `✓ Official B2B Commercial Proforma Quotation for Bulk Scale-Up (50 to 1,000+ units)\n\n`;
+    msg += `Please confirm shipping dispatch and provide Citi Bank ACH routing or tracking.`;
+
+    const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
+    window.open(waUrl, '_blank');
+  };
+
+  // Payment Preference Switcher
+  window.handlePaymentPrefChange = function() {
+    const isPayPal = document.getElementById('payMethodPayPal') && document.getElementById('payMethodPayPal').checked;
+    const paypalSection = document.getElementById('paypalButtonsSection');
+    const cardOptionLabel = document.getElementById('cardOptionLabel');
+    const achOptionLabel = document.getElementById('achOptionLabel');
+
+    if (cardOptionLabel && achOptionLabel) {
+      cardOptionLabel.classList.toggle('active', isPayPal);
+      achOptionLabel.classList.toggle('active', !isPayPal);
+    }
+
+    if (paypalSection) {
+      paypalSection.style.display = isPayPal ? 'block' : 'none';
+      if (isPayPal) renderPayPalButtons();
+    }
+  };
+
+  // Drawer Controls
+  window.openInquiryDrawer = function() {
+    if (inquiryDrawer) {
+      inquiryDrawer.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      renderPayPalButtons();
+    }
+  };
+
+  window.closeInquiryDrawer = function() {
+    if (inquiryDrawer) {
+      inquiryDrawer.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  };
+
+  // ========================================================================
+  // 4. DISCOVERY KITS RENDERING & MODAL SPECS
+  // ========================================================================
+  function renderKitCards() {
+    if (!kitsGrid) return;
+
+    if (filteredKits.length === 0) {
+      kitsGrid.innerHTML = `
+        <div class="empty-state" style="grid-column: 1 / -1; padding: 40px; text-align: center;">
+          <i class="fa-solid fa-magnifying-glass" style="font-size: 2.2rem; color: var(--accent-gold); margin-bottom: 12px;"></i>
+          <h3>No matching Discovery Kits found</h3>
+          <p>Try clearing your search query or selecting 'All Target Audiences'.</p>
+          <button class="btn-primary" onclick="resetKitFilters()">View All 8 Discovery Kits</button>
+        </div>
+      `;
+      if (visibleCountEl) visibleCountEl.innerText = '0';
+      return;
+    }
+
+    if (visibleCountEl) visibleCountEl.innerText = filteredKits.length;
+
+    kitsGrid.innerHTML = filteredKits.map(kit => {
+      return `
+        <article class="kit-card" data-id="${kit.id}">
+          <div class="kit-image-wrapper">
+            <img src="${kit.image}" alt="${kit.title}" class="kit-card-img" loading="lazy">
+            <div class="kit-badge-top-left">${kit.badge}</div>
+            <div class="kit-badge-bottom-right"><i class="fa-solid fa-certificate"></i> US FDA & GMP Certified</div>
+          </div>
+
+          <div class="kit-card-body">
+            <div class="kit-audience-tag">
+              <i class="fa-solid ${kit.icon}"></i>
+              <span>${kit.audience}</span>
+            </div>
+
+            <h3 class="kit-card-title">${kit.title}</h3>
+            <p class="kit-card-tagline">${kit.tagline}</p>
+            <p class="kit-card-desc">${kit.overview}</p>
+
+            <div class="kit-highlights-box">
+              <div class="kit-highlights-title"><i class="fa-solid fa-sparkles" style="color: var(--accent-gold);"></i> What's In The Box (${kit.itemCount} Formulations):</div>
+              <ul class="kit-highlights-list">
+                ${kit.highlights.map(h => `<li><i class="fa-solid fa-check"></i> <span>${h}</span></li>`).join('')}
+              </ul>
+            </div>
+
+            <div class="kit-formulations-preview">
+              ${kit.formulations.slice(0, 5).map(f => `<span class="kit-form-tag">#${f.num} ${f.name}</span>`).join('')}
+              ${kit.formulations.length > 5 ? `<span class="kit-form-tag more">+${kit.formulations.length - 5} more formulations</span>` : ''}
+            </div>
+
+            <div class="kit-card-footer">
+              <div class="kit-pricing-block">
+                <div class="kit-price-row">
+                  <span class="kit-price-val">$${kit.price.toFixed(2)}</span>
+                  <span class="kit-price-curr">USD / Kit</span>
+                </div>
+                <div class="kit-shipping-note">
+                  <i class="fa-solid fa-plane-departure" style="color: #25D366;"></i> +$29.00 Insured Express Freight
+                </div>
+              </div>
+
+              <div class="kit-card-actions">
+                <button class="btn-primary-large btn-add-kit" onclick="addKitToCart('${kit.id}')">
+                  <i class="fa-solid fa-cart-plus"></i>
+                  <span>Order Sample Kit ($99)</span>
+                </button>
+                <button class="btn-secondary-large btn-specs-kit" onclick="openKitSpecsModal('${kit.id}')">
+                  <i class="fa-solid fa-list-check"></i>
+                  <span>View All ${kit.itemCount} Specs</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    attach3DKitTilt();
+  }
+
+  // Interactive 3D Card Tilt
+  function attach3DKitTilt() {
+    const cards = document.querySelectorAll('.kit-card');
+    cards.forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const rotateX = ((y - cy) / cy) * -4;
+        const rotateY = ((x - cx) / cx) * 4;
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+      });
+    });
+  }
+
+  // Open Detailed Specs Modal
+  window.openKitSpecsModal = function(kitId) {
+    const kit = allKits.find(k => k.id === kitId);
+    if (!kit || !kitSpecsModal || !kitSpecsContent) return;
+
+    kitSpecsContent.innerHTML = `
+      <div class="specs-modal-header">
+        <div class="specs-modal-image-col">
+          <img src="${kit.image}" alt="${kit.title}" class="specs-modal-img">
+          <div class="specs-modal-pricing-card">
+            <div class="price-big">$${kit.price.toFixed(2)} USD</div>
+            <div class="price-ship"><i class="fa-solid fa-truck-fast"></i> +$29.00 Insured Worldwide Freight</div>
+            <button class="btn-primary-large" style="width: 100%; margin-top: 10px;" onclick="addKitToCart('${kit.id}'); closeKitSpecsModal();">
+              <i class="fa-solid fa-cart-plus"></i> Order This Discovery Kit ($99)
+            </button>
+            <a href="https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Hello ZBM, I have questions about ' + kit.title)}" target="_blank" class="btn-whatsapp-outline" style="width: 100%; margin-top: 8px;">
+              <i class="fa-brands fa-whatsapp"></i> Inquire via WhatsApp
+            </a>
+          </div>
+        </div>
+
+        <div class="specs-modal-info-col">
+          <div class="specs-badge"><i class="fa-solid ${kit.icon}"></i> ${kit.audience}</div>
+          <h2 class="specs-title">${kit.title}</h2>
+          <p class="specs-tagline">${kit.tagline}</p>
+          <p class="specs-desc">${kit.overview}</p>
+
+          <div class="specs-inclusions-banner">
+            <h4><i class="fa-solid fa-shield-halved" style="color: var(--accent-gold);"></i> Standard Turnkey Discovery Inclusions:</h4>
+            <ul>
+              <li><strong>${kit.itemCount} Physical Laboratory Formulations:</strong> Arrives pre-filled in unbranded luxury packaging ready for your brand's label application.</li>
+              <li><strong>Quality & Safety Dossier:</strong> Full INCI ingredient disclosure, Certificate of Analysis (COA), and batch test records.</li>
+              <li><strong>Scale-Up Commercial Proforma:</strong> Official B2B quotation for scaling from 50 units (Startup Launch) to 1,000+ units (Enterprise).</li>
+              <li><strong>US FDA Registered:</strong> Sterile cGMP 21 CFR Part 700/701 compliant production facilities.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="specs-modal-table-section">
+        <h3 class="specs-table-title">Complete Formulations Manifest (${kit.itemCount} Formulations Included)</h3>
+        <div class="specs-table-wrapper">
+          <table class="specs-manifest-table">
+            <thead>
+              <tr>
+                <th>Item #</th>
+                <th>Formulation Name</th>
+                <th>Volume</th>
+                <th>Key Bio-Actives</th>
+                <th>Packaging Format</th>
+                <th>Clinical / Service Application</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${kit.formulations.map(f => `
+                <tr>
+                  <td><span class="manifest-num">#${f.num}</span></td>
+                  <td><strong>${f.name}</strong><div class="manifest-cat">${f.category}</div></td>
+                  <td><span class="manifest-weight">${f.weight}</span></td>
+                  <td><div class="manifest-actives">${f.actives}</div></td>
+                  <td><span class="manifest-pkg"><i class="fa-solid fa-box"></i> ${f.pkg}</span></td>
+                  <td><div class="manifest-note">${f.note}</div></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+
+    kitSpecsModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closeKitSpecsModal = function() {
+    if (kitSpecsModal) {
+      kitSpecsModal.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  };
+
+  // ========================================================================
+  // 5. FILTERING & SEARCH ENGINE
+  // ========================================================================
+  function applyKitFilters() {
+    let list = [...allKits];
+
+    // Audience Filter
+    if (currentAudienceFilter !== 'all') {
+      list = list.filter(k => k.id === currentAudienceFilter);
+    }
+
+    // Search Query (Desktop + Mobile Sync)
+    const qDesktop = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    const qMobile = mobileSearchInput ? mobileSearchInput.value.trim().toLowerCase() : '';
+    const q = qDesktop || qMobile;
+
+    if (q) {
+      list = list.filter(k => {
+        return (
+          k.title.toLowerCase().includes(q) ||
+          k.audience.toLowerCase().includes(q) ||
+          k.tagline.toLowerCase().includes(q) ||
+          k.overview.toLowerCase().includes(q) ||
+          k.formulations.some(f => 
+            f.name.toLowerCase().includes(q) ||
+            f.actives.toLowerCase().includes(q) ||
+            f.category.toLowerCase().includes(q) ||
+            f.num.toString() === q
+          )
+        );
+      });
+    }
+
+    filteredKits = list;
+    renderKitCards();
+  }
+
+  window.resetKitFilters = function() {
+    currentAudienceFilter = 'all';
+    if (searchInput) searchInput.value = '';
+    if (mobileSearchInput) mobileSearchInput.value = '';
+    if (clearSearchBtn) clearSearchBtn.style.display = 'none';
+    if (mobileClearSearchBtn) mobileClearSearchBtn.style.display = 'none';
+    
+    document.querySelectorAll('.audience-pill').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-audience') === 'all');
+    });
+
+    applyKitFilters();
+  };
+
+  function setupAudienceFilterPills() {
+    const pills = document.querySelectorAll('.audience-pill');
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        pills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        currentAudienceFilter = pill.getAttribute('data-audience');
+        applyKitFilters();
+      });
+    });
+  }
+
+  // ========================================================================
+  // 6. AMBIENT DRIFT & PARTICLES
   // ========================================================================
   function initAmbientLayer() {
     const layer = document.getElementById('ambientLayer');
     if (!layer) return;
 
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 28; i++) {
       const p = document.createElement('div');
       p.className = 'ambient-particle';
       const size = Math.random() * 8 + 4;
@@ -373,1400 +682,119 @@
   }
 
   // ========================================================================
-  // 4. CATEGORY & SUBCATEGORY PILLS (8 STRUCTURED DEPARTMENTS)
+  // 7. 3D BRAND STUDIO VISUALIZER
   // ========================================================================
-  function renderCategoryPills() {
-    if (!categoryBar) return;
-
-    // If on a dedicated Department Page, render that department's subcategories
-    if (activeDeptKey && DEPARTMENTS_CONFIG[activeDeptKey]) {
-      const dept = DEPARTMENTS_CONFIG[activeDeptKey];
-      let html = '';
-
-      dept.subcategories.forEach(sub => {
-        const count = allProducts.filter(sub.filter).length;
-        const isActive = currentSubcategory === sub.id ? 'active' : '';
-        html += `
-          <button class="cat-pill ${isActive}" data-subcat="${sub.id}">
-            <i class="fa-solid ${dept.icon}"></i>
-            <span>${sub.name}</span>
-            <span class="cat-count">${count}</span>
-          </button>
-        `;
-      });
-
-      categoryBar.innerHTML = html;
-
-      categoryBar.querySelectorAll('.cat-pill').forEach(btn => {
-        btn.addEventListener('click', () => {
-          currentSubcategory = btn.getAttribute('data-subcat');
-          categoryBar.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          applyFilters();
-        });
-      });
-
-      setupCategoryScrollNavigation();
-      return;
-    }
-
-    // Default: Home Page (index.html) - Render all 8 Flagship Departments
-    let html = `
-      <button class="cat-pill ${currentCategory === 'all' ? 'active' : ''}" data-cat="all">
-        <i class="fa-solid fa-layer-group"></i>
-        <span>All Master Formulations</span>
-        <span class="cat-count">${allProducts.length}</span>
-      </button>
-    `;
-
-    DEPARTMENTS.forEach(dept => {
-      const count = allProducts.filter(dept.filter).length;
-      const isActive = currentCategory === dept.id ? 'active' : '';
-      html += `
-        <button class="cat-pill ${isActive}" data-cat="${dept.id}">
-          <i class="fa-solid ${dept.icon}"></i>
-          <span>${dept.name}</span>
-          <span class="cat-count">${count}</span>
-        </button>
-      `;
-    });
-
-    categoryBar.innerHTML = html;
-
-    categoryBar.querySelectorAll('.cat-pill').forEach(btn => {
-      btn.addEventListener('click', () => {
-        currentCategory = btn.getAttribute('data-cat');
-        categoryBar.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        applyFilters();
-      });
-    });
-
-    setupCategoryScrollNavigation();
-  }
-
-  function setupCategoryScrollNavigation() {
-    if (!categoryNavWrapper) return;
-
-    const updateArrows = () => {
-      if (!catScrollLeftBtn || !catScrollRightBtn) return;
-      const maxScroll = categoryNavWrapper.scrollWidth - categoryNavWrapper.clientWidth;
-      const current = categoryNavWrapper.scrollLeft;
-
-      if (current <= 5) {
-        catScrollLeftBtn.classList.add('disabled');
-      } else {
-        catScrollLeftBtn.classList.remove('disabled');
-      }
-
-      if (current >= maxScroll - 5 || maxScroll <= 0) {
-        catScrollRightBtn.classList.add('disabled');
-      } else {
-        catScrollRightBtn.classList.remove('disabled');
-      }
-    };
-
-    if (catScrollLeftBtn && !catScrollLeftBtn.dataset.bound) {
-      catScrollLeftBtn.dataset.bound = 'true';
-      catScrollLeftBtn.addEventListener('click', () => {
-        categoryNavWrapper.scrollBy({ left: -300, behavior: 'smooth' });
-      });
-    }
-
-    if (catScrollRightBtn && !catScrollRightBtn.dataset.bound) {
-      catScrollRightBtn.dataset.bound = 'true';
-      catScrollRightBtn.addEventListener('click', () => {
-        categoryNavWrapper.scrollBy({ left: 300, behavior: 'smooth' });
-      });
-    }
-
-    if (!categoryNavWrapper.dataset.bound) {
-      categoryNavWrapper.dataset.bound = 'true';
-
-      // Scroll listener to update arrow opacity
-      categoryNavWrapper.addEventListener('scroll', updateArrows);
-      window.addEventListener('resize', updateArrows);
-
-      // Mouse wheel horizontal scroll support
-      categoryNavWrapper.addEventListener('wheel', (e) => {
-        if (e.deltaY !== 0) {
-          e.preventDefault();
-          categoryNavWrapper.scrollBy({ left: e.deltaY * 1.6, behavior: 'smooth' });
-        }
-      }, { passive: false });
-
-      // Click and drag to scroll support
-      let isDown = false;
-      let startX = 0;
-      let scrollStart = 0;
-
-      categoryNavWrapper.addEventListener('mousedown', (e) => {
-        isDown = true;
-        startX = e.pageX - categoryNavWrapper.offsetLeft;
-        scrollStart = categoryNavWrapper.scrollLeft;
-      });
-
-      categoryNavWrapper.addEventListener('mouseleave', () => {
-        isDown = false;
-      });
-
-      categoryNavWrapper.addEventListener('mouseup', () => {
-        isDown = false;
-      });
-
-      categoryNavWrapper.addEventListener('mousemove', (e) => {
-        if (!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - categoryNavWrapper.offsetLeft;
-        const walk = (x - startX) * 1.5;
-        categoryNavWrapper.scrollLeft = scrollStart - walk;
-      });
-    }
-
-    setTimeout(updateArrows, 150);
-  }
-
-  window.filterByCategory = function(categoryOrDeptId) {
-    currentCategory = categoryOrDeptId;
-    if (categoryBar) {
-      categoryBar.querySelectorAll('.cat-pill').forEach(b => {
-        if (b.getAttribute('data-cat') === categoryOrDeptId) {
-          b.classList.add('active');
-          b.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-        } else {
-          b.classList.remove('active');
-        }
-      });
-    }
-    applyFilters();
-    const targetEl = document.getElementById(`dept-${categoryOrDeptId}`);
-    if (targetEl) {
-      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
-
-  // ========================================================================
-  // 5. PRODUCT CARD RENDERING (UNIQUE WEBP IMAGES & REALISTIC SHADERS)
-  // ========================================================================
-  function renderProductCardHtml(p) {
-    let activePrice = p.pricing ? p.pricing.sample : (p.usdPrice || 24);
-
-    if (currentMoqTier === '50') {
-      activePrice = p.pricing ? p.pricing.tier2_price : (activePrice * 0.8);
-    } else if (currentMoqTier === '250') {
-      activePrice = p.pricing ? p.pricing.tier3_price : (activePrice * 0.65);
-    } else if (currentMoqTier === '500') {
-      activePrice = p.pricing ? p.pricing.tier4_price : (activePrice * 0.50);
-    } else if (currentMoqTier === '1000') {
-      activePrice = p.pricing ? p.pricing.tier5_price : (activePrice * 0.35);
-    }
-
-    const starTags = (p.starFeatures || []).slice(0, 2).map(feat => 
-      `<span class="star-tag">✦ ${feat}</span>`
-    ).join('');
-
-    const imgPath = p.image || `assets/images/mockups/${p.packaging || 'jar'}.jpg`;
-
-    return `
-      <article class="product-card" data-id="${p.id}">
-        <div class="card-image-wrapper">
-          <div class="card-floating-badges">
-            <span class="badge-item-id">#${p.id}</span>
-            <span class="badge-free-shipping"><i class="fa-solid fa-truck-fast"></i> Free Shipping</span>
-          </div>
-
-          <div class="card-podium-shadow"></div>
-
-          <img 
-            src="${imgPath}" 
-            alt="${p.name}" 
-            class="card-product-image"
-            loading="lazy"
-            onclick="openProductModal(${p.id})"
-            onerror="this.src='assets/images/mockups/${p.packaging || 'jar'}.jpg'"
-          >
-        </div>
-
-        <div class="card-body">
-          <div class="card-header-row">
-            <h3 class="card-title" title="${p.name}" onclick="openProductModal(${p.id})">
-              ${p.name}
-            </h3>
-            <span class="card-weight">${p.weight}</span>
-          </div>
-
-          <div class="card-meta-row">
-            <span class="meta-pill" title="Target Concern">
-              <i class="fa-solid fa-bullseye"></i>
-              ${p.concern || 'Cellular Revitalization'}
-            </span>
-          </div>
-
-          <div class="card-star-features">
-            ${starTags}
-          </div>
-
-          <div class="card-aroma">
-            <i class="fa-solid fa-wind"></i>
-            <span>${p.aroma || 'Natural Clean Botanical Essential Oils'}</span>
-          </div>
-
-          <div class="card-trust-row">
-            <span class="card-trust-item"><i class="fa-solid fa-check"></i> US FDA</span>
-            <span class="card-trust-item"><i class="fa-solid fa-check"></i> ISO 9001</span>
-            <span class="card-trust-item"><i class="fa-solid fa-check"></i> WHO-GMP</span>
-            <span class="card-trust-item"><i class="fa-solid fa-check"></i> $0 Freight</span>
-          </div>
-
-          <div class="card-pricing-box">
-            <div class="card-price-headline">
-              <div class="price-unit-block">
-                <span class="price-currency">$</span>
-                <span class="price-amount" id="price-${p.id}">${activePrice.toFixed(2)}</span>
-                <span class="price-moq-label">/ unit</span>
-              </div>
-              <div class="price-msrp-tag">
-                <span>MSRP $${p.pricing ? p.pricing.msrp : 65}</span>
-                <span class="margin-badge">${p.pricing ? p.pricing.margin : '70%'} Margin</span>
-              </div>
-            </div>
-
-            <div class="card-tier-selector">
-              <button class="tier-btn ${currentMoqTier === '1' ? 'active' : ''}" onclick="selectCardTier(${p.id}, '1')">
-                <span class="tier-btn-qty">1 pc</span>
-                <span class="tier-btn-rate">$${p.pricing ? p.pricing.sample.toFixed(2) : activePrice.toFixed(2)}</span>
-              </button>
-              <button class="tier-btn ${currentMoqTier === '50' ? 'active' : ''}" onclick="selectCardTier(${p.id}, '50')">
-                <span class="tier-btn-qty">50 pcs</span>
-                <span class="tier-btn-rate">$${p.pricing ? p.pricing.tier2_price.toFixed(2) : (activePrice * 0.8).toFixed(2)}</span>
-              </button>
-              <button class="tier-btn ${currentMoqTier === '500' ? 'active' : ''}" onclick="selectCardTier(${p.id}, '500')">
-                <span class="tier-btn-qty">500+ pcs</span>
-                <span class="tier-btn-rate">$${p.pricing ? p.pricing.tier4_price.toFixed(2) : (activePrice * 0.5).toFixed(2)}</span>
-              </button>
-            </div>
-
-            <div class="card-actions-row">
-              <button class="btn-card-sample" onclick="addToSampleCart(${p.id})">
-                <i class="fa-solid fa-cart-plus"></i>
-                <span>Add to Basket</span>
-              </button>
-              <button class="btn-card-specs" onclick="openProductModal(${p.id})" title="View Specs & INCI">
-                <i class="fa-solid fa-flask"></i>
-              </button>
-              <button class="btn-card-specs" onclick="sendProductWhatsApp(${p.id})" title="Direct WhatsApp DM (ZBM)">
-                <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-      </article>
-    `;
-  }
-
-  function renderProductCards() {
-    if (!productsGrid) return;
-
-    if (filteredProducts.length === 0) {
-      productsGrid.innerHTML = '';
-      if (emptyState) emptyState.style.display = 'block';
-      if (visibleCountEl) visibleCountEl.innerText = '0';
-      return;
-    }
-
-    if (emptyState) emptyState.style.display = 'none';
-    if (visibleCountEl) visibleCountEl.innerText = filteredProducts.length;
-
-    const mobileSearchEl = document.getElementById('mobileSearchInput');
-    const hasSearch = (searchInput && searchInput.value.trim()) || (mobileSearchEl && mobileSearchEl.value.trim());
-    const hasActiveFilters = hasSearch || 
-                             (concernFilter && concernFilter.value) || 
-                             (skinTypeFilter && skinTypeFilter.value);
-
-    // 1. If on a Dedicated Department Page
-    if (activeDeptKey && DEPARTMENTS_CONFIG[activeDeptKey]) {
-      const dept = DEPARTMENTS_CONFIG[activeDeptKey];
-      if (!hasActiveFilters && currentSubcategory === 'all' && dept.subcategories.length > 2) {
-        let subcatHtml = '';
-        // Skip index 0 ('all') to render each subcategory section with header
-        dept.subcategories.slice(1).forEach(sub => {
-          const subProducts = filteredProducts.filter(sub.filter);
-          if (subProducts.length === 0) return;
-
-          subcatHtml += `
-            <section class="department-section" id="subcat-${sub.id}">
-              <div class="department-header">
-                <div class="department-header-left">
-                  <div class="department-badge">
-                    <i class="fa-solid ${dept.icon}"></i>
-                    <span>${sub.name}</span>
-                  </div>
-                  <h3 class="department-title">${sub.name}</h3>
-                </div>
-                <div class="department-header-right">
-                  <span class="department-count-badge">${subProducts.length} Formulations</span>
-                  <span class="badge-free-shipping-tag"><i class="fa-solid fa-truck-fast"></i> From 1 pc (No MOQ)</span>
-                </div>
-              </div>
-
-              <div class="products-grid department-grid">
-                ${subProducts.map(renderProductCardHtml).join('')}
-              </div>
-            </section>
-          `;
-        });
-        productsGrid.innerHTML = subcatHtml;
-      } else {
-        productsGrid.innerHTML = filteredProducts.map(renderProductCardHtml).join('');
-      }
-      attach3DCardTilt();
-      return;
-    }
-
-    // 2. If on Main Home Portal (index.html)
-    const isFilteredHome = hasActiveFilters || (currentCategory !== 'all');
-    if (!isFilteredHome && currentViewMode === 'categorized') {
-      let categorizedHtml = '';
-
-      DEPARTMENTS.forEach(dept => {
-        const deptProducts = filteredProducts.filter(dept.filter);
-        if (deptProducts.length === 0) return;
-
-        categorizedHtml += `
-          <section class="department-section" id="dept-${dept.id}">
-            <div class="department-header">
-              <div class="department-header-left">
-                <div class="department-badge">
-                  <i class="fa-solid ${dept.icon}"></i>
-                  <span>${dept.name}</span>
-                </div>
-                <h3 class="department-title">${dept.name}</h3>
-                <p class="department-desc">${dept.desc}</p>
-              </div>
-              <div class="department-header-right" style="display: flex; align-items: center; gap: 10px;">
-                <span class="department-count-badge">${deptProducts.length} Formulations</span>
-                <a href="${dept.page}" class="btn-secondary-small" style="text-decoration: none; font-size: 0.76rem; padding: 5px 12px; border-radius: var(--radius-full); background: #FFFFFF; border: 1px solid var(--border-medium); font-weight: 700; color: var(--accent-gold-dark);">
-                  View Department Page <i class="fa-solid fa-arrow-right" style="font-size: 0.7rem; margin-left: 4px;"></i>
-                </a>
-              </div>
-            </div>
-
-            <div class="products-grid department-grid">
-              ${deptProducts.map(renderProductCardHtml).join('')}
-            </div>
-          </section>
-        `;
-      });
-
-      productsGrid.innerHTML = categorizedHtml;
-    } else {
-      productsGrid.innerHTML = filteredProducts.map(renderProductCardHtml).join('');
-    }
-
-    attach3DCardTilt();
-  }
-
-  window.selectCardTier = function(productId, tier) {
-    currentMoqTier = tier;
-    const prod = allProducts.find(x => x.id === productId);
-    if (!prod) return;
-
-    let price = prod.pricing ? prod.pricing.sample : 24;
-    if (tier === '50') price = prod.pricing ? prod.pricing.tier2_price : (price * 0.8);
-    else if (tier === '250') price = prod.pricing ? prod.pricing.tier3_price : (price * 0.65);
-    else if (tier === '500') price = prod.pricing ? prod.pricing.tier4_price : (price * 0.50);
-    else if (tier === '1000') price = prod.pricing ? prod.pricing.tier5_price : (price * 0.35);
-
-    const priceEl = document.getElementById(`price-${productId}`);
-    if (priceEl) priceEl.innerText = price.toFixed(2);
-
-    const card = document.querySelector(`.product-card[data-id="${productId}"]`);
-    if (card) {
-      card.querySelectorAll('.tier-btn').forEach(btn => btn.classList.remove('active'));
-      const activeBtn = Array.from(card.querySelectorAll('.tier-btn')).find(b => b.innerText.includes(tier));
-      if (activeBtn) activeBtn.classList.add('active');
-    }
-  };
-
-  // 3D Card Interactive Tilt Effect
-  function attach3DCardTilt() {
-    const cards = document.querySelectorAll('.product-card');
-    cards.forEach(card => {
-      card.addEventListener('mousemove', e => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const cx = rect.width / 2;
-        const cy = rect.height / 2;
-        const rotateX = ((y - cy) / cy) * -6;
-        const rotateY = ((x - cx) / cx) * 6;
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
-      });
-
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)';
-      });
-    });
-  }
-
-  // ========================================================================
-  // 6. FILTERING, SEARCH & SORTING
-  // ========================================================================
-  function applyFilters() {
-    let list = [...allProducts];
-
-    // 1. Department & Subcategory Scope
-    if (activeDeptKey && DEPARTMENTS_CONFIG[activeDeptKey]) {
-      const dept = DEPARTMENTS_CONFIG[activeDeptKey];
-      if (currentSubcategory === 'all') {
-        list = list.filter(dept.subcategories[0].filter);
-      } else {
-        const sub = dept.subcategories.find(s => s.id === currentSubcategory);
-        if (sub) list = list.filter(sub.filter);
-        else list = list.filter(dept.subcategories[0].filter);
-      }
-    } else if (currentCategory !== 'all') {
-      const dept = DEPARTMENTS.find(d => d.id === currentCategory);
-      if (dept) {
-        list = list.filter(dept.filter);
-      }
-    }
-
-    // 2. Search Query (Synchronized between desktop and mobile)
-    const mobileSearchInputEl = document.getElementById('mobileSearchInput');
-    const searchVal = (searchInput && searchInput.value.trim()) || 
-                      (mobileSearchInputEl && mobileSearchInputEl.value.trim()) || '';
-
-    if (searchVal !== '') {
-      const q = searchVal.toLowerCase();
-      list = list.filter(p => 
-        p.name.toLowerCase().includes(q) ||
-        (p.concern && p.concern.toLowerCase().includes(q)) ||
-        (p.keyActive && p.keyActive.toLowerCase().includes(q)) ||
-        (p.aroma && p.aroma.toLowerCase().includes(q)) ||
-        (p.category && p.category.toLowerCase().includes(q)) ||
-        (p.packaging && p.packaging.toLowerCase().includes(q)) ||
-        p.id.toString() === q
-      );
-    }
-
-    // 3. Concern Filter
-    if (concernFilter && concernFilter.value !== '') {
-      const cVal = concernFilter.value.toLowerCase();
-      list = list.filter(p => p.concern && p.concern.toLowerCase().includes(cVal));
-    }
-
-    // 4. Skin/Hair Type Filter
-    if (skinTypeFilter && skinTypeFilter.value !== '') {
-      const sVal = skinTypeFilter.value.toLowerCase();
-      list = list.filter(p => p.skinType && p.skinType.toLowerCase().includes(sVal));
-    }
-
-    // 5. Sort
-    if (sortFilter) {
-      const sortVal = sortFilter.value;
-      if (sortVal === 'price-asc') {
-        list.sort((a, b) => (a.pricing ? a.pricing.sample : a.usdPrice) - (b.pricing ? b.pricing.sample : b.usdPrice));
-      } else if (sortVal === 'price-desc') {
-        list.sort((a, b) => (b.pricing ? b.pricing.sample : b.usdPrice) - (a.pricing ? a.pricing.sample : a.usdPrice));
-      } else if (sortVal === 'name-asc') {
-        list.sort((a, b) => a.name.localeCompare(b.name));
-      } else if (sortVal === 'margin-desc') {
-        list.sort((a, b) => {
-          const mA = parseInt(a.pricing ? a.pricing.margin : 70, 10);
-          const mB = parseInt(b.pricing ? b.pricing.margin : 70, 10);
-          return mB - mA;
-        });
-      } else {
-        list.sort((a, b) => a.id - b.id);
-      }
-    }
-
-    filteredProducts = list;
-    renderProductCards();
-  }
-
-  window.resetFilters = function() {
-    currentCategory = 'all';
-    if (searchInput) searchInput.value = '';
-    if (concernFilter) concernFilter.value = '';
-    if (skinTypeFilter) skinTypeFilter.value = '';
-    if (sortFilter) sortFilter.value = 'id-asc';
-    renderCategoryPills();
-    applyFilters();
-  };
-
-  // ========================================================================
-  // 7. SAMPLE BASKET / CART DRAWER LOGIC
-  // ========================================================================
-  window.addToSampleCart = function(productId, initialQty = null) {
-    const prod = allProducts.find(x => x.id === productId);
-    if (!prod) return;
-
-    let qtyToAdd = initialQty ? parseInt(initialQty, 10) : parseInt(currentMoqTier, 10);
-    if (!qtyToAdd || qtyToAdd < 1) qtyToAdd = 1;
-
-    const existing = inquiryCart.find(x => x.id === productId);
-    if (existing) {
-      existing.qty += qtyToAdd;
-    } else {
-      inquiryCart.push({
-        id: prod.id,
-        name: prod.name,
-        price: prod.pricing ? prod.pricing.sample : (prod.usdPrice || 24),
-        weight: prod.weight,
-        image: prod.image || `assets/images/products/product_${prod.id}.webp`,
-        qty: qtyToAdd
-      });
-    }
-
-    localStorage.setItem('aura_inquiry_cart', JSON.stringify(inquiryCart));
-    updateInquiryUI();
-    openInquiryDrawer();
-  };
-
-  window.changeCartQty = function(idx, delta) {
-    if (!inquiryCart[idx]) return;
-    inquiryCart[idx].qty += delta;
-    if (inquiryCart[idx].qty <= 0) {
-      inquiryCart.splice(idx, 1);
-    }
-    localStorage.setItem('aura_inquiry_cart', JSON.stringify(inquiryCart));
-    updateInquiryUI();
-  };
-
-  window.setCartItemQuantity = function(idx, newQty) {
-    if (!inquiryCart[idx]) return;
-    const q = parseInt(newQty, 10);
-    if (isNaN(q) || q <= 0) {
-      inquiryCart.splice(idx, 1);
-    } else {
-      inquiryCart[idx].qty = q;
-    }
-    localStorage.setItem('aura_inquiry_cart', JSON.stringify(inquiryCart));
-    updateInquiryUI();
-  };
-
-  window.removeCartItem = function(idx) {
-    inquiryCart.splice(idx, 1);
-    localStorage.setItem('aura_inquiry_cart', JSON.stringify(inquiryCart));
-    updateInquiryUI();
-  };
-
-  window.clearAllCart = function() {
-    if (confirm('Are you sure you want to clear your sample basket?')) {
-      inquiryCart = [];
-      localStorage.removeItem('aura_inquiry_cart');
-      updateInquiryUI();
-    }
-  };
-
-  function updateInquiryUI() {
-    const totalCount = inquiryCart.reduce((sum, item) => sum + item.qty, 0);
-    
-    if (inquiryCountBadge) {
-      inquiryCountBadge.innerText = totalCount;
-      inquiryCountBadge.style.display = totalCount > 0 ? 'inline-flex' : 'none';
-    }
-    if (drawerTotalCount) {
-      drawerTotalCount.innerText = `${totalCount} unit(s)`;
-    }
-
-    if (!drawerBody) return;
-
-    if (inquiryCart.length === 0) {
-      drawerBody.innerHTML = `
-        <div class="empty-drawer">
-          <i class="fa-solid fa-basket-shopping" style="font-size: 2.2rem; color: var(--accent-gold); margin-bottom: 12px;"></i>
-          <h4>Your Sample Basket is Empty</h4>
-          <p>Browse our 202 master formulations and add items to request evaluation samples or tiered bulk manufacturing.</p>
-        </div>
-      `;
-      if (drawerSubtotal) drawerSubtotal.innerText = '$0.00';
-      if (drawerTotalValue) drawerTotalValue.innerText = '$0.00';
-      if (drawerDiscountRow) drawerDiscountRow.style.display = 'none';
-      if (drawerShippingAlert) drawerShippingAlert.style.display = 'none';
-      if (whatsappOrderBtn) whatsappOrderBtn.classList.add('disabled-btn');
-      return;
-    }
-
-    const totals = calculateCartTotals();
-
-    // Populate drawer line items
-    drawerBody.innerHTML = inquiryCart.map((item, idx) => {
-      const prod = allProducts.find(x => x.id === item.id);
-      const tierInfo = calculateItemUnitPrice(prod, item.qty);
-      const lineTotal = tierInfo.price * item.qty;
-
-      return `
-        <div class="drawer-item">
-          <img src="${item.image}" alt="${item.name}" class="drawer-item-img" onerror="this.src='assets/images/mockups/jar.jpg'">
-          <div class="drawer-item-info">
-            <div class="drawer-item-title">${item.name}</div>
-            <div class="drawer-item-sub">${item.weight} • ${prod ? prod.category : ''}</div>
-            
-            <div class="drawer-item-pricing-row">
-              <span class="drawer-unit-price">$${tierInfo.price.toFixed(2)} / unit</span>
-              <span class="drawer-tier-badge">${tierInfo.discount}</span>
-            </div>
-
-            <div class="drawer-item-subtotal">Line Total: <strong>$${lineTotal.toFixed(2)} USD</strong></div>
-          </div>
-
-          <div class="drawer-item-actions">
-            <div class="qty-stepper">
-              <button onclick="changeCartQty(${idx}, -1)" title="Decrease">-</button>
-              <input 
-                type="number" 
-                value="${item.qty}" 
-                min="1" 
-                class="qty-input" 
-                onchange="setCartItemQuantity(${idx}, this.value)"
-              >
-              <button onclick="changeCartQty(${idx}, 1)" title="Increase">+</button>
-            </div>
-            <button onclick="removeCartItem(${idx})" class="btn-remove-item" title="Remove Item">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    // Update Drawer Price Fields
-    if (drawerSubtotal) {
-      drawerSubtotal.innerText = `$${totals.rawSubtotal.toFixed(2)}`;
-    }
-
-    // Tiered Discount Display
-    if (drawerDiscountRow) {
-      if (totals.discountAmount > 0) {
-        drawerDiscountRow.style.display = 'flex';
-        if (drawerDiscountRate) drawerDiscountRate.innerText = `(${Math.round(totals.discountRate * 100)}% OFF)`;
-        if (drawerDiscountVal) drawerDiscountVal.innerText = `-$${totals.discountAmount.toFixed(2)}`;
-      } else {
-        drawerDiscountRow.style.display = 'none';
-      }
-    }
-
-    if (drawerTotalValue) {
-      if (totals.isBulkCapped) {
-        drawerTotalValue.innerHTML = `<span style="font-size: 0.92rem; color: #166534; font-weight: 800;">Enterprise Quote Required (> $1,000)</span>`;
-      } else {
-        drawerTotalValue.innerText = `$${totals.finalTotal.toFixed(2)}`;
-      }
-    }
-
-    // Shipping Alert ($150 minimum threshold)
-    if (drawerShippingAlert) {
-      if (!totals.meetsMinShipping) {
-        drawerShippingAlert.style.display = 'flex';
-        drawerShippingAlert.innerHTML = `
-          <i class="fa-solid fa-circle-exclamation"></i>
-          <div>
-            <strong>Minimum cart value for sample shipping is $150.</strong>
-            <span>Add $${totals.amountNeededForShipping.toFixed(2)} more to qualify for Free Freight.</span>
-          </div>
-        `;
-      } else {
-        drawerShippingAlert.style.display = 'none';
-      }
-    }
-
-    // Dynamic Payment Preference Recommendation based on Cart Value
-    const achBadgeText = document.getElementById('achBadgeText');
-    if (achBadgeText) {
-      if (totals.rawSubtotal >= 500) {
-        achBadgeText.innerText = '★ Recommended (0% Fee)';
-        achBadgeText.style.background = '#166534';
-        achBadgeText.style.color = '#ffffff';
-      } else {
-        achBadgeText.innerText = '0% Fee (Wholesale)';
-        achBadgeText.style.background = '#e0f2fe';
-        achBadgeText.style.color = '#0369a1';
-      }
-    }
-
-    // Enable WhatsApp Order Button
-    if (whatsappOrderBtn) {
-      whatsappOrderBtn.classList.remove('disabled-btn');
-    }
-
-    // Refresh active payment preference UI
-    if (typeof window.handlePaymentPrefChange === 'function') {
-      window.handlePaymentPrefChange();
-    }
-  }
-
-  // PayPal Smart Buttons Renderer
-  let currentPayPalAmount = null;
-  window.renderPayPalButtons = function() {
-    const container = document.getElementById('paypal-button-container');
-    if (!container) return;
-
-    if (!window.paypal) {
-      container.innerHTML = `
-        <div style="background: rgba(0, 121, 193, 0.08); border: 1px solid rgba(0, 121, 193, 0.25); border-radius: 6px; padding: 10px; font-size: 0.78rem; color: #0079C1; text-align: center;">
-          <i class="fa-brands fa-paypal"></i> Instant PayPal & Card Checkout Ready.<br>
-          <span style="font-size: 0.72rem; color: var(--text-muted);">Please use the WhatsApp order desk below if buttons are blocked by browser ad-blocker.</span>
-        </div>
-      `;
-      return;
-    }
-
-    if (!inquiryCart || inquiryCart.length === 0) {
-      container.innerHTML = `
-        <div style="background: rgba(223, 192, 144, 0.1); border: 1px dashed rgba(223, 192, 144, 0.4); border-radius: 6px; padding: 12px; font-size: 0.76rem; color: var(--text-secondary); text-align: center;">
-          <i class="fa-solid fa-basket-shopping" style="color: var(--accent-gold); margin-bottom: 4px; display: block; font-size: 1.1rem;"></i>
-          Add formulation samples to your basket to activate PayPal & Card checkout.
-        </div>
-      `;
-      return;
-    }
-
-    const totals = calculateCartTotals();
-    if (totals.finalTotal <= 0) {
-      container.innerHTML = `
-        <div style="background: rgba(223, 192, 144, 0.1); border: 1px dashed rgba(223, 192, 144, 0.4); border-radius: 6px; padding: 12px; font-size: 0.76rem; color: var(--text-secondary); text-align: center;">
-          Basket total must be greater than $0.00 to activate PayPal checkout.
-        </div>
-      `;
-      return;
-    }
-
-    const amountStr = totals.finalTotal.toFixed(2);
-
-    if (currentPayPalAmount === amountStr && container.children.length > 0) {
-      return;
-    }
-    currentPayPalAmount = amountStr;
-    container.innerHTML = '';
-
-    try {
-      window.paypal.Buttons({
-        style: {
-          layout: 'vertical',
-          color: 'gold',
-          shape: 'rect',
-          label: 'paypal'
-        },
-        createOrder: function(data, actions) {
-          const liveTotals = calculateCartTotals();
-          if (!liveTotals || liveTotals.finalTotal <= 0) {
-            alert('Your basket total must be greater than $0.00 to checkout.');
-            return actions.reject();
-          }
-          return actions.order.create({
-            intent: 'CAPTURE',
-            purchase_units: [{
-              description: `ZANDRA BEAUTY MATRIX (ZBM) B2B Wholesale Order (${inquiryCart.length} formulations)`,
-              amount: {
-                currency_code: 'USD',
-                value: liveTotals.finalTotal.toFixed(2)
-              }
-            }]
-          });
-        },
-        onApprove: function(data, actions) {
-          return actions.order.capture().then(function(details) {
-            const payerName = details.payer?.name?.given_name || 'Valued Client';
-            alert(`Payment of $${amountStr} USD completed successfully by ${payerName}! Transaction ID: ${details.id}. Trade desk confirmation dispatching on WhatsApp.`);
-            window.submitOrderViaWhatsApp(details.id);
-          });
-        },
-        onCancel: function(data) {
-          console.log('[PAYPAL CHECKOUT CANCELLED]', data);
-        },
-        onError: function(err) {
-          console.error('[PAYPAL BUTTON ERROR]', err);
-          alert('PayPal Transaction Notice:\n\n1. If you are testing with an Indian bank card or Indian PayPal account: Under Reserve Bank of India (RBI) regulations, domestic Indian transactions are prohibited on PayPal. PayPal strictly processes international payments from foreign buyers (USA, UK, Europe, etc.).\n\n2. You can also send your order directly to our WhatsApp Trade Desk below to complete your order.');
-        }
-      }).render('#paypal-button-container');
-    } catch (e) {
-      console.error('[PAYPAL BUTTON EXCEPTION]', e);
-    }
-  };
-
-  // Payment preference radio state toggle
-  window.handlePaymentPrefChange = function() {
-    const paypalRadio = document.getElementById('payMethodPayPal');
-    const achRadio = document.getElementById('payMethodAchWire');
-    const cardLabel = document.getElementById('cardOptionLabel');
-    const achLabel = document.getElementById('achOptionLabel');
-    const paypalSection = document.getElementById('paypalButtonsSection');
-    const whatsappBtn = document.getElementById('whatsappOrderBtn');
-
-    if (paypalRadio && paypalRadio.checked) {
-      if (cardLabel) cardLabel.classList.add('active');
-      if (achLabel) achLabel.classList.remove('active');
-      if (paypalSection) paypalSection.style.display = 'block';
-      if (whatsappBtn) {
-        whatsappBtn.innerHTML = `<i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i> <span>Inquire / Send Draft to WhatsApp</span>`;
-      }
-      window.renderPayPalButtons();
-    } else if (achRadio && achRadio.checked) {
-      if (achLabel) achLabel.classList.add('active');
-      if (cardLabel) cardLabel.classList.remove('active');
-      if (paypalSection) paypalSection.style.display = 'none';
-      if (whatsappBtn) {
-        whatsappBtn.innerHTML = `<i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i> <span>Request Official Commercial Invoice (ACH)</span>`;
-      }
-    }
-  };
-
-  function openInquiryDrawer() {
-    if (inquiryDrawer) {
-      inquiryDrawer.classList.add('open');
+  window.openVisualizer = function() {
+    if (visualizerModal) {
+      visualizerModal.classList.add('active');
       document.body.style.overflow = 'hidden';
-      if (typeof window.populateDrawerBuyer === 'function') {
-        window.populateDrawerBuyer();
-      }
+      startVisualizerAnimation();
     }
-  }
+  };
 
-  function closeInquiryDrawer() {
-    if (inquiryDrawer) {
-      inquiryDrawer.classList.remove('open');
+  window.closeVisualizer = function() {
+    if (visualizerModal) {
+      visualizerModal.classList.remove('active');
       document.body.style.overflow = '';
+      if (visualizerAnimFrame) cancelAnimationFrame(visualizerAnimFrame);
     }
-  }
-
-  // ========================================================================
-  // 8. DIRECT WHATSAPP ORDER ENGINE (+91 9344087944)
-  // ========================================================================
-  window.submitOrderViaWhatsApp = function(onlineTxId = null) {
-    if (!inquiryCart || inquiryCart.length === 0) {
-      alert('Your sample basket is empty. Please select formulations before submitting.');
-      return;
-    }
-
-    const totals = calculateCartTotals();
-    const buyerBrand = (document.getElementById('buyerBrandInput')?.value || '').trim();
-    const buyerName = (document.getElementById('buyerNameInput')?.value || '').trim();
-    const buyerLocation = (document.getElementById('buyerLocationInput')?.value || '').trim();
-    const buyerNotes = (document.getElementById('buyerNotesInput')?.value || '').trim();
-
-    let msg = `🌟 *NEW PRIVATE LABEL ORDER / RFQ — ZANDRA BEAUTY MATRIX (ZBM)* 🌟\n`;
-    msg += `----------------------------------------\n`;
-    msg += `👤 *BUYER & BRAND PROFILE:*\n`;
-    const authUser = window.ZBM_AUTH ? window.ZBM_AUTH.getUser() : null;
-    if (authUser && authUser.email) {
-      msg += `• Verified B2B Account: ${authUser.name} (${authUser.email})\n`;
-    }
-    if (buyerBrand) msg += `• Brand / Company: *${buyerBrand}*\n`;
-    if (buyerName) msg += `• Contact Person: ${buyerName}\n`;
-    if (buyerLocation) msg += `• Delivery Destination: ${buyerLocation}\n`;
-    if (buyerNotes) msg += `• Custom Notes / Requests: ${buyerNotes}\n`;
-    if (!buyerBrand && !buyerName && !buyerLocation && !authUser) {
-      msg += `• Inquiry Type: USA Private Label Turnkey Order\n`;
-    }
-    msg += `----------------------------------------\n\n`;
-
-    msg += `📦 *SELECTED FORMULATIONS (${totals.totalQty} Units):*\n`;
-    inquiryCart.forEach((item, idx) => {
-      const prod = allProducts.find(x => x.id === item.id);
-      const tier = calculateItemUnitPrice(prod, item.qty);
-      const packaging = prod?.packaging ? prod.packaging.toUpperCase() : 'BOTTLE';
-      const active = prod?.keyActive || 'Clinical Bio-Actives';
-      
-      msg += `${idx + 1}. *${item.name}*\n`;
-      msg += `   • Packaging: ${packaging} (${item.weight})\n`;
-      msg += `   • Key Active: ${active}\n`;
-      msg += `   • Quantity: *${item.qty} pcs* [Tier: ${tier.discount}]\n`;
-      msg += `   • Unit Price: $${tier.price.toFixed(2)} USD\n`;
-      msg += `   • Line Total: $${(tier.price * item.qty).toFixed(2)} USD\n\n`;
-    });
-
-    msg += `----------------------------------------\n`;
-    msg += `📊 *ORDER COMMERCIAL SUMMARY:*\n`;
-    msg += `• Total Formulations: ${inquiryCart.length} product(s)\n`;
-    msg += `• Total Units: ${totals.totalQty} pcs\n`;
-    msg += `• Raw Subtotal: $${totals.rawSubtotal.toFixed(2)} USD\n`;
-    if (totals.discountAmount > 0) {
-      msg += `• Volume Discount: -$${totals.discountAmount.toFixed(2)} USD (${totals.discountLabel})\n`;
-    }
-    msg += `• Insured Freight: *FREE SHIPPING ($0.00)*\n`;
-    if (totals.isBulkCapped) {
-      msg += `• Order Status: *ENTERPRISE BULK QUOTE (> $1,000)*\n`;
-    } else {
-      msg += `• Estimated Total: *$${totals.finalTotal.toFixed(2)} USD*\n`;
-    }
-    msg += `----------------------------------------\n\n`;
-
-    // Payment Preference
-    const selectedPayPref = document.querySelector('input[name="paymentPreference"]:checked')?.value || 'paypal_card';
-    msg += `💳 *PAYMENT PREFERENCE:*\n`;
-    if (onlineTxId) {
-      msg += `• Selected Method: *PayPal & Credit/Debit Card*\n`;
-      msg += `• Payment Status: *PAID ONLINE VIA PAYPAL* (Trans ID: ${onlineTxId})\n`;
-      msg += `• Settlement: Confirmed via PayPal Smart Gateway\n`;
-    } else if (selectedPayPref === 'ach_wire') {
-      msg += `• Selected Method: *USA Local Bank ACH / Domestic Wire Transfer (0% Fee)*\n`;
-      msg += `• Commercial Invoice Request: Please issue an official B2B Commercial Proforma Invoice with Citi Bank USA routing & account details.\n`;
-      if (totals.rawSubtotal >= 500) {
-        msg += `• Tier Qualification: Qualified for fee-free wholesale settlement ($500+ order)\n`;
-      }
-    } else {
-      msg += `• Selected Method: *PayPal & Credit/Debit Card Online Checkout*\n`;
-      msg += `• Action Required: Online card processing active via PayPal smart gateway.\n`;
-    }
-    msg += `----------------------------------------\n\n`;
-
-    msg += `💬 *NEXT STEPS:*\n`;
-    msg += `Please confirm formulation batch availability, physical unbranded sample dispatch, label artwork customization with my logo, and manufacturing turnaround.`;
-
-    const encoded = encodeURIComponent(msg);
-    const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encoded}`;
-    window.open(whatsappUrl, '_blank');
   };
 
-  // Direct WhatsApp DM for a single product
-  window.sendProductWhatsApp = function(productId) {
-    const prod = allProducts.find(x => x.id === productId);
-    if (!prod) return;
-
-    const tier = calculateItemUnitPrice(prod, parseInt(currentMoqTier, 10));
-    let text = `Hello ZANDRA BEAUTY MATRIX (ZBM) Team,\n\n`;
-    text += `I am interested in private label manufacturing for formulation #${prod.id}:\n`;
-    text += `• Product: *${prod.name}*\n`;
-    text += `• Category: ${prod.category} (${prod.weight})\n`;
-    text += `• Packaging Archetype: ${prod.packaging || 'Frosted Container'} with unbranded "Logo Here" label\n`;
-    text += `• Active Ingredients: ${prod.keyActive || 'Clinical Bio-Actives'}\n`;
-    text += `• Target Concern: ${prod.concern || 'Dermal Renewal'}\n`;
-    text += `• Sample Unit Price: $${prod.pricing ? prod.pricing.sample.toFixed(2) : 24.00} USD\n`;
-    text += `• Selected Volume Tier: ${currentMoqTier} pcs ($${tier.price.toFixed(2)}/unit)\n\n`;
-    text += `Please share standard lead times, private label branding options, and COA/batch test documentation.`;
-
-    window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`, '_blank');
-  };
-
-  // ========================================================================
-  // 9. PRODUCT DETAIL MODAL (SPECS, INCI, REGULATORY)
-  // ========================================================================
-  window.openProductModal = function(productId) {
-    const prod = allProducts.find(x => x.id === productId);
-    if (!prod) return;
-    currentModalProduct = prod;
-
-    const ingList = (prod.ingredients || []).map(ing => `<li>${ing}</li>`).join('');
-    const starList = (prod.starFeatures || []).map(f => `<li><i class="fa-solid fa-sparkles"></i> ${f}</li>`).join('');
-    const certList = (prod.certificates || []).map(c => `<span class="modal-cert-tag"><i class="fa-solid fa-shield-check"></i> ${c}</span>`).join('');
-
-    const imgPath = prod.image || `assets/images/mockups/${prod.packaging || 'jar'}.jpg`;
-
-    modalContent.innerHTML = `
-      <div class="modal-image-col">
-        <div class="modal-image-stage">
-          <div class="card-podium-shadow"></div>
-          <img src="${imgPath}" alt="${prod.name}" class="modal-img" onerror="this.src='assets/images/mockups/${prod.packaging || 'jar'}.jpg'">
-        </div>
-        <div class="modal-trust-tags">
-          ${certList}
-        </div>
-      </div>
-
-      <div class="modal-info-col">
-        <div class="modal-tag-row">
-          <span class="modal-category-tag">${prod.category}</span>
-          <span class="modal-item-id">Item #${prod.id}</span>
-          <span class="badge-free-shipping"><i class="fa-solid fa-truck-fast"></i> Free Shipping</span>
-        </div>
-
-        <h2 class="modal-title">${prod.name}</h2>
-        <div class="modal-weight-row">
-          <strong>Volume / Net Weight:</strong> ${prod.weight}
-        </div>
-
-        <p class="modal-overview">${prod.overview || 'Turnkey white-label formulation certified for USA and global retail markets.'}</p>
-
-        <!-- Star Features -->
-        <div class="modal-features-box">
-          <h4><i class="fa-solid fa-star"></i> Clinical Star Bio-Actives</h4>
-          <ul class="modal-star-list">${starList}</ul>
-        </div>
-
-        <!-- Tiered Wholesale Pricing Matrix -->
-        <div class="modal-pricing-matrix">
-          <h4>Tiered Turnkey Wholesale Pricing (USD)</h4>
-          <div class="modal-tiers-grid">
-            <div class="m-tier">
-              <span class="m-tier-name">Sample</span>
-              <span class="m-tier-qty">1 pc</span>
-              <span class="m-tier-price">$${prod.pricing ? prod.pricing.sample.toFixed(2) : '24.00'}</span>
-            </div>
-            <div class="m-tier">
-              <span class="m-tier-name">Startup</span>
-              <span class="m-tier-qty">50 pcs</span>
-              <span class="m-tier-price">$${prod.pricing ? prod.pricing.tier2_price.toFixed(2) : '19.20'}</span>
-            </div>
-            <div class="m-tier">
-              <span class="m-tier-name">Growth</span>
-              <span class="m-tier-qty">250 pcs</span>
-              <span class="m-tier-price">$${prod.pricing ? prod.pricing.tier3_price.toFixed(2) : '15.60'}</span>
-            </div>
-            <div class="m-tier">
-              <span class="m-tier-name">Wholesale</span>
-              <span class="m-tier-qty">500+ pcs</span>
-              <span class="m-tier-price">$${prod.pricing ? prod.pricing.tier4_price.toFixed(2) : '12.00'}</span>
-            </div>
-            <div class="m-tier">
-              <span class="m-tier-name">Enterprise</span>
-              <span class="m-tier-qty">1,000+ pcs</span>
-              <span class="m-tier-price">$${prod.pricing ? prod.pricing.tier5_price.toFixed(2) : '8.40'}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Packaging Specifications -->
-        <div class="modal-packaging-box">
-          <h4><i class="fa-solid fa-box"></i> Packaging Specifications</h4>
-          <p><strong>Container:</strong> ${prod.packagingSpecs ? prod.packagingSpecs.material : 'Unbranded Sterile Packaging'}</p>
-          <p><strong>Closure:</strong> ${prod.packagingSpecs ? prod.packagingSpecs.closure : 'Airtight Protective Seal'}</p>
-          <p><strong>Labeling:</strong> Unbranded physical product with centered "Logo Here" ready for client logo imprint.</p>
-        </div>
-
-        <!-- Full INCI Ingredients -->
-        <div class="modal-inci-box">
-          <h4><i class="fa-solid fa-dna"></i> Full INCI Ingredient Disclosure</h4>
-          <ul class="inci-list">${ingList}</ul>
-        </div>
-
-        <!-- Modal Action Buttons -->
-        <div class="modal-actions-bar">
-          <div class="modal-qty-selector">
-            <label>Order Qty:</label>
-            <input type="number" id="modalQtyInput" value="1" min="1" style="width: 60px; padding: 8px; font-weight: 700; text-align: center; border-radius: 6px; border: 1px solid var(--border-medium);">
-          </div>
-          <button class="btn-primary-large" onclick="addModalItemToCart()">
-            <i class="fa-solid fa-cart-plus"></i> Add to Sample Basket
-          </button>
-          <button class="btn-secondary-large" onclick="sendProductWhatsApp(${prod.id})">
-            <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Inquire on WhatsApp
-          </button>
-        </div>
-      </div>
-    `;
-
-    productModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  };
-
-  window.addModalItemToCart = function() {
-    if (!currentModalProduct) return;
-    const input = document.getElementById('modalQtyInput');
-    const qty = input ? parseInt(input.value, 10) : 1;
-    addToSampleCart(currentModalProduct.id, qty);
-    closeProductModal();
-  };
-
-  function closeProductModal() {
-    if (productModal) {
-      productModal.classList.remove('active');
-      document.body.style.overflow = '';
-      currentModalProduct = null;
-    }
-  }
-
-  // ========================================================================
-  // 10. 3D ANTI-GRAVITY BRAND VISUALIZER STUDIO
-  // ========================================================================
-  function initVisualizerStudio() {
+  function startVisualizerAnimation() {
     if (!brandCanvas) return;
     const ctx = brandCanvas.getContext('2d');
 
-    function renderStudioScene() {
-      const W = brandCanvas.width;
-      const H = brandCanvas.height;
-      ctx.clearRect(0, 0, W, H);
+    const render = () => {
+      animTime += 0.02;
+      ctx.clearRect(0, 0, brandCanvas.width, brandCanvas.height);
 
-      animTime += 0.025;
-      const floatOffsetY = Math.sin(animTime) * 12;
+      // Base Studio Gradient
+      const grad = ctx.createRadialGradient(450, 450, 100, 450, 450, 450);
+      grad.addColorStop(0, '#FFFFFF');
+      grad.addColorStop(1, '#F3F0EA');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, brandCanvas.width, brandCanvas.height);
 
-      // Dark Luxury Studio Radial Void
-      const bg = ctx.createRadialGradient(W/2, H/2 - 40, 50, W/2, H/2, 450);
-      bg.addColorStop(0, '#1c1b19');
-      bg.addColorStop(0.6, '#0f0e0d');
-      bg.addColorStop(1, '#050505');
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, W, H);
-
-      // Ambient Floating Particles
-      for (let i = 0; i < 16; i++) {
-        const pAngle = (i / 16) * Math.PI * 2 + animTime * 0.2;
-        const pDist = 180 + Math.sin(animTime + i) * 30;
-        const px = W/2 + Math.cos(pAngle) * pDist;
-        const py = H/2 + Math.sin(pAngle) * (pDist * 0.7) + floatOffsetY * 0.5;
-
-        ctx.fillStyle = i % 2 === 0 ? 'rgba(223, 192, 144, 0.65)' : 'rgba(255, 255, 255, 0.4)';
-        ctx.beginPath();
-        ctx.arc(px, py, 3.5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Soft Depth Shadow
-      const shadowScale = 1 + (floatOffsetY / 50);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+      // Travertine Stone Pedestal
+      ctx.save();
+      ctx.fillStyle = '#E5DFD5';
       ctx.beginPath();
-      ctx.ellipse(W/2, 570, 160 * shadowScale, 24 * shadowScale, 0, 0, Math.PI * 2);
+      ctx.roundRect(250, 680, 400, 70, 10);
       ctx.fill();
+      ctx.restore();
 
-      // Floating Marble Base
-      ctx.fillStyle = '#2b2926';
+      // Floating Bottle Simulation
+      const floatY = Math.sin(animTime) * 12;
+      ctx.save();
+      ctx.translate(450, 420 + floatY);
+
+      // Bottle Body
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.strokeStyle = '#D1CAC0';
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.ellipse(W/2, 540, 150, 18, 0, 0, Math.PI * 2);
+      ctx.roundRect(-100, -180, 200, 360, 20);
       ctx.fill();
-      ctx.strokeStyle = 'rgba(223, 192, 144, 0.3)';
-      ctx.lineWidth = 1;
       ctx.stroke();
 
-      // Draw Selected 3D Packaging
-      const pkgY = 280 + floatOffsetY;
-      drawPackagingInStudio(ctx, W/2, pkgY, visualizerPkg);
+      // Gold Collar
+      ctx.fillStyle = '#DFC090';
+      ctx.fillRect(-45, -230, 90, 50);
 
-      // Draw Client Brand Logo on Product
-      drawBrandLogoOnProduct(ctx, W/2, pkgY + 50);
+      // Cap / Dropper
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.roundRect(-30, -290, 60, 60, 10);
+      ctx.fill();
 
-      visualizerAnimFrame = requestAnimationFrame(renderStudioScene);
-    }
+      // Logo on Bottle
+      ctx.fillStyle = '#1C1B1A';
+      ctx.font = '800 24px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(currentBrandPreset === 'custom' ? 'YOUR BRAND' : 'ZANDRA', 0, 0);
+      ctx.font = '600 12px "Plus Jakarta Sans", sans-serif';
+      ctx.fillStyle = '#8C877E';
+      ctx.fillText('PRIVATE LABEL • USA', 0, 25);
 
-    function drawPackagingInStudio(c, cx, cy, pkg) {
-      if (pkg === 'dropper') {
-        const w = 170, h = 230;
-        const x = cx - w/2, y = cy - h/2;
+      ctx.restore();
 
-        const g = c.createLinearGradient(x, 0, x + w, 0);
-        g.addColorStop(0, '#784315');
-        g.addColorStop(0.3, '#d97706');
-        g.addColorStop(0.5, '#fef3c7');
-        g.addColorStop(0.8, '#b45309');
-        g.addColorStop(1, '#572b0c');
-        c.fillStyle = g;
-        c.beginPath();
-        c.roundRect(x, y, w, h, [20, 20, 24, 24]);
-        c.fill();
+      visualizerAnimFrame = requestAnimationFrame(render);
+    };
 
-        c.fillStyle = '#dfc090';
-        c.fillRect(cx - 38, y - 44, 76, 44);
-        c.fillStyle = '#1c1c1e';
-        c.beginPath();
-        c.roundRect(cx - 30, y - 96, 60, 56, [18, 18, 2, 2]);
-        c.fill();
-
-        c.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        c.fillRect(x + 12, y + 10, 4, h - 20);
-
-      } else if (pkg === 'jar') {
-        const w = 240, h = 165;
-        const x = cx - w/2, y = cy - h/2 + 20;
-
-        const g = c.createLinearGradient(x, 0, x + w, 0);
-        g.addColorStop(0, '#573d1c');
-        g.addColorStop(0.4, '#e2c08d');
-        g.addColorStop(0.6, '#fff7ed');
-        g.addColorStop(1, '#573d1c');
-        c.fillStyle = g;
-        c.beginPath();
-        c.roundRect(x, y, w, h, [12, 12, 26, 26]);
-        c.fill();
-
-        c.fillStyle = '#dfc090';
-        c.beginPath();
-        c.roundRect(cx - w/2 - 10, y - 46, w + 20, 48, [10, 10, 2, 2]);
-        c.fill();
-
-      } else if (pkg === 'soap') {
-        const w = 260, h = 170;
-        const x = cx - w/2, y = cy - h/2;
-        c.fillStyle = '#c89552';
-        c.beginPath();
-        c.roundRect(x, y, w, h, 18);
-        c.fill();
-
-        c.fillStyle = '#181716';
-        c.fillRect(x, y + 42, w, 75);
-      } else {
-        const w = 175, h = 260;
-        const x = cx - w/2, y = cy - h/2;
-        const g = c.createLinearGradient(x, 0, x + w, 0);
-        g.addColorStop(0, '#1c2421');
-        g.addColorStop(0.5, '#40534c');
-        g.addColorStop(1, '#1c2421');
-        c.fillStyle = g;
-        c.beginPath();
-        c.roundRect(x, y, w, h, [26, 26, 20, 20]);
-        c.fill();
-
-        c.fillStyle = '#dfc090';
-        c.fillRect(cx - 36, y - 36, 72, 36);
-      }
-    }
-
-    function drawBrandLogoOnProduct(c, cx, cy) {
-      c.save();
-      c.fillStyle = 'rgba(15, 14, 13, 0.9)';
-      c.beginPath();
-      c.roundRect(cx - 65, cy - 30, 130, 58, 6);
-      c.fill();
-      c.strokeStyle = '#dfc090';
-      c.lineWidth = 1;
-      c.stroke();
-
-      if (currentBrandPreset === 'custom' && customLogoImg) {
-        try {
-          c.drawImage(customLogoImg, cx - 45, cy - 22, 90, 42);
-        } catch (e) {
-          c.fillStyle = '#dfc090';
-          c.font = 'bold 12px sans-serif';
-          c.textAlign = 'center';
-          c.fillText('YOUR LOGO', cx, cy + 4);
-        }
-      } else if (currentBrandPreset === 'zandra') {
-        if (zandraLogoImg.complete) {
-          c.drawImage(zandraLogoImg, cx - 50, cy - 18, 100, 36);
-        }
-      } else {
-        if (zbmLogoImg.complete) {
-          c.drawImage(zbmLogoImg, cx - 28, cy - 25, 56, 36);
-          c.fillStyle = '#dfc090';
-          c.font = '700 9px system-ui, sans-serif';
-          c.textAlign = 'center';
-          c.fillText('ZANDRA MATRIX', cx, cy + 20);
-        }
-      }
-      c.restore();
-    }
-
-    function startStudio() {
-      if (!visualizerAnimFrame) {
-        renderStudioScene();
-      }
-    }
-
-    function stopStudio() {
-      if (visualizerAnimFrame) {
-        cancelAnimationFrame(visualizerAnimFrame);
-        visualizerAnimFrame = null;
-      }
-    }
-
-    // Modal Triggers
-    if (openVisualizerBtn) {
-      openVisualizerBtn.addEventListener('click', () => {
-        visualizerModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        startStudio();
-      });
-    }
-
-    if (closeVisualizerBtn) {
-      closeVisualizerBtn.addEventListener('click', () => {
-        visualizerModal.classList.remove('active');
-        document.body.style.overflow = '';
-        stopStudio();
-      });
-    }
-
-    // Controls
-    document.querySelectorAll('.pkg-type-btn[data-pkg]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.pkg-type-btn[data-pkg]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        visualizerPkg = btn.getAttribute('data-pkg');
-      });
-    });
-
-    document.querySelectorAll('.brand-preset-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.brand-preset-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentBrandPreset = btn.getAttribute('data-brand');
-        if (customUploadContainer) {
-          customUploadContainer.style.display = currentBrandPreset === 'custom' ? 'block' : 'none';
-        }
-      });
-    });
-
-    if (brandLogoInput) {
-      brandLogoInput.addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = ev => {
-            const img = new Image();
-            img.onload = () => {
-              customLogoImg = img;
-              currentBrandPreset = 'custom';
-            };
-            img.src = ev.target.result;
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-    }
-
-    if (downloadMockupBtn) {
-      downloadMockupBtn.addEventListener('click', () => {
-        const link = document.createElement('a');
-        link.download = `zbm-branded-${visualizerPkg}-mockup.png`;
-        link.href = brandCanvas.toDataURL('image/png');
-        link.click();
-      });
-    }
-
-    if (resetVisualizerBtn) {
-      resetVisualizerBtn.addEventListener('click', () => {
-        visualizerPkg = 'dropper';
-        currentBrandPreset = 'zbm';
-        customLogoImg = null;
-        document.querySelectorAll('.brand-preset-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-brand') === 'zbm'));
-        document.querySelectorAll('.pkg-type-btn[data-pkg]').forEach(b => b.classList.toggle('active', b.getAttribute('data-pkg') === 'dropper'));
-        if (customUploadContainer) customUploadContainer.style.display = 'none';
-      });
-    }
+    if (visualizerAnimFrame) cancelAnimationFrame(visualizerAnimFrame);
+    render();
   }
 
-  // ========================================================================
-  // 11. CERTIFICATIONS TRUST MODAL
-  // ========================================================================
+  // Regulatory Cert Modal
   window.openCertModal = function(type) {
-    if (!certModalContent || !certModal) return;
+    if (!certModal || !certModalContent) return;
+    let title = 'US FDA Compliance';
+    let desc = 'cGMP 21 CFR Part 700/701 compliant facility batch records, INCI safety documentation, and stability test protocols.';
 
-    let title = 'Certifications & Compliance';
-    let desc = '';
-    let certBadge = '';
-
-    if (type === 'fda') {
-      title = 'US FDA Registered Facility';
-      desc = 'Our manufacturing laboratories are registered under the US FDA Voluntary Cosmetic Registration Program (VCRP) and fully compliant with cGMP 21 CFR Part 700 & 701 regulations. Every formulation includes verified INCI listings, heavy-metal laboratory analysis, stability verification, and full documentation for seamless USA import and distribution.';
-      certBadge = '<img src="assets/certificates/fda.svg" style="height: 60px; margin-bottom: 16px;">';
-    } else if (type === 'iso') {
-      title = 'ISO 9001:2015 Certified';
-      desc = 'Certified international Quality Management System (QMS) ensuring strict batch-to-batch consistency, raw ingredient quarantine testing, cleanroom climate stability, and traceability from active botanical harvest to final container closure.';
-      certBadge = '<img src="assets/certificates/iso.svg" style="height: 60px; margin-bottom: 16px;">';
+    if (type === 'iso') {
+      title = 'ISO 9001:2015 International Certification';
+      desc = 'Certified international quality management standard guaranteeing zero microbial contamination and standardized batch repeatability.';
     } else if (type === 'gmp') {
-      title = 'WHO-GMP Certified Sterile Manufacturing';
-      desc = 'Certified by the World Health Organization for Good Manufacturing Practices. Class 10,000 sterile filling suites, automated HEPA filtration, deionized purified aqua loops, and validated aseptic hygiene protocols.';
-      certBadge = '<img src="assets/certificates/gmp.svg" style="height: 60px; margin-bottom: 16px;">';
-    } else {
-      title = 'Clean Standards & Botanical Safety';
-      desc = 'FSSAI certified food-grade and Ayurvedic safety compliance. Formulated with zero parabens, zero phthalates, zero formaldehydes, and cruelty-free non-animal testing standards.';
-      certBadge = '<img src="assets/certificates/fssai.svg" style="height: 60px; margin-bottom: 16px;">';
+      title = 'WHO-GMP Cleanroom Certification';
+      desc = 'World Health Organization standard Good Manufacturing Practice operating under Grade-D sterile cleanroom standards.';
+    } else if (type === 'fssai') {
+      title = 'Clean, Vegan & Cruelty-Free Compliance';
+      desc = '100% cruelty-free, zero animal testing, paraben-free, sulfate-free options with pure cold-pressed organic botanicals.';
     }
 
     certModalContent.innerHTML = `
-      ${certBadge}
-      <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 10px; color: var(--text-primary);">${title}</h3>
-      <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px;">${desc}</p>
-      <div style="display: flex; gap: 12px; justify-content: center;">
-        <button class="btn-primary-large" onclick="closeCertModal()">
-          Acknowledge & Close
-        </button>
-        <a href="https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Hello ZBM Compliance Team, please share COA and certification sheets.')}" target="_blank" class="btn-secondary-large">
-          <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> Request Full COA Dossier
+      <div style="text-align: center; margin-bottom: 20px;">
+        <i class="fa-solid fa-certificate" style="font-size: 2.8rem; color: var(--accent-gold); margin-bottom: 12px;"></i>
+        <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary);">${title}</h3>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin-top: 8px;">${desc}</p>
+      </div>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button class="btn-primary" onclick="closeCertModal()">Acknowledge & Close</button>
+        <a href="https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Hello ZBM, please share official ' + title + ' verification sheets')}" target="_blank" class="btn-secondary">
+          <i class="fa-brands fa-whatsapp"></i> Request Full PDF Dossier
         </a>
       </div>
     `;
-
     certModal.classList.add('active');
     document.body.style.overflow = 'hidden';
   };
@@ -1779,27 +807,21 @@
   };
 
   // ========================================================================
-  // 12. INITIALIZATION & EVENT BINDINGS
+  // 8. INITIALIZATION & BINDINGS
   // ========================================================================
   function init() {
     initAmbientLayer();
     updateInquiryUI();
+    renderKitCards();
+    setupAudienceFilterPills();
 
-    renderCategoryPills();
-    renderProductCards();
-
-    // Desktop & Mobile Search Synchronization
-    const mobileSearchInput = document.getElementById('mobileSearchInput');
-    const mobileClearSearchBtn = document.getElementById('mobileClearSearchBtn');
-
+    // Search Synchronizer
     function syncSearch(val) {
       if (searchInput && searchInput.value !== val) searchInput.value = val;
       if (mobileSearchInput && mobileSearchInput.value !== val) mobileSearchInput.value = val;
-
       if (clearSearchBtn) clearSearchBtn.style.display = val ? 'block' : 'none';
       if (mobileClearSearchBtn) mobileClearSearchBtn.style.display = val ? 'block' : 'none';
-
-      applyFilters();
+      applyKitFilters();
     }
 
     if (searchInput) {
@@ -1819,6 +841,29 @@
       mobileClearSearchBtn.addEventListener('click', () => {
         syncSearch('');
         mobileSearchInput.focus();
+      });
+    }
+
+    // Drawer Listeners
+    if (openDrawerBtn) openDrawerBtn.addEventListener('click', openInquiryDrawer);
+    if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeInquiryDrawer);
+    if (clearInquiryBtn) clearInquiryBtn.addEventListener('click', clearAllCart);
+
+    // Modal Closers
+    if (closeKitSpecsModalBtn) closeKitSpecsModalBtn.addEventListener('click', closeKitSpecsModal);
+    if (kitSpecsModal) {
+      kitSpecsModal.addEventListener('click', e => {
+        if (e.target === kitSpecsModal) closeKitSpecsModal();
+      });
+    }
+
+    if (closeVisualizerBtn) closeVisualizerBtn.addEventListener('click', closeVisualizer);
+    if (openVisualizerBtn) openVisualizerBtn.addEventListener('click', openVisualizer);
+
+    if (closeCertModalBtn) closeCertModalBtn.addEventListener('click', closeCertModal);
+    if (certModal) {
+      certModal.addEventListener('click', e => {
+        if (e.target === certModal) closeCertModal();
       });
     }
 
@@ -1847,69 +892,16 @@
     if (closeMobileNavBtn) closeMobileNavBtn.addEventListener('click', window.closeMobileNav);
     if (mobileNavBackdrop) mobileNavBackdrop.addEventListener('click', window.closeMobileNav);
 
-    // Filters
-    if (concernFilter) concernFilter.addEventListener('change', applyFilters);
-    if (skinTypeFilter) skinTypeFilter.addEventListener('change', applyFilters);
-    if (sortFilter) sortFilter.addEventListener('change', applyFilters);
-
-    // MOQ Pills
-    moqPills.forEach(pill => {
-      pill.addEventListener('click', () => {
-        moqPills.forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-        currentMoqTier = pill.getAttribute('data-tier');
-        renderProductCards();
-      });
-    });
-
-    // View Toggles
-    if (viewGridBtn) {
-      viewGridBtn.addEventListener('click', () => {
-        viewGridBtn.classList.add('active');
-        if (viewListBtn) viewListBtn.classList.remove('active');
-        currentViewMode = 'categorized';
-        renderProductCards();
-      });
-    }
-
-    if (viewListBtn) {
-      viewListBtn.addEventListener('click', () => {
-        viewListBtn.classList.add('active');
-        if (viewGridBtn) viewGridBtn.classList.remove('active');
-        currentViewMode = 'list';
-        renderProductCards();
-      });
-    }
-
-    // Drawer Listeners
-    if (openDrawerBtn) openDrawerBtn.addEventListener('click', openInquiryDrawer);
-    if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', closeInquiryDrawer);
-    if (clearInquiryBtn) clearInquiryBtn.addEventListener('click', clearAllCart);
-
-    // Close Modals on click outside or Esc
-    if (productModal) {
-      productModal.addEventListener('click', e => {
-        if (e.target === productModal) closeProductModal();
-      });
-    }
-    if (closeModalBtn) closeModalBtn.addEventListener('click', closeProductModal);
-
-    if (certModal) {
-      certModal.addEventListener('click', e => {
-        if (e.target === certModal) closeCertModal();
-      });
-    }
-    if (closeCertModalBtn) closeCertModalBtn.addEventListener('click', closeCertModal);
-
+    // Escape Key
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
-        closeProductModal();
         closeInquiryDrawer();
+        closeKitSpecsModal();
+        closeVisualizer();
         closeCertModal();
+        window.closeMobileNav();
       }
     });
-
-    initVisualizerStudio();
   }
 
   // Run on DOM Ready
