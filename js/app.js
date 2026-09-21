@@ -35,65 +35,181 @@
   const zandraLogoImg = new Image();
   zandraLogoImg.src = 'assets/images/brand/zandra_full_logo.png';
 
-  // Department Categories Mapping (8 Structured Departments)
-  const DEPARTMENTS = [
-    {
-      id: 'celebrity',
-      name: 'Celebrity Luxury Range',
+  // ========================================================================
+  // 8 FLAGSHIP DEPARTMENTS CONFIGURATION (202 Master Formulations)
+  // ========================================================================
+  const DEPARTMENTS_CONFIG = {
+    'celebrity-range': {
+      id: 'celebrity-range',
+      page: 'celebrity-range.html',
+      name: 'Celebrity Range',
+      fullName: 'Celebrity Luxury Range',
       icon: 'fa-crown',
       desc: 'Pharma-grade L-Glutathione, 24K gold flakes, and high-potency celebrity secrets.',
-      filter: p => p.category === 'Celebrity Range'
+      subcategories: [
+        { id: 'all', name: 'All Celebrity Formulations', filter: p => p.category === 'Celebrity Range' },
+        { id: 'celebrity', name: 'Celebrity Range Products', filter: p => p.category === 'Celebrity Range' }
+      ]
     },
-    {
-      id: 'serums',
-      name: 'Facial Serums & Elixirs',
-      icon: 'fa-droplet',
-      desc: 'Micro-molecular active serums in frosted glass dropper packaging with targeted cellular repair.',
-      filter: p => p.category.includes('Serum') && !p.category.includes('Hair')
-    },
-    {
-      id: 'creams',
-      name: 'Face Creams & Restorative Gels',
+    'face-care': {
+      id: 'face-care',
+      page: 'face-care.html',
+      name: 'Face Care',
+      fullName: 'Advanced Dermal Face Care',
       icon: 'fa-spa',
-      desc: 'Dermal barrier restorative creams and soothing aloe gels in heavy-wall frosted jars.',
-      filter: p => (p.category === 'Face Cream' || p.category === 'Face Gel')
+      desc: 'Clinical face washes, gentle cleansers, restorative creams, soothing gels, micro-molecular active serums, brightening packs, and botanical scrubs.',
+      subcategories: [
+        { id: 'all', name: 'All Face Care', filter: p => [
+          'Face Wash', 'Face Cleanser', 'Face Cream', 'Face Gel',
+          'Face Serum: Oil Based-Natural', 'Face Serum Water Based (Non Fragrance)',
+          'Face Pack', 'Face Scrub', 'Eye Care (Non Fragrance)'
+        ].includes(p.category) },
+        { id: 'face-wash', name: 'Face Wash', filter: p => p.category === 'Face Wash' },
+        { id: 'face-cleanser', name: 'Face Cleanser', filter: p => p.category === 'Face Cleanser' },
+        { id: 'face-cream', name: 'Face Cream', filter: p => p.category === 'Face Cream' },
+        { id: 'face-gel', name: 'Face Gel', filter: p => p.category === 'Face Gel' },
+        { id: 'face-serum-oil', name: 'Face Serum: Oil Based-Natural', filter: p => p.category === 'Face Serum: Oil Based-Natural' },
+        { id: 'face-serum-water', name: 'Face Serum Water Based (Non Fragrance)', filter: p => p.category === 'Face Serum Water Based (Non Fragrance)' },
+        { id: 'face-pack', name: 'Face Pack', filter: p => p.category === 'Face Pack' },
+        { id: 'face-scrub', name: 'Face Scrub', filter: p => p.category === 'Face Scrub' },
+        { id: 'eye-care', name: 'Eye Care (Non Fragrance)', filter: p => p.category === 'Eye Care (Non Fragrance)' }
+      ]
     },
-    {
-      id: 'cleansers',
-      name: 'Face Cleansers, Scrubs & Packs',
-      icon: 'fa-pump-soap',
-      desc: 'pH-balanced purifying cleansers and exfoliating polishes in matte PCR squeeze tubes.',
-      filter: p => (p.category === 'Face Wash' || p.category.includes('Scrub') || p.category.includes('Cleanser') || p.category.includes('Pack'))
-    },
-    {
-      id: 'soaps',
-      name: 'Artisanal Botanical Soaps',
+    'body-care': {
+      id: 'body-care',
+      page: 'body-care.html',
+      name: 'Body Care',
+      fullName: 'Botanical & Mineral Body Care',
       icon: 'fa-soap',
-      desc: 'Cold-processed 45-day cured botanical bathing bars wrapped in zero-waste linen paper bands.',
-      filter: p => p.category === 'Soaps' || p.name.toLowerCase().includes('bathing bar')
+      desc: 'Cold-processed botanical artisanal soaps, hydrating body lotions, exfoliating body scrubs, foot crack balms, intimate care, and mineral bath salts.',
+      subcategories: [
+        { id: 'all', name: 'All Body Care', filter: p => [
+          'Soaps', 'Body Lotion', 'Body Scrub', 'Foot Care', 'Inti Care', 'Bath Salt'
+        ].includes(p.category) },
+        { id: 'soaps', name: 'Soaps', filter: p => p.category === 'Soaps' },
+        { id: 'body-lotion', name: 'Body Lotion', filter: p => p.category === 'Body Lotion' },
+        { id: 'body-scrub', name: 'Body Scrub', filter: p => p.category === 'Body Scrub' },
+        { id: 'foot-care', name: 'Foot Care', filter: p => p.category === 'Foot Care' },
+        { id: 'inti-care', name: 'Inti Care', filter: p => p.category === 'Inti Care' },
+        { id: 'bath-salt', name: 'Bath Salt', filter: p => p.category === 'Bath Salt' }
+      ]
     },
-    {
-      id: 'haircare',
-      name: 'Hair Oils, Shampoos & Conditioners',
+    'hair-care': {
+      id: 'hair-care',
+      page: 'hair-care.html',
+      name: 'Hair Care',
+      fullName: 'Trichology Scalp & Hair Formulations',
       icon: 'fa-wind',
-      desc: 'Sulfate-free clarified shampoos, follicle root oils, and hair conditioning emulsions.',
-      filter: p => (p.category.includes('Hair') || p.category === 'Shampoo' || p.category === 'Hair Conditioner')
+      desc: 'Non-fragrance herbal hair oils, sulfate-free clarified shampoos, restorative conditioners, herbal hair dye, oil & water serums, hair packs, rich butters, and styling gels.',
+      subcategories: [
+        { id: 'all', name: 'All Hair Care', filter: p => [
+          'Hair Oil (Non Fragrance)', 'Shampoo', 'Hair Conditioner', 'Hair Dye (Non Fragrance)',
+          'Hair Serum (Oil Based)', 'Hair Serum (Water Based)', 'Hair Pack', 'Hair Butter', 'Hair Gel'
+        ].includes(p.category) },
+        { id: 'hair-oil', name: 'Hair Oil (Non Fragrance)', filter: p => p.category === 'Hair Oil (Non Fragrance)' },
+        { id: 'shampoo', name: 'Shampoo', filter: p => p.category === 'Shampoo' },
+        { id: 'hair-conditioner', name: 'Hair Conditioner', filter: p => p.category === 'Hair Conditioner' },
+        { id: 'hair-dye', name: 'Hair Dye (Non Fragrance)', filter: p => p.category === 'Hair Dye (Non Fragrance)' },
+        { id: 'hair-serum-oil', name: 'Hair Serum (Oil Based)', filter: p => p.category === 'Hair Serum (Oil Based)' },
+        { id: 'hair-serum-water', name: 'Hair Serum (Water Based)', filter: p => p.category === 'Hair Serum (Water Based)' },
+        { id: 'hair-pack', name: 'Hair Pack', filter: p => p.category === 'Hair Pack' },
+        { id: 'hair-butter', name: 'Hair Butter', filter: p => p.category === 'Hair Butter' },
+        { id: 'hair-gel', name: 'Hair Gel', filter: p => p.category === 'Hair Gel' }
+      ]
     },
-    {
-      id: 'bodycare',
-      name: 'Body Lotions, Shimmers & Bath Salts',
-      icon: 'fa-bottle-droplet',
-      desc: 'Nourishing body moisturizers, shimmer lotions, and therapeutic mineral bath salts.',
-      filter: p => (p.category === 'Body Lotion' || p.category.includes('Bath Salt') || p.category.includes('Body Scrub'))
+    'lip-care': {
+      id: 'lip-care',
+      page: 'lip-care.html',
+      name: 'Lip Care',
+      fullName: 'Nourishing & Tinted Lip Formulations',
+      icon: 'fa-kiss-wink-heart',
+      desc: 'Targeted lip lightening serums, deeply moisturizing beeswax & beetroot balms, and exfoliating sugarcane lip scrubs.',
+      subcategories: [
+        { id: 'all', name: 'All Lip Care', filter: p => [
+          'Lip Care (Non Fragrance)', 'Lip Balm', 'Lip Scrub'
+        ].includes(p.category) },
+        { id: 'lip-care-serum', name: 'Lip Care (Non Fragrance)', filter: p => p.category === 'Lip Care (Non Fragrance)' },
+        { id: 'lip-balm', name: 'Lip Balm', filter: p => p.category === 'Lip Balm' },
+        { id: 'lip-scrub', name: 'Lip Scrub', filter: p => p.category === 'Lip Scrub' }
+      ]
     },
-    {
-      id: 'specialized',
-      name: 'Specialized Clinical Formulations',
+    'sunscreen': {
+      id: 'sunscreen',
+      page: 'sunscreen.html',
+      name: 'Sunscreen',
+      fullName: 'Broad Spectrum SPF 50 Dermal Shield',
+      icon: 'fa-sun',
+      desc: 'Mineral and organic broad-spectrum SPF 50 sunscreen formulation with zero white-cast and non-fragrance finish.',
+      subcategories: [
+        { id: 'all', name: 'All Sunscreen', filter: p => p.category === 'Sunscreen (Non Fragrance)' },
+        { id: 'sunscreen-spf50', name: 'Sunscreen (Non Fragrance)', filter: p => p.category === 'Sunscreen (Non Fragrance)' }
+      ]
+    },
+    'wax-powder': {
+      id: 'wax-powder',
+      page: 'wax-powder.html',
+      name: 'Wax Powder',
+      fullName: 'Herbal Hair Removal Wax Powders',
+      icon: 'fa-feather',
+      desc: 'Pain-free, natural herbal waxing formulations for gentle facial hair removal and whole body depilation.',
+      subcategories: [
+        { id: 'all', name: 'All Wax Powders', filter: p => p.category === 'Wax Powder' },
+        { id: 'facial-wax', name: 'Facial Wax Powder', filter: p => p.category === 'Wax Powder' && p.name.toLowerCase().includes('facial') },
+        { id: 'hair-wax', name: 'Hair / Body Wax Powder', filter: p => p.category === 'Wax Powder' && !p.name.toLowerCase().includes('facial') }
+      ]
+    },
+    'special-products': {
+      id: 'special-products',
+      page: 'special-products.html',
+      name: 'Special Products',
+      fullName: 'Special Clinical Formulations & Balms',
       icon: 'fa-wand-magic-sparkles',
-      desc: 'Specialized dermal balms, dark circle serums, lip treatments, kajal, and sunscreens.',
-      filter: p => (p.category.includes('Special') || p.category.includes('Eye') || p.category.includes('Lip') || p.category.includes('Sunscreen') || p.category.includes('Foot') || p.category.includes('Inti') || p.category.includes('Wax') || p.category.includes('Kajal'))
+      desc: 'Feminine hygiene napkins, dark neck & underarm treatments, rash balms, shimmer lotions, Moroccan Nila collection, day creams, Bobba creams, and Herbal Kajal.',
+      subcategories: [
+        { id: 'all', name: 'All Special Formulations (37)', filter: p => p.category === 'Special Products' || p.category === 'Herbal Kajal' },
+        { id: 'napkins', name: 'Sanitary Napkins (L, XL, XXL)', filter: p => p.name.includes('NAPKIN') },
+        { id: 'underarm', name: 'Dark Neck & Underarm Series', filter: p => p.name.includes('Dark neck') },
+        { id: 'rash-care', name: 'Rash Free Series', filter: p => p.name.includes('Rash free') },
+        { id: 'moroccan-nila', name: 'Moroccan Nila Collection', filter: p => p.name.includes('Moroccan Nila') },
+        { id: 'shimmer', name: 'Shimmer & Glow Series', filter: p => p.name.includes('Shimmer') },
+        { id: 'face-gels-creams', name: 'Specialty Face Gels & Creams', filter: p => ['All in one day cream', '3 in 1 Moisturizer', 'Magic face gel', 'Bridal face cream', 'Bobba cream', 'Turmeric cream'].some(k => p.name.includes(k)) },
+        { id: 'specialty-other', name: 'Balms, Scalp, Beard & Kajal', filter: p => p.name.includes('KAJAL') || p.name.includes('scalp lotion') || p.name.includes('Peel off') || p.name.includes('Themal') || p.name.includes('Beard') || p.name.includes('Men lip') || p.name.includes('Cover up') || p.name.includes('Rosemary hair spray') || p.name.includes('Rose water') || p.name.includes('Golden tan') }
+      ]
     }
-  ];
+  };
+
+  // Convert to Array for easy iteration
+  const DEPARTMENTS = Object.keys(DEPARTMENTS_CONFIG).map(k => ({
+    id: k,
+    name: DEPARTMENTS_CONFIG[k].name,
+    fullName: DEPARTMENTS_CONFIG[k].fullName,
+    page: DEPARTMENTS_CONFIG[k].page,
+    icon: DEPARTMENTS_CONFIG[k].icon,
+    desc: DEPARTMENTS_CONFIG[k].desc,
+    filter: DEPARTMENTS_CONFIG[k].subcategories[0].filter
+  }));
+
+  // Detect Active Department Page
+  const activeDeptKey = (function() {
+    const bodyDept = document.body.getAttribute('data-dept');
+    if (bodyDept && DEPARTMENTS_CONFIG[bodyDept]) return bodyDept;
+
+    const path = window.location.pathname.toLowerCase();
+    for (const key of Object.keys(DEPARTMENTS_CONFIG)) {
+      if (path.includes(key) || path.includes(DEPARTMENTS_CONFIG[key].page)) return key;
+    }
+    const params = new URLSearchParams(window.location.search);
+    const qDept = params.get('dept');
+    if (qDept && DEPARTMENTS_CONFIG[qDept]) return qDept;
+
+    return null;
+  })();
+
+  let currentSubcategory = 'all';
+  if (activeDeptKey) {
+    currentCategory = activeDeptKey;
+  }
+
 
   // DOM Elements Cache
   const productsGrid = document.getElementById('productsGrid');
@@ -257,11 +373,44 @@
   }
 
   // ========================================================================
-  // 4. CATEGORY PILLS (8 STRUCTURED DEPARTMENTS)
+  // 4. CATEGORY & SUBCATEGORY PILLS (8 STRUCTURED DEPARTMENTS)
   // ========================================================================
   function renderCategoryPills() {
     if (!categoryBar) return;
 
+    // If on a dedicated Department Page, render that department's subcategories
+    if (activeDeptKey && DEPARTMENTS_CONFIG[activeDeptKey]) {
+      const dept = DEPARTMENTS_CONFIG[activeDeptKey];
+      let html = '';
+
+      dept.subcategories.forEach(sub => {
+        const count = allProducts.filter(sub.filter).length;
+        const isActive = currentSubcategory === sub.id ? 'active' : '';
+        html += `
+          <button class="cat-pill ${isActive}" data-subcat="${sub.id}">
+            <i class="fa-solid ${dept.icon}"></i>
+            <span>${sub.name}</span>
+            <span class="cat-count">${count}</span>
+          </button>
+        `;
+      });
+
+      categoryBar.innerHTML = html;
+
+      categoryBar.querySelectorAll('.cat-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentSubcategory = btn.getAttribute('data-subcat');
+          categoryBar.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          applyFilters();
+        });
+      });
+
+      setupCategoryScrollNavigation();
+      return;
+    }
+
+    // Default: Home Page (index.html) - Render all 8 Flagship Departments
     let html = `
       <button class="cat-pill ${currentCategory === 'all' ? 'active' : ''}" data-cat="all">
         <i class="fa-solid fa-layer-group"></i>
@@ -528,12 +677,55 @@
     if (emptyState) emptyState.style.display = 'none';
     if (visibleCountEl) visibleCountEl.innerText = filteredProducts.length;
 
-    const hasActiveFilters = (searchInput && searchInput.value.trim()) || 
+    const mobileSearchEl = document.getElementById('mobileSearchInput');
+    const hasSearch = (searchInput && searchInput.value.trim()) || (mobileSearchEl && mobileSearchEl.value.trim());
+    const hasActiveFilters = hasSearch || 
                              (concernFilter && concernFilter.value) || 
-                             (skinTypeFilter && skinTypeFilter.value) ||
-                             (currentCategory !== 'all');
+                             (skinTypeFilter && skinTypeFilter.value);
 
-    if (!hasActiveFilters && currentViewMode === 'categorized') {
+    // 1. If on a Dedicated Department Page
+    if (activeDeptKey && DEPARTMENTS_CONFIG[activeDeptKey]) {
+      const dept = DEPARTMENTS_CONFIG[activeDeptKey];
+      if (!hasActiveFilters && currentSubcategory === 'all' && dept.subcategories.length > 2) {
+        let subcatHtml = '';
+        // Skip index 0 ('all') to render each subcategory section with header
+        dept.subcategories.slice(1).forEach(sub => {
+          const subProducts = filteredProducts.filter(sub.filter);
+          if (subProducts.length === 0) return;
+
+          subcatHtml += `
+            <section class="department-section" id="subcat-${sub.id}">
+              <div class="department-header">
+                <div class="department-header-left">
+                  <div class="department-badge">
+                    <i class="fa-solid ${dept.icon}"></i>
+                    <span>${sub.name}</span>
+                  </div>
+                  <h3 class="department-title">${sub.name}</h3>
+                </div>
+                <div class="department-header-right">
+                  <span class="department-count-badge">${subProducts.length} Formulations</span>
+                  <span class="badge-free-shipping-tag"><i class="fa-solid fa-truck-fast"></i> From 1 pc (No MOQ)</span>
+                </div>
+              </div>
+
+              <div class="products-grid department-grid">
+                ${subProducts.map(renderProductCardHtml).join('')}
+              </div>
+            </section>
+          `;
+        });
+        productsGrid.innerHTML = subcatHtml;
+      } else {
+        productsGrid.innerHTML = filteredProducts.map(renderProductCardHtml).join('');
+      }
+      attach3DCardTilt();
+      return;
+    }
+
+    // 2. If on Main Home Portal (index.html)
+    const isFilteredHome = hasActiveFilters || (currentCategory !== 'all');
+    if (!isFilteredHome && currentViewMode === 'categorized') {
       let categorizedHtml = '';
 
       DEPARTMENTS.forEach(dept => {
@@ -551,9 +743,11 @@
                 <h3 class="department-title">${dept.name}</h3>
                 <p class="department-desc">${dept.desc}</p>
               </div>
-              <div class="department-header-right">
+              <div class="department-header-right" style="display: flex; align-items: center; gap: 10px;">
                 <span class="department-count-badge">${deptProducts.length} Formulations</span>
-                <span class="badge-free-shipping-tag"><i class="fa-solid fa-truck-fast"></i> Free Shipping on $150+</span>
+                <a href="${dept.page}" class="btn-secondary-small" style="text-decoration: none; font-size: 0.76rem; padding: 5px 12px; border-radius: var(--radius-full); background: #FFFFFF; border: 1px solid var(--border-medium); font-weight: 700; color: var(--accent-gold-dark);">
+                  View Department Page <i class="fa-solid fa-arrow-right" style="font-size: 0.7rem; margin-left: 4px;"></i>
+                </a>
               </div>
             </div>
 
@@ -621,17 +815,30 @@
   function applyFilters() {
     let list = [...allProducts];
 
-    // Department Filter
-    if (currentCategory !== 'all') {
+    // 1. Department & Subcategory Scope
+    if (activeDeptKey && DEPARTMENTS_CONFIG[activeDeptKey]) {
+      const dept = DEPARTMENTS_CONFIG[activeDeptKey];
+      if (currentSubcategory === 'all') {
+        list = list.filter(dept.subcategories[0].filter);
+      } else {
+        const sub = dept.subcategories.find(s => s.id === currentSubcategory);
+        if (sub) list = list.filter(sub.filter);
+        else list = list.filter(dept.subcategories[0].filter);
+      }
+    } else if (currentCategory !== 'all') {
       const dept = DEPARTMENTS.find(d => d.id === currentCategory);
       if (dept) {
         list = list.filter(dept.filter);
       }
     }
 
-    // Search Query
-    if (searchInput && searchInput.value.trim() !== '') {
-      const q = searchInput.value.trim().toLowerCase();
+    // 2. Search Query (Synchronized between desktop and mobile)
+    const mobileSearchInputEl = document.getElementById('mobileSearchInput');
+    const searchVal = (searchInput && searchInput.value.trim()) || 
+                      (mobileSearchInputEl && mobileSearchInputEl.value.trim()) || '';
+
+    if (searchVal !== '') {
+      const q = searchVal.toLowerCase();
       list = list.filter(p => 
         p.name.toLowerCase().includes(q) ||
         (p.concern && p.concern.toLowerCase().includes(q)) ||
@@ -643,19 +850,19 @@
       );
     }
 
-    // Concern Filter
+    // 3. Concern Filter
     if (concernFilter && concernFilter.value !== '') {
       const cVal = concernFilter.value.toLowerCase();
       list = list.filter(p => p.concern && p.concern.toLowerCase().includes(cVal));
     }
 
-    // Skin/Hair Type Filter
+    // 4. Skin/Hair Type Filter
     if (skinTypeFilter && skinTypeFilter.value !== '') {
       const sVal = skinTypeFilter.value.toLowerCase();
       list = list.filter(p => p.skinType && p.skinType.toLowerCase().includes(sVal));
     }
 
-    // Sort
+    // 5. Sort
     if (sortFilter) {
       const sortVal = sortFilter.value;
       if (sortVal === 'price-asc') {
@@ -1581,20 +1788,66 @@
     renderCategoryPills();
     renderProductCards();
 
-    // Search & Filters
+    // Desktop & Mobile Search Synchronization
+    const mobileSearchInput = document.getElementById('mobileSearchInput');
+    const mobileClearSearchBtn = document.getElementById('mobileClearSearchBtn');
+
+    function syncSearch(val) {
+      if (searchInput && searchInput.value !== val) searchInput.value = val;
+      if (mobileSearchInput && mobileSearchInput.value !== val) mobileSearchInput.value = val;
+
+      if (clearSearchBtn) clearSearchBtn.style.display = val ? 'block' : 'none';
+      if (mobileClearSearchBtn) mobileClearSearchBtn.style.display = val ? 'block' : 'none';
+
+      applyFilters();
+    }
+
     if (searchInput) {
-      searchInput.addEventListener('input', () => {
-        if (clearSearchBtn) clearSearchBtn.style.display = searchInput.value ? 'block' : 'none';
-        applyFilters();
-      });
+      searchInput.addEventListener('input', e => syncSearch(e.target.value));
     }
     if (clearSearchBtn) {
       clearSearchBtn.addEventListener('click', () => {
-        searchInput.value = '';
-        clearSearchBtn.style.display = 'none';
-        applyFilters();
+        syncSearch('');
+        searchInput.focus();
       });
     }
+
+    if (mobileSearchInput) {
+      mobileSearchInput.addEventListener('input', e => syncSearch(e.target.value));
+    }
+    if (mobileClearSearchBtn) {
+      mobileClearSearchBtn.addEventListener('click', () => {
+        syncSearch('');
+        mobileSearchInput.focus();
+      });
+    }
+
+    // Mobile Navigation Drawer Controls
+    window.openMobileNav = function() {
+      const drawer = document.getElementById('mobileNavDrawer');
+      const backdrop = document.getElementById('mobileNavBackdrop');
+      if (drawer) drawer.classList.add('open');
+      if (backdrop) backdrop.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.closeMobileNav = function() {
+      const drawer = document.getElementById('mobileNavDrawer');
+      const backdrop = document.getElementById('mobileNavBackdrop');
+      if (drawer) drawer.classList.remove('open');
+      if (backdrop) backdrop.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    const openMobileNavBtn = document.getElementById('openMobileNavBtn');
+    const closeMobileNavBtn = document.getElementById('closeMobileNavBtn');
+    const mobileNavBackdrop = document.getElementById('mobileNavBackdrop');
+
+    if (openMobileNavBtn) openMobileNavBtn.addEventListener('click', window.openMobileNav);
+    if (closeMobileNavBtn) closeMobileNavBtn.addEventListener('click', window.closeMobileNav);
+    if (mobileNavBackdrop) mobileNavBackdrop.addEventListener('click', window.closeMobileNav);
+
+    // Filters
     if (concernFilter) concernFilter.addEventListener('change', applyFilters);
     if (skinTypeFilter) skinTypeFilter.addEventListener('change', applyFilters);
     if (sortFilter) sortFilter.addEventListener('change', applyFilters);

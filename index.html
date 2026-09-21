@@ -49,7 +49,50 @@
         </div>
       </div>
 
-      <!-- Quick Search Bar -->
+      <!-- Desktop Departments Dropdown Navigation -->
+      <div class="departments-dropdown-container desktop-only">
+        <button class="departments-dropdown-trigger">
+          <i class="fa-solid fa-grid-2"></i>
+          <span>Departments</span>
+          <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem; opacity: 0.6;"></i>
+        </button>
+        <div class="departments-dropdown-menu">
+          <a href="celebrity-range.html" class="departments-dropdown-item">
+            <span><i class="fa-solid fa-crown"></i> Celebrity Range</span>
+            <span class="nav-badge">13</span>
+          </a>
+          <a href="face-care.html" class="departments-dropdown-item">
+            <span><i class="fa-solid fa-spa"></i> Face Care</span>
+            <span class="nav-badge">53</span>
+          </a>
+          <a href="body-care.html" class="departments-dropdown-item">
+            <span><i class="fa-solid fa-soap"></i> Body Care</span>
+            <span class="nav-badge">36</span>
+          </a>
+          <a href="hair-care.html" class="departments-dropdown-item">
+            <span><i class="fa-solid fa-wind"></i> Hair Care</span>
+            <span class="nav-badge">49</span>
+          </a>
+          <a href="lip-care.html" class="departments-dropdown-item">
+            <span><i class="fa-solid fa-kiss-wink-heart"></i> Lip Care</span>
+            <span class="nav-badge">11</span>
+          </a>
+          <a href="sunscreen.html" class="departments-dropdown-item">
+            <span><i class="fa-solid fa-sun"></i> Sunscreen</span>
+            <span class="nav-badge">1</span>
+          </a>
+          <a href="wax-powder.html" class="departments-dropdown-item">
+            <span><i class="fa-solid fa-feather"></i> Wax Powder</span>
+            <span class="nav-badge">2</span>
+          </a>
+          <a href="special-products.html" class="departments-dropdown-item">
+            <span><i class="fa-solid fa-wand-magic-sparkles"></i> Special Products</span>
+            <span class="nav-badge">37</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Search Bar (Desktop) -->
       <div class="search-container">
         <i class="fa-solid fa-magnifying-glass search-icon"></i>
         <input 
@@ -66,8 +109,8 @@
 
       <!-- Header Action Buttons -->
       <div class="header-actions">
-        <!-- Direct WhatsApp DM Button -->
-        <a href="https://wa.me/919344087944?text=Hello%20Zandra%20Beauty%20Matrix%2C%20I%20am%20interested%20in%20private%20label%20manufacturing" target="_blank" class="btn-header whatsapp-dm-btn" title="Direct Message on WhatsApp (ZBM)">
+        <!-- Direct WhatsApp DM Button (Desktop) -->
+        <a href="https://wa.me/919344087944?text=Hello%20Zandra%20Beauty%20Matrix%2C%20I%20am%20interested%20in%20private%20label%20manufacturing" target="_blank" class="btn-header whatsapp-dm-btn desktop-only" title="Direct Message on WhatsApp (ZBM)">
           <i class="fa-brands fa-whatsapp" style="color: #25D366; font-size: 1.15rem;"></i>
           <span>DM: ZBM</span>
         </a>
@@ -76,25 +119,98 @@
         <div id="authHeaderContainer" class="auth-header-container">
           <button id="openAuthModalBtn" class="btn-header auth-trigger-btn" onclick="openAuthModal('signin')" title="Sign In or Register B2B Account">
             <i class="fa-regular fa-circle-user" style="color: var(--accent-gold); font-size: 1.15rem;"></i>
-            <span>Sign In</span>
+            <span class="desktop-text">Sign In</span>
           </button>
         </div>
 
         <!-- 3D Brand Studio Trigger -->
-        <button id="openVisualizerBtn" class="btn-header" title="Open 3D Brand Studio & Preview Your Brand">
+        <button id="openVisualizerBtn" class="btn-header desktop-only" title="Open 3D Brand Studio & Preview Your Brand">
           <i class="fa-solid fa-cube" style="color: var(--accent-gold);"></i>
-          <span>3D Brand Studio</span>
+          <span>3D Studio</span>
         </button>
 
         <!-- Sample Basket Trigger -->
         <button id="openDrawerBtn" class="btn-header primary" title="View Sample Basket & WhatsApp Order">
           <i class="fa-solid fa-bag-shopping"></i>
-          <span>Sample Basket</span>
+          <span class="desktop-text">Basket</span>
           <span id="inquiryCount" class="cart-count-badge">0</span>
+        </button>
+
+        <!-- Mobile Hamburger Menu Button -->
+        <button id="openMobileNavBtn" class="btn-header mobile-menu-btn" title="Open Menu">
+          <i class="fa-solid fa-bars"></i>
         </button>
       </div>
     </div>
   </header>
+
+  <!-- Dedicated Mobile Search Bar (Touch-Optimized) -->
+  <div class="mobile-search-bar" id="mobileSearchBar" style="display: none;">
+    <div class="mobile-search-inner">
+      <i class="fa-solid fa-magnifying-glass mobile-search-icon"></i>
+      <input 
+        type="text" 
+        id="mobileSearchInput" 
+        class="mobile-search-input" 
+        placeholder="Search 202 formulations by name, active..." 
+        autocomplete="off"
+      >
+      <button id="mobileClearSearchBtn" class="mobile-clear-search-btn" title="Clear Search">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation Slide-Over Drawer -->
+  <div class="mobile-nav-backdrop" id="mobileNavBackdrop"></div>
+  <aside class="mobile-nav-drawer" id="mobileNavDrawer">
+    <div class="mobile-nav-header">
+      <div class="brand">
+        <img src="assets/images/brand/zbm_emblem_logo.png" alt="ZBM Logo" class="brand-logo-img">
+        <div class="brand-text">
+          <span class="brand-title">ZANDRA</span>
+          <span class="brand-subtitle">BEAUTY MATRIX</span>
+        </div>
+      </div>
+      <button class="mobile-nav-close" id="closeMobileNavBtn" title="Close Menu">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="mobile-nav-body">
+      <div class="mobile-nav-section-title">DEPARTMENTS & CATALOGUES</div>
+      <ul class="mobile-nav-links">
+        <li><a href="index.html" class="mobile-nav-link active"><i class="fa-solid fa-layer-group"></i><span>All Master Formulations</span><span class="nav-badge">202</span></a></li>
+        <li><a href="celebrity-range.html" class="mobile-nav-link"><i class="fa-solid fa-crown"></i><span>Celebrity Range</span><span class="nav-badge">13</span></a></li>
+        <li><a href="face-care.html" class="mobile-nav-link"><i class="fa-solid fa-spa"></i><span>Face Care</span><span class="nav-badge">53</span></a></li>
+        <li><a href="body-care.html" class="mobile-nav-link"><i class="fa-solid fa-soap"></i><span>Body Care</span><span class="nav-badge">36</span></a></li>
+        <li><a href="hair-care.html" class="mobile-nav-link"><i class="fa-solid fa-wind"></i><span>Hair Care</span><span class="nav-badge">49</span></a></li>
+        <li><a href="lip-care.html" class="mobile-nav-link"><i class="fa-solid fa-kiss-wink-heart"></i><span>Lip Care</span><span class="nav-badge">11</span></a></li>
+        <li><a href="sunscreen.html" class="mobile-nav-link"><i class="fa-solid fa-sun"></i><span>Sunscreen</span><span class="nav-badge">1</span></a></li>
+        <li><a href="wax-powder.html" class="mobile-nav-link"><i class="fa-solid fa-feather"></i><span>Wax Powder</span><span class="nav-badge">2</span></a></li>
+        <li><a href="special-products.html" class="mobile-nav-link"><i class="fa-solid fa-wand-magic-sparkles"></i><span>Special Products</span><span class="nav-badge">37</span></a></li>
+      </ul>
+
+      <div class="mobile-nav-section-title">QUICK ACTIONS</div>
+      <div class="mobile-nav-actions">
+        <button class="btn-mobile-nav-action" onclick="openInquiryDrawer(); closeMobileNav();">
+          <i class="fa-solid fa-bag-shopping" style="color: var(--accent-gold);"></i>
+          <span>Open Sample Basket</span>
+        </button>
+        <button class="btn-mobile-nav-action" onclick="openVisualizer(); closeMobileNav();">
+          <i class="fa-solid fa-cube" style="color: var(--accent-gold);"></i>
+          <span>3D Brand Studio</span>
+        </button>
+        <button class="btn-mobile-nav-action" onclick="openAuthModal('signin'); closeMobileNav();">
+          <i class="fa-regular fa-circle-user" style="color: var(--accent-gold);"></i>
+          <span>B2B Client Sign In</span>
+        </button>
+        <a href="https://wa.me/919344087944?text=Hello%20ZBM%20Team%2C%20I%20want%20to%20place%20an%20order" target="_blank" class="btn-mobile-nav-whatsapp">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>Direct WhatsApp DM (ZBM)</span>
+        </a>
+      </div>
+    </div>
+  </aside>
 
   <!-- Hero Section: Anti-Gravity Floating Visuals & Value Props -->
   <section class="hero-section">
@@ -217,6 +333,146 @@
           <p>FSSAI organic herbal safety, zero parabens, 100% vegan</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- 8 Flagship Departments Showcase Grid -->
+  <section class="dept-showcase-section">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 18px;">
+      <div>
+        <h2 class="dept-showcase-title">8 Flagship Formulations Departments</h2>
+        <p class="dept-showcase-subtitle">Explore dedicated department pages with full laboratory specifications, subcategories, and tier pricing.</p>
+      </div>
+    </div>
+
+    <div class="dept-cards-grid">
+      <!-- 1. Celebrity Range -->
+      <a href="celebrity-range.html" class="dept-showcase-card">
+        <div>
+          <div class="dept-card-top">
+            <div class="dept-card-icon"><i class="fa-solid fa-crown"></i></div>
+            <span class="dept-card-count">13 Formulations</span>
+          </div>
+          <h3 class="dept-card-name">Celebrity Range</h3>
+          <p class="dept-card-desc">Pharma-grade Glutathione, 24K gold elixirs, and red-carpet night creams.</p>
+        </div>
+        <div class="dept-card-arrow">
+          <span>Open Department</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- 2. Face Care -->
+      <a href="face-care.html" class="dept-showcase-card">
+        <div>
+          <div class="dept-card-top">
+            <div class="dept-card-icon"><i class="fa-solid fa-spa"></i></div>
+            <span class="dept-card-count">53 Formulations</span>
+          </div>
+          <h3 class="dept-card-name">Face Care</h3>
+          <p class="dept-card-desc">Face washes, cleansers, creams, gels, oil & water serums, packs, scrubs, and eye care.</p>
+        </div>
+        <div class="dept-card-arrow">
+          <span>Open Department</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- 3. Body Care -->
+      <a href="body-care.html" class="dept-showcase-card">
+        <div>
+          <div class="dept-card-top">
+            <div class="dept-card-icon"><i class="fa-solid fa-soap"></i></div>
+            <span class="dept-card-count">36 Formulations</span>
+          </div>
+          <h3 class="dept-card-name">Body Care</h3>
+          <p class="dept-card-desc">Artisanal 45-day botanical soaps, nourishing body lotions, scrubs, foot care, and bath salts.</p>
+        </div>
+        <div class="dept-card-arrow">
+          <span>Open Department</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- 4. Hair Care -->
+      <a href="hair-care.html" class="dept-showcase-card">
+        <div>
+          <div class="dept-card-top">
+            <div class="dept-card-icon"><i class="fa-solid fa-wind"></i></div>
+            <span class="dept-card-count">49 Formulations</span>
+          </div>
+          <h3 class="dept-card-name">Hair Care</h3>
+          <p class="dept-card-desc">Herbal hair oils, sulfate-free shampoos, conditioners, dyes, serums, packs, butters & gels.</p>
+        </div>
+        <div class="dept-card-arrow">
+          <span>Open Department</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- 5. Lip Care -->
+      <a href="lip-care.html" class="dept-showcase-card">
+        <div>
+          <div class="dept-card-top">
+            <div class="dept-card-icon"><i class="fa-solid fa-kiss-wink-heart"></i></div>
+            <span class="dept-card-count">11 Formulations</span>
+          </div>
+          <h3 class="dept-card-name">Lip Care</h3>
+          <p class="dept-card-desc">Targeted lip lightening serums, deeply moisturizing beeswax balms, and organic lip scrubs.</p>
+        </div>
+        <div class="dept-card-arrow">
+          <span>Open Department</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- 6. Sunscreen -->
+      <a href="sunscreen.html" class="dept-showcase-card">
+        <div>
+          <div class="dept-card-top">
+            <div class="dept-card-icon"><i class="fa-solid fa-sun"></i></div>
+            <span class="dept-card-count">1 Formulation</span>
+          </div>
+          <h3 class="dept-card-name">Sunscreen</h3>
+          <p class="dept-card-desc">Broad-spectrum SPF 50 non-fragrance dermal shield with zero white-cast finish.</p>
+        </div>
+        <div class="dept-card-arrow">
+          <span>Open Department</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- 7. Wax Powder -->
+      <a href="wax-powder.html" class="dept-showcase-card">
+        <div>
+          <div class="dept-card-top">
+            <div class="dept-card-icon"><i class="fa-solid fa-feather"></i></div>
+            <span class="dept-card-count">2 Formulations</span>
+          </div>
+          <h3 class="dept-card-name">Wax Powder</h3>
+          <p class="dept-card-desc">Pain-free botanical facial hair wax powder and whole body depilation powder.</p>
+        </div>
+        <div class="dept-card-arrow">
+          <span>Open Department</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </a>
+
+      <!-- 8. Special Products -->
+      <a href="special-products.html" class="dept-showcase-card">
+        <div>
+          <div class="dept-card-top">
+            <div class="dept-card-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <span class="dept-card-count">37 Formulations</span>
+          </div>
+          <h3 class="dept-card-name">Special Products</h3>
+          <p class="dept-card-desc">Sanitary napkins, dark neck & underarm care, rash balms, Moroccan Nila series, Bobba creams, & Kajal.</p>
+        </div>
+        <div class="dept-card-arrow">
+          <span>Open Department</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </div>
+      </a>
     </div>
   </section>
 
@@ -732,13 +988,16 @@
       </div>
 
       <div class="footer-col">
-        <h4>Core Categories</h4>
+        <h4>Flagship Departments</h4>
         <ul>
-          <li><a href="#" onclick="filterByCategory('celebrity')">Celebrity Luxury Range</a></li>
-          <li><a href="#" onclick="filterByCategory('serums')">Facial Serums & Elixirs</a></li>
-          <li><a href="#" onclick="filterByCategory('creams')">Face Creams & Gels</a></li>
-          <li><a href="#" onclick="filterByCategory('cleansers')">Cleansers & Scrubs</a></li>
-          <li><a href="#" onclick="filterByCategory('soaps')">Botanical Soaps</a></li>
+          <li><a href="celebrity-range.html">Celebrity Range (13)</a></li>
+          <li><a href="face-care.html">Face Care (53)</a></li>
+          <li><a href="body-care.html">Body Care (36)</a></li>
+          <li><a href="hair-care.html">Hair Care (49)</a></li>
+          <li><a href="lip-care.html">Lip Care (11)</a></li>
+          <li><a href="sunscreen.html">Sunscreen (1)</a></li>
+          <li><a href="wax-powder.html">Wax Powder (2)</a></li>
+          <li><a href="special-products.html">Special Products (37)</a></li>
         </ul>
       </div>
 

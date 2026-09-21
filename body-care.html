@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Botanical & Mineral Body Care | ZANDRA BEAUTY MATRIX (ZBM)</title>
+  
+  <!-- Minimalist Sans-Serif Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Main Anti-Gravity Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- PayPal JavaScript SDK -->
+  <script src="https://www.paypal.com/sdk/js?client-id=BAA-u2yVmXqxnRwv_Rl33gbbYN5xfMek_rB4jBOMr9_GE8tew9ZaUCGhc0iz0T7VXclluMXyk_nASAihrM&currency=USD&components=buttons"></script>
+</head>
+<body data-dept="body-care">
+
+  <!-- Floating Ambient Particles Layer -->
+  <div class="ambient-floating-layer" id="ambientLayer"></div>
+
+  <!-- Top Announcement Bar -->
+  <div class="top-bar">
+    <div class="top-bar-item">
+      <span>✦ ZANDRA BEAUTY MATRIX (ZBM) USA PRIVATE LABEL</span>
+      <span class="dot">•</span>
+      <span>ORDER SAMPLES FROM <strong class="top-bar-highlight">1 PIECE (NO MOQ)</strong></span>
+      <span class="dot">•</span>
+      <span>DIRECT DM / WHATSAPP: <a href="https://wa.me/919344087944" target="_blank" style="color: #DFC090; font-weight: 800; text-decoration: underline;">ZBM</a></span>
+      <span class="dot">•</span>
+      <span>US FDA REGISTERED & WHO-GMP CERTIFIED ✦</span>
+    </div>
+  </div>
+
+  <!-- Main Sticky Minimalist Header -->
+  <header class="header">
+    <div class="header-container">
+      <!-- Brand Logo -->
+      <a href="index.html" class="brand" style="text-decoration: none;">
+        <img src="assets/images/brand/zbm_emblem_logo.png" alt="ZBM Logo" class="brand-logo-img">
+        <div class="brand-text">
+          <span class="brand-title">ZANDRA</span>
+          <span class="brand-subtitle">BEAUTY MATRIX</span>
+        </div>
+      </a>
+
+      <!-- Desktop Departments Dropdown Navigation -->
+      <div class="departments-dropdown-container desktop-only">
+        <button class="departments-dropdown-trigger">
+          <i class="fa-solid fa-grid-2"></i>
+          <span>Departments</span>
+          <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem; opacity: 0.6;"></i>
+        </button>
+        <div class="departments-dropdown-menu">
+          <a href="celebrity-range.html" class="departments-dropdown-item ">
+            <span><i class="fa-solid fa-crown"></i> Celebrity Range</span>
+            <span class="nav-badge">13</span>
+          </a>
+          <a href="face-care.html" class="departments-dropdown-item ">
+            <span><i class="fa-solid fa-spa"></i> Face Care</span>
+            <span class="nav-badge">53</span>
+          </a>
+          <a href="body-care.html" class="departments-dropdown-item active">
+            <span><i class="fa-solid fa-soap"></i> Body Care</span>
+            <span class="nav-badge">36</span>
+          </a>
+          <a href="hair-care.html" class="departments-dropdown-item ">
+            <span><i class="fa-solid fa-wind"></i> Hair Care</span>
+            <span class="nav-badge">49</span>
+          </a>
+          <a href="lip-care.html" class="departments-dropdown-item ">
+            <span><i class="fa-solid fa-kiss-wink-heart"></i> Lip Care</span>
+            <span class="nav-badge">11</span>
+          </a>
+          <a href="sunscreen.html" class="departments-dropdown-item ">
+            <span><i class="fa-solid fa-sun"></i> Sunscreen</span>
+            <span class="nav-badge">1</span>
+          </a>
+          <a href="wax-powder.html" class="departments-dropdown-item ">
+            <span><i class="fa-solid fa-feather"></i> Wax Powder</span>
+            <span class="nav-badge">2</span>
+          </a>
+          <a href="special-products.html" class="departments-dropdown-item ">
+            <span><i class="fa-solid fa-wand-magic-sparkles"></i> Special Products</span>
+            <span class="nav-badge">37</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Quick Search Bar (Desktop) -->
+      <div class="search-container">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Search within Botanical & Mineral Body Care..." 
+          autocomplete="off"
+        >
+        <button id="clearSearchBtn" class="clear-search-btn" title="Clear Search">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Header Action Buttons -->
+      <div class="header-actions">
+        <!-- Direct WhatsApp DM Button (Desktop) -->
+        <a href="https://wa.me/919344087944?text=Hello%20Zandra%20Beauty%20Matrix%2C%20I%20am%20interested%20in%20private%20label%20manufacturing" target="_blank" class="btn-header whatsapp-dm-btn desktop-only" title="Direct Message on WhatsApp (ZBM)">
+          <i class="fa-brands fa-whatsapp" style="color: #25D366; font-size: 1.15rem;"></i>
+          <span>DM: ZBM</span>
+        </a>
+
+        <!-- B2B Client Portal / Sign In Button -->
+        <div id="authHeaderContainer" class="auth-header-container">
+          <button id="openAuthModalBtn" class="btn-header auth-trigger-btn" onclick="openAuthModal('signin')" title="Sign In or Register B2B Account">
+            <i class="fa-regular fa-circle-user" style="color: var(--accent-gold); font-size: 1.15rem;"></i>
+            <span class="desktop-text">Sign In</span>
+          </button>
+        </div>
+
+        <!-- 3D Brand Studio Trigger -->
+        <button id="openVisualizerBtn" class="btn-header desktop-only" title="Open 3D Brand Studio & Preview Your Brand">
+          <i class="fa-solid fa-cube" style="color: var(--accent-gold);"></i>
+          <span>3D Studio</span>
+        </button>
+
+        <!-- Sample Basket Trigger -->
+        <button id="openDrawerBtn" class="btn-header primary" title="View Sample Basket & WhatsApp Order">
+          <i class="fa-solid fa-bag-shopping"></i>
+          <span class="desktop-text">Basket</span>
+          <span id="inquiryCount" class="cart-count-badge">0</span>
+        </button>
+
+        <!-- Mobile Hamburger Menu Button -->
+        <button id="openMobileNavBtn" class="btn-header mobile-menu-btn" title="Open Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dedicated Mobile Search Bar (Touch-Optimized) -->
+  <div class="mobile-search-bar" id="mobileSearchBar" style="display: none;">
+    <div class="mobile-search-inner">
+      <i class="fa-solid fa-magnifying-glass mobile-search-icon"></i>
+      <input 
+        type="text" 
+        id="mobileSearchInput" 
+        class="mobile-search-input" 
+        placeholder="Search Botanical & Mineral Body Care..." 
+        autocomplete="off"
+      >
+      <button id="mobileClearSearchBtn" class="mobile-clear-search-btn" title="Clear Search">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation Slide-Over Drawer -->
+  <div class="mobile-nav-backdrop" id="mobileNavBackdrop"></div>
+  <aside class="mobile-nav-drawer" id="mobileNavDrawer">
+    <div class="mobile-nav-header">
+      <div class="brand">
+        <img src="assets/images/brand/zbm_emblem_logo.png" alt="ZBM Logo" class="brand-logo-img">
+        <div class="brand-text">
+          <span class="brand-title">ZANDRA</span>
+          <span class="brand-subtitle">BEAUTY MATRIX</span>
+        </div>
+      </div>
+      <button class="mobile-nav-close" id="closeMobileNavBtn" title="Close Menu">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="mobile-nav-body">
+      <div class="mobile-nav-section-title">DEPARTMENTS & CATALOGUES</div>
+      <ul class="mobile-nav-links">
+        <li><a href="index.html" class="mobile-nav-link"><i class="fa-solid fa-layer-group"></i><span>All Master Formulations</span><span class="nav-badge">202</span></a></li>
+        <li><a href="celebrity-range.html" class="mobile-nav-link "><i class="fa-solid fa-crown"></i><span>Celebrity Range</span><span class="nav-badge">13</span></a></li>
+        <li><a href="face-care.html" class="mobile-nav-link "><i class="fa-solid fa-spa"></i><span>Face Care</span><span class="nav-badge">53</span></a></li>
+        <li><a href="body-care.html" class="mobile-nav-link active"><i class="fa-solid fa-soap"></i><span>Body Care</span><span class="nav-badge">36</span></a></li>
+        <li><a href="hair-care.html" class="mobile-nav-link "><i class="fa-solid fa-wind"></i><span>Hair Care</span><span class="nav-badge">49</span></a></li>
+        <li><a href="lip-care.html" class="mobile-nav-link "><i class="fa-solid fa-kiss-wink-heart"></i><span>Lip Care</span><span class="nav-badge">11</span></a></li>
+        <li><a href="sunscreen.html" class="mobile-nav-link "><i class="fa-solid fa-sun"></i><span>Sunscreen</span><span class="nav-badge">1</span></a></li>
+        <li><a href="wax-powder.html" class="mobile-nav-link "><i class="fa-solid fa-feather"></i><span>Wax Powder</span><span class="nav-badge">2</span></a></li>
+        <li><a href="special-products.html" class="mobile-nav-link "><i class="fa-solid fa-wand-magic-sparkles"></i><span>Special Products</span><span class="nav-badge">37</span></a></li>
+      </ul>
+
+      <div class="mobile-nav-section-title">QUICK ACTIONS</div>
+      <div class="mobile-nav-actions">
+        <button class="btn-mobile-nav-action" onclick="openInquiryDrawer(); closeMobileNav();">
+          <i class="fa-solid fa-bag-shopping" style="color: var(--accent-gold);"></i>
+          <span>Open Sample Basket</span>
+        </button>
+        <button class="btn-mobile-nav-action" onclick="openVisualizer(); closeMobileNav();">
+          <i class="fa-solid fa-cube" style="color: var(--accent-gold);"></i>
+          <span>3D Brand Studio</span>
+        </button>
+        <button class="btn-mobile-nav-action" onclick="openAuthModal('signin'); closeMobileNav();">
+          <i class="fa-regular fa-circle-user" style="color: var(--accent-gold);"></i>
+          <span>B2B Client Sign In</span>
+        </button>
+        <a href="https://wa.me/919344087944?text=Hello%20ZBM%20Team%2C%20I%20want%20to%20place%20an%20order" target="_blank" class="btn-mobile-nav-whatsapp">
+          <i class="fa-brands fa-whatsapp"></i>
+          <span>Direct WhatsApp DM (ZBM)</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Department Page Hero Banner -->
+  <section class="dept-hero-banner">
+    <div class="dept-hero-inner">
+      <nav class="breadcrumbs-nav">
+        <a href="index.html"><i class="fa-solid fa-house"></i> Home</a>
+        <span class="breadcrumb-sep"><i class="fa-solid fa-chevron-right"></i></span>
+        <span>Departments</span>
+        <span class="breadcrumb-sep"><i class="fa-solid fa-chevron-right"></i></span>
+        <span style="color: #FFFFFF; font-weight: 800;">Botanical & Mineral Body Care</span>
+      </nav>
+
+      <div class="dept-badge">
+        <i class="fa-solid fa-soap"></i>
+        <span>Artisanal & Mineral Care</span>
+      </div>
+
+      <h1 class="dept-hero-title">Botanical & Mineral Body Care</h1>
+      <p class="dept-hero-desc">45-day cured cold-processed botanical artisanal soaps, deeply hydrating body lotions, Himalayan pink bath salts, foot crack restorative balms, intimate care, and exfoliating body polishes.</p>
+
+      <div class="dept-meta-row">
+        <div class="dept-meta-pill" style="background: rgba(223, 192, 144, 0.2); border-color: rgba(223, 192, 144, 0.4); color: #DFC090;">
+          <i class="fa-solid fa-boxes-stacked"></i>
+          <span>36 Master Formulations</span>
+        </div>
+        <div class="dept-meta-pill">
+          <i class="fa-solid fa-box-open" style="color: var(--accent-gold);"></i>
+          <span>Order Samples from 1 pc (No MOQ)</span>
+        </div>
+        <div class="dept-meta-pill">
+          <i class="fa-solid fa-truck-fast" style="color: #25D366;"></i>
+          <span>Free USA & Global Shipping on $150+</span>
+        </div>
+        <div class="dept-meta-pill">
+          <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i>
+          <span>Direct WhatsApp: <a href="https://wa.me/919344087944" target="_blank" style="color: #DFC090; text-decoration: underline;">ZBM</a></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Verifiable Certifications Trust Bar -->
+  <section class="trust-bar-section">
+    <div class="trust-badges-grid">
+      <div class="trust-badge-card" onclick="openCertModal('fda')">
+        <img src="assets/certificates/fda.svg" alt="US FDA Registered" class="trust-badge-icon">
+        <div class="trust-badge-info">
+          <h4>US FDA REGISTERED</h4>
+          <p>cGMP 21 CFR Part 700/701 compliant cosmetic manufacturing</p>
+        </div>
+      </div>
+
+      <div class="trust-badge-card" onclick="openCertModal('iso')">
+        <img src="assets/certificates/iso.svg" alt="ISO 9001:2015" class="trust-badge-icon">
+        <div class="trust-badge-info">
+          <h4>ISO 9001:2015</h4>
+          <p>Certified International Quality Management System</p>
+        </div>
+      </div>
+
+      <div class="trust-badge-card" onclick="openCertModal('gmp')">
+        <img src="assets/certificates/gmp.svg" alt="WHO-GMP Certified" class="trust-badge-icon">
+        <div class="trust-badge-info">
+          <h4>WHO-GMP CERTIFIED</h4>
+          <p>Good Manufacturing Practice certified sterile facilities</p>
+        </div>
+      </div>
+
+      <div class="trust-badge-card" onclick="openCertModal('fssai')">
+        <img src="assets/certificates/fssai.svg" alt="FSSAI & Clean Standards" class="trust-badge-icon">
+        <div class="trust-badge-info">
+          <h4>CLEAN & CRUELTY-FREE</h4>
+          <p>FSSAI organic herbal safety, zero parabens, 100% vegan</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Subcategory Filter Bar -->
+  <div class="category-nav-outer">
+    <button class="cat-scroll-arrow cat-scroll-arrow-left" id="catScrollLeftBtn" title="Scroll Left">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <nav class="category-nav-wrapper" id="categoryNavWrapper">
+      <div id="categoryBar" class="category-bar">
+        <!-- Injected dynamically via JavaScript -->
+      </div>
+    </nav>
+    <button class="cat-scroll-arrow cat-scroll-arrow-right" id="catScrollRightBtn" title="Scroll Right">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+
+  <!-- Catalogue Toolbar & Global MOQ Previewer -->
+  <section class="toolbar-container">
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <div class="results-count">
+          Showing <strong id="visibleCount">...</strong> Master Formulations
+        </div>
+
+        <!-- Concern Filter -->
+        <select id="concernFilter" class="filter-select">
+          <option value="">All Skin & Hair Concerns</option>
+          <option value="pigmentation">Hyperpigmentation & Melasma</option>
+          <option value="acne">Acne & Blemish Clarifying</option>
+          <option value="aging">Anti-Aging & Wrinkles</option>
+          <option value="dullness">Dullness & Glow</option>
+          <option value="hair fall">Hair Fall & Density</option>
+          <option value="dandruff">Dandruff Control</option>
+          <option value="dryness">Dryness & Barrier Repair</option>
+          <option value="tan">Tan Removal & Detan</option>
+        </select>
+
+        <!-- Skin / Hair Type Filter -->
+        <select id="skinTypeFilter" class="filter-select">
+          <option value="">All Skin & Scalp Types</option>
+          <option value="all skin">All Skin Types</option>
+          <option value="sensitive">Sensitive Skin</option>
+          <option value="oily">Oily & Acne-Prone</option>
+          <option value="dry">Dry to Mature</option>
+          <option value="all scalp">All Scalp Types</option>
+          <option value="curly">Curly / Textured Hair</option>
+        </select>
+
+        <!-- Sort Sorter -->
+        <select id="sortFilter" class="filter-select">
+          <option value="id-asc">Sort: Item #</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name-asc">Name: A to Z</option>
+          <option value="margin-desc">Highest Retail Margin %</option>
+        </select>
+      </div>
+
+      <!-- Global MOQ Tier Preview Bar -->
+      <div class="toolbar-right" style="display: flex; align-items: center; gap: 14px;">
+        <div class="moq-global-preview">
+          <span class="moq-preview-label">Preview Tier:</span>
+          <button class="moq-pill-btn active" data-tier="1">1 pc (Sample)</button>
+          <button class="moq-pill-btn" data-tier="50">50 pcs (-20%)</button>
+          <button class="moq-pill-btn" data-tier="250">250 pcs (-35%)</button>
+          <button class="moq-pill-btn" data-tier="500">500+ pcs (-50%)</button>
+          <button class="moq-pill-btn" data-tier="1000">1000+ pcs (-65%)</button>
+        </div>
+
+        <div class="view-toggle">
+          <button id="viewGridBtn" class="view-btn active" title="Grid View">
+            <i class="fa-solid fa-grip"></i>
+          </button>
+          <button id="viewListBtn" class="view-btn" title="Compact List View">
+            <i class="fa-solid fa-list"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Products Grid Showcase -->
+  <main class="catalogue-container">
+    <div id="productsGrid" class="products-grid">
+      <!-- Injected dynamically via JavaScript -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <i class="fa-solid fa-flask-vial"></i>
+      <h3>No matching formulations found</h3>
+      <p>Try clearing your active filters or searching for another keyword or active ingredient.</p>
+      <button class="btn-primary" onclick="resetFilters()">Reset All Filters</button>
+    </div>
+  </main>
+
+  <!-- Persistent Floating Direct Message / WhatsApp Widget -->
+  <a href="https://wa.me/919344087944?text=Hello%20ZBM%20Team%2C%20I%20am%20inquiring%20about%20Botanical%20%26%20Mineral%20Body%20Care%20formulations" target="_blank" class="floating-dm-widget" title="Direct WhatsApp DM (ZBM)">
+    <div class="dm-pulse-ring"></div>
+    <i class="fa-brands fa-whatsapp"></i>
+    <div class="dm-widget-text">
+      <span class="dm-widget-sub">Direct WhatsApp</span>
+      <span class="dm-widget-phone">DM: ZBM</span>
+    </div>
+  </a>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-col brand-col">
+        <img src="assets/images/brand/zandra_full_logo.png" alt="ZANDRA BEAUTY MATRIX" class="footer-brand-logo">
+        <p class="footer-desc">
+          ZANDRA BEAUTY MATRIX (ZBM) is an international turn-key contract manufacturer specializing in high-performance cosmetic formulations, FDA compliance, and white-label supply chain integration.
+        </p>
+        <p style="margin-top: 14px; font-size: 0.82rem; color: #DFC090;">
+          Direct Trade Desk: <a href="https://wa.me/919344087944" target="_blank" style="color: #DFC090; font-weight: 800; text-decoration: underline;">ZBM on WhatsApp</a>
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Flagship Departments</h4>
+        <ul>
+          <li><a href="celebrity-range.html">Celebrity Range (13)</a></li>
+          <li><a href="face-care.html">Face Care (53)</a></li>
+          <li><a href="body-care.html">Body Care (36)</a></li>
+          <li><a href="hair-care.html">Hair Care (49)</a></li>
+          <li><a href="lip-care.html">Lip Care (11)</a></li>
+          <li><a href="sunscreen.html">Sunscreen (1)</a></li>
+          <li><a href="wax-powder.html">Wax Powder (2)</a></li>
+          <li><a href="special-products.html">Special Products (37)</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Compliance & Quality</h4>
+        <ul>
+          <li><a href="javascript:void(0)" onclick="openCertModal('fda')">US FDA Facility 21 CFR</a></li>
+          <li><a href="javascript:void(0)" onclick="openCertModal('iso')">ISO 9001:2015 Standards</a></li>
+          <li><a href="javascript:void(0)" onclick="openCertModal('gmp')">WHO-GMP Cleanrooms</a></li>
+          <li><a href="javascript:void(0)" onclick="openCertModal('fssai')">Clean & Cruelty-Free Vegan</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Private Label Turnkey</h4>
+        <ul>
+          <li><a href="javascript:void(0)" onclick="openVisualizer()">3D Mockup Studio</a></li>
+          <li><a href="javascript:void(0)" onclick="openInquiryDrawer()">Sample Basket (1 pc MOQ)</a></li>
+          <li><a href="javascript:void(0)" onclick="openAuthModal('signin')">B2B Client Portal</a></li>
+          <li><a href="https://wa.me/919344087944" target="_blank">Direct Trade Desk WhatsApp</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-bottom-inner">
+        <p>&copy; 2026 ZANDRA BEAUTY MATRIX (ZBM). All Rights Reserved. Turnkey USA & Global Private Label.</p>
+        <p style="font-size: 0.74rem; color: #8C877E;">
+          Laboratory certified unbranded cosmetics. Batch test certificates, COA, and custom packaging available upon request.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Product Detail & INCI Modal -->
+  <div id="productModal" class="modal-backdrop">
+    <div class="modal-dialog">
+      <button id="closeModalBtn" class="modal-close-btn" title="Close Specification Modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- 3D Brand Mockup Studio Modal -->
+  <div id="visualizerModal" class="modal-backdrop">
+    <div class="modal-dialog visualizer-dialog">
+      <button id="closeVisualizerBtn" class="modal-close-btn" title="Close 3D Studio">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="visualizer-container">
+        <div class="visualizer-header">
+          <div class="visualizer-title-group">
+            <span class="visualizer-badge"><i class="fa-solid fa-cube"></i> Interactive 3D Brand Studio</span>
+            <h2>Preview Your Brand on Master Formulations</h2>
+            <p>Upload your vector logo or PNG emblem to instantly render photorealistic 3D mockups.</p>
+          </div>
+        </div>
+
+        <div class="visualizer-grid">
+          <div class="visualizer-viewport-card">
+            <div class="canvas-wrapper">
+              <canvas id="brandCanvas" width="900" height="900"></canvas>
+            </div>
+            <div class="visualizer-action-bar">
+              <button id="downloadMockupBtn" class="btn-primary-large">
+                <i class="fa-solid fa-download"></i> Download High-Res Mockup (PNG)
+              </button>
+              <button id="resetVisualizerBtn" class="btn-secondary">
+                <i class="fa-solid fa-rotate-left"></i> Reset
+              </button>
+            </div>
+          </div>
+
+          <div class="visualizer-controls-panel">
+            <div class="control-group">
+              <label class="control-label">1. Select Packaging Format</label>
+              <div class="pkg-selector-grid">
+                <button class="pkg-btn active" data-pkg="dropper">Frosted Dropper (30ml)</button>
+                <button class="pkg-btn" data-pkg="jar">Heavy-Wall Jar (50g)</button>
+                <button class="pkg-btn" data-pkg="pump">Airless Treatment Pump (50ml)</button>
+                <button class="pkg-btn" data-pkg="soap">Linen Paper Bathing Bar</button>
+                <button class="pkg-btn" data-pkg="tube">Matte PCR Squeeze Tube (100ml)</button>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label">2. Brand Emblem / Logo Source</label>
+              <div class="logo-source-toggle">
+                <button class="logo-toggle-btn active" data-source="zbm">ZBM Luxury Emblem</button>
+                <button class="logo-toggle-btn" data-source="zandra">Zandra Master Signature</button>
+                <button class="logo-toggle-btn" data-source="custom">Upload Your Brand Logo</button>
+              </div>
+              <div id="customUploadContainer" class="custom-upload-box" style="display: none; margin-top: 10px;">
+                <input type="file" id="brandLogoInput" accept="image/png, image/jpeg, image/svg+xml">
+                <span style="font-size: 0.75rem; color: var(--text-dim); display: block; margin-top: 4px;">Recommended: Transparent PNG (min 500x500px)</span>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label">3. Ambient Formulation Particles</label>
+              <div class="effects-pill-row">
+                <button class="effect-pill-btn active" data-effect="petals">Botanical Petals</button>
+                <button class="effect-pill-btn" data-effect="gold">24K Gold Flakes</button>
+                <button class="effect-pill-btn" data-effect="bubbles">Active Bubbles</button>
+                <button class="effect-pill-btn" data-effect="none">Studio Minimal</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- B2B Single-Account Auth Modal -->
+  <div id="authModal" class="modal-backdrop">
+    <div class="modal-dialog auth-dialog" style="max-width: 440px;">
+      <button id="closeAuthModalBtn" class="modal-close-btn" onclick="closeAuthModal()" title="Close Portal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="auth-modal-header" style="text-align: center; margin-bottom: 20px;">
+        <img src="assets/images/brand/zbm_emblem_logo.png" alt="ZBM" style="height: 38px; margin-bottom: 10px;">
+        <h3 id="authModalTitle" style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">B2B Client Portal</h3>
+        <p id="authModalSubtitle" style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4;">Access wholesale volume pricing, sample orders & direct invoices.</p>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="auth-tabs-nav">
+        <button id="tabSignInBtn" class="auth-tab-btn active" onclick="switchAuthTab('signin')">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In
+        </button>
+        <button id="tabSignUpBtn" class="auth-tab-btn" onclick="switchAuthTab('signup')">
+          <i class="fa-solid fa-user-plus"></i> Create Account
+        </button>
+      </div>
+
+      <div id="authAlertBox" class="auth-alert" style="display: none; padding: 10px 14px; border-radius: var(--radius-xs); font-size: 0.82rem; margin-bottom: 14px; font-weight: 600;"></div>
+
+      <!-- Sign In Form -->
+      <form id="signInForm" onsubmit="handleSignInSubmit(event)">
+        <div class="auth-field" style="margin-bottom: 14px;">
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 5px;">Business Email</label>
+          <div style="position: relative;">
+            <i class="fa-solid fa-envelope" style="position: absolute; left: 14px; top: 12px; color: var(--text-dim); font-size: 0.88rem;"></i>
+            <input type="email" id="signInEmail" required placeholder="buyer@yourbrand.com" style="width: 100%; padding: 10px 14px 10px 38px; border: 1px solid var(--border-medium); border-radius: var(--radius-xs); font-size: 0.88rem; outline: none;">
+          </div>
+        </div>
+
+        <div class="auth-field" style="margin-bottom: 18px;">
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 5px;">Password</label>
+          <div style="position: relative; display: flex; align-items: center; border: 1px solid var(--border-medium); border-radius: var(--radius-xs); background: #FFFFFF;">
+            <i class="fa-solid fa-lock" style="padding-left: 14px; color: var(--text-dim); font-size: 0.88rem;"></i>
+            <input type="password" id="signInPassword" required placeholder="Enter password" style="width: 100%; padding: 10px 10px 10px 12px; border: none; outline: none; font-size: 0.88rem;">
+            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('signInPassword', this)" title="Show/Hide Password">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="signInSubmitBtn" class="btn-primary-large" style="width: 100%; justify-content: center; font-size: 0.92rem; padding: 12px;">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to B2B Portal
+        </button>
+      </form>
+
+      <!-- Sign Up Form -->
+      <form id="signUpForm" onsubmit="handleSignUpSubmit(event)" style="display: none;">
+        <div class="auth-field" style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Full Legal Name</label>
+          <input type="text" id="signUpName" required placeholder="e.g. Sarah Jenkins" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border-medium); border-radius: var(--radius-xs); font-size: 0.86rem; outline: none;">
+        </div>
+
+        <div class="auth-field" style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Brand / Company Name</label>
+          <input type="text" id="signUpBrand" required placeholder="e.g. Lumina Skin Co" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border-medium); border-radius: var(--radius-xs); font-size: 0.86rem; outline: none;">
+        </div>
+
+        <div class="auth-field" style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Business Email (Single Account)</label>
+          <input type="email" id="signUpEmail" required placeholder="buyer@yourbrand.com" style="width: 100%; padding: 9px 12px; border: 1px solid var(--border-medium); border-radius: var(--radius-xs); font-size: 0.86rem; outline: none;">
+        </div>
+
+        <div class="auth-field" style="margin-bottom: 12px;">
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Create Password (Min. 6 chars)</label>
+          <div style="position: relative; display: flex; align-items: center; border: 1px solid var(--border-medium); border-radius: var(--radius-xs); background: #FFFFFF;">
+            <input type="password" id="signUpPassword" required minlength="6" placeholder="Choose a secure password" style="width: 100%; padding: 9px 10px 9px 12px; border: none; outline: none; font-size: 0.86rem;">
+            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('signUpPassword', this)">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="auth-field" style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px;">Confirm Password</label>
+          <div style="position: relative; display: flex; align-items: center; border: 1px solid var(--border-medium); border-radius: var(--radius-xs); background: #FFFFFF;">
+            <input type="password" id="signUpConfirmPassword" required minlength="6" placeholder="Re-enter password" style="width: 100%; padding: 9px 10px 9px 12px; border: none; outline: none; font-size: 0.86rem;">
+            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('signUpConfirmPassword', this)">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="signUpSubmitBtn" class="btn-primary-large" style="width: 100%; justify-content: center; font-size: 0.92rem; padding: 12px;">
+          <i class="fa-solid fa-user-check"></i> Register Single B2B Account
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Regulatory Compliance Dossier Modal -->
+  <div id="certModal" class="modal-backdrop">
+    <div class="modal-dialog cert-dialog">
+      <button id="closeCertModalBtn" class="modal-close-btn" title="Close Regulatory Cert Modal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div id="certModalContent" class="cert-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Sample Basket Slide-Over Drawer -->
+  <aside id="inquiryDrawer" class="drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <div class="drawer-icon-wrap">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <div>
+          <h3>Sample Basket & Wholesale Checkout</h3>
+          <p>Order physical unbranded samples from 1 pc or bulk tiers.</p>
+        </div>
+      </div>
+      <button id="closeDrawerBtn" class="drawer-close-btn" title="Close Basket">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Unified Smooth Scroll Container -->
+    <div class="drawer-scroll-container">
+      <!-- Cart Items Container -->
+      <div id="drawerBody" class="drawer-body"></div>
+
+      <!-- Drawer Footer & Checkout Controls -->
+      <div class="drawer-footer">
+        <div class="drawer-contact-form">
+          <div class="drawer-form-row">
+            <input type="text" id="buyerName" placeholder="Your Name / Title" class="drawer-input" autocomplete="name">
+            <input type="text" id="buyerBrand" placeholder="Brand / Company" class="drawer-input" autocomplete="organization">
+          </div>
+        </div>
+
+        <div class="drawer-total-row">
+          <span>Selected Formulations:</span>
+          <strong id="drawerTotalCount">0 unit(s)</strong>
+        </div>
+        <div class="drawer-total-row">
+          <span>Raw Subtotal:</span>
+          <strong id="drawerSubtotal">$0.00</strong>
+        </div>
+        
+        <div id="drawerDiscountRow" class="drawer-total-row discount-row" style="display: none;">
+          <span>Volume Discount <span id="drawerDiscountRate"></span>:</span>
+          <strong id="drawerDiscountVal" style="color: #166534;">-$0.00</strong>
+        </div>
+
+        <div class="drawer-total-row shipping-row">
+          <span>Insured Freight:</span>
+          <strong style="color: #166534; font-weight: 700;"><i class="fa-solid fa-truck-fast"></i> FREE SHIPPING ($0.00)</strong>
+        </div>
+
+        <div class="drawer-total-row drawer-final-row">
+          <span>Estimated Total:</span>
+          <strong id="drawerTotalValue" style="color: var(--accent-gold); font-size: 1.25rem;">$0.00</strong>
+        </div>
+
+        <!-- B2B Wholesale Payment Method Preference -->
+        <div class="payment-preference-container">
+          <label class="payment-preference-label">
+            <i class="fa-solid fa-credit-card" style="color: var(--accent-gold);"></i>
+            <span>Choose Payment Preference</span>
+          </label>
+          
+          <div class="payment-options-grid">
+            <label class="payment-option-card active" for="payMethodPayPal" id="cardOptionLabel">
+              <input type="radio" name="paymentPreference" id="payMethodPayPal" value="paypal_card" checked onchange="handlePaymentPrefChange()">
+              <div class="payment-option-content">
+                <div class="payment-option-header">
+                  <span class="payment-option-title">
+                    <i class="fa-brands fa-paypal" style="color: #0079C1;"></i>
+                    <span>PayPal & Cards</span>
+                  </span>
+                  <span class="payment-badge-instant">Instant Online</span>
+                </div>
+                <p class="payment-option-desc">Pay directly via Visa, Mastercard, AMEX, Discover, or PayPal balance.</p>
+              </div>
+            </label>
+
+            <label class="payment-option-card" for="payMethodAchWire" id="achOptionLabel">
+              <input type="radio" name="paymentPreference" id="payMethodAchWire" value="ach_wire" onchange="handlePaymentPrefChange()">
+              <div class="payment-option-content">
+                <div class="payment-option-header">
+                  <span class="payment-option-title"><i class="fa-solid fa-building-columns" style="color: #25D366;"></i> USA Local Bank ACH</span>
+                  <span class="payment-badge-zero-fee" id="achBadgeText">0% Fee (Wholesale)</span>
+                </div>
+                <p class="payment-option-desc">Official B2B Commercial Proforma Invoice with Citi Bank USA routing for fee-free ACH.</p>
+              </div>
+            </label>
+          </div>
+
+          <!-- Dynamic PayPal Smart Buttons Section -->
+          <div id="paypalButtonsSection" class="paypal-buttons-wrapper" style="margin-top: 12px;">
+            <div id="paypal-button-container"></div>
+          </div>
+        </div>
+
+        <!-- Direct WhatsApp Order Button -->
+        <button id="whatsappOrderBtn" class="btn-primary-large whatsapp-order-submit-btn" onclick="submitOrderViaWhatsApp()" style="width: 100%; margin-top: 10px; margin-bottom: 8px;">
+          <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i>
+          <span>Send Order to WhatsApp (ZBM)</span>
+        </button>
+
+        <button id="clearInquiryBtn" style="font-size: 0.74rem; color: var(--text-muted); text-align: center; margin-top: 4px; background: none; border: none; cursor: pointer; text-decoration: underline; width: 100%;">
+          Clear All Selected Formulations
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Core Scripts -->
+  <script src="js/products-data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
