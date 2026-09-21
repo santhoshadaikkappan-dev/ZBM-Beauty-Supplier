@@ -907,7 +907,26 @@
       return;
     }
 
+    if (!inquiryCart || inquiryCart.length === 0) {
+      container.innerHTML = `
+        <div style="background: rgba(223, 192, 144, 0.1); border: 1px dashed rgba(223, 192, 144, 0.4); border-radius: 6px; padding: 12px; font-size: 0.76rem; color: var(--text-secondary); text-align: center;">
+          <i class="fa-solid fa-basket-shopping" style="color: var(--accent-gold); margin-bottom: 4px; display: block; font-size: 1.1rem;"></i>
+          Add formulation samples to your basket to activate PayPal & Card checkout.
+        </div>
+      `;
+      return;
+    }
+
     const totals = calculateCartTotals();
+    if (totals.finalTotal <= 0) {
+      container.innerHTML = `
+        <div style="background: rgba(223, 192, 144, 0.1); border: 1px dashed rgba(223, 192, 144, 0.4); border-radius: 6px; padding: 12px; font-size: 0.76rem; color: var(--text-secondary); text-align: center;">
+          Basket total must be greater than $0.00 to activate PayPal checkout.
+        </div>
+      `;
+      return;
+    }
+
     const amountStr = totals.finalTotal.toFixed(2);
 
     if (currentPayPalAmount === amountStr && container.children.length > 0) {
@@ -926,7 +945,12 @@
         },
         createOrder: function(data, actions) {
           const liveTotals = calculateCartTotals();
+          if (!liveTotals || liveTotals.finalTotal <= 0) {
+            alert('Your basket total must be greater than $0.00 to checkout.');
+            return actions.reject();
+          }
           return actions.order.create({
+            intent: 'CAPTURE',
             purchase_units: [{
               description: `ZANDRA BEAUTY MATRIX (ZBM) B2B Wholesale Order (${inquiryCart.length} formulations)`,
               amount: {
@@ -943,8 +967,12 @@
             window.submitOrderViaWhatsApp(details.id);
           });
         },
+        onCancel: function(data) {
+          console.log('[PAYPAL CHECKOUT CANCELLED]', data);
+        },
         onError: function(err) {
           console.error('[PAYPAL BUTTON ERROR]', err);
+          alert('PayPal Transaction Notice:\n\n1. If you are testing with an Indian bank card or Indian PayPal account: Under Reserve Bank of India (RBI) regulations, domestic Indian transactions are prohibited on PayPal. PayPal strictly processes international payments from foreign buyers (USA, UK, Europe, etc.).\n\n2. You can also send your order directly to our WhatsApp Trade Desk below to complete your order.');
         }
       }).render('#paypal-button-container');
     } catch (e) {
