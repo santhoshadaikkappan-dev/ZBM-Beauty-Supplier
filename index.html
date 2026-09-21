@@ -418,106 +418,109 @@
       </button>
     </div>
 
-    <div id="drawerBody" class="drawer-body">
-      <!-- Dynamic Cart Items Injected Here -->
-    </div>
+    <!-- Scrollable Unified Drawer Area -->
+    <div class="drawer-scroll-container">
+      <div id="drawerBody" class="drawer-body">
+        <!-- Dynamic Cart Items Injected Here -->
+      </div>
 
-    <div class="drawer-footer">
-      <!-- Shipping Threshold Alert -->
-      <div id="drawerShippingAlert" class="drawer-shipping-alert" style="display: none;"></div>
+      <div class="drawer-footer">
+        <!-- Shipping Threshold Alert -->
+        <div id="drawerShippingAlert" class="drawer-shipping-alert" style="display: none;"></div>
 
-      <!-- Buyer Details Capture Form for WhatsApp Message -->
-      <div class="drawer-buyer-form">
-        <h4 style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px;">
-          <i class="fa-solid fa-user-tag" style="color: var(--accent-gold);"></i> Buyer & Brand Profile (Optional)
-        </h4>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px;">
-          <input type="text" id="buyerBrandInput" class="drawer-input" placeholder="Brand / LLC Name">
-          <input type="text" id="buyerNameInput" class="drawer-input" placeholder="Your Name">
+        <!-- Buyer Details Capture Form for WhatsApp Message -->
+        <div class="drawer-buyer-form">
+          <h4 style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px;">
+            <i class="fa-solid fa-user-tag" style="color: var(--accent-gold);"></i> Buyer & Brand Profile (Optional)
+          </h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px;">
+            <input type="text" id="buyerBrandInput" class="drawer-input" placeholder="Brand / LLC Name">
+            <input type="text" id="buyerNameInput" class="drawer-input" placeholder="Your Name">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px;">
+            <input type="text" id="buyerLocationInput" class="drawer-input" placeholder="City, Country (e.g. NY, USA)">
+            <input type="text" id="buyerNotesInput" class="drawer-input" placeholder="Customization Notes">
+          </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px;">
-          <input type="text" id="buyerLocationInput" class="drawer-input" placeholder="City, Country (e.g. NY, USA)">
-          <input type="text" id="buyerNotesInput" class="drawer-input" placeholder="Customization Notes">
+
+        <div class="drawer-total-row">
+          <span>Selected Formulations:</span>
+          <strong id="drawerTotalCount">0 unit(s)</strong>
         </div>
-      </div>
-
-      <div class="drawer-total-row">
-        <span>Selected Formulations:</span>
-        <strong id="drawerTotalCount">0 unit(s)</strong>
-      </div>
-      <div class="drawer-total-row">
-        <span>Raw Subtotal:</span>
-        <strong id="drawerSubtotal">$0.00</strong>
-      </div>
-      
-      <!-- Tiered Discount Row -->
-      <div id="drawerDiscountRow" class="drawer-total-row discount-row" style="display: none;">
-        <span>Volume Discount <span id="drawerDiscountRate"></span>:</span>
-        <strong id="drawerDiscountVal" style="color: #166534;">-$0.00</strong>
-      </div>
-
-      <!-- Free Shipping Notice -->
-      <div class="drawer-total-row shipping-row">
-        <span>Insured Freight:</span>
-        <strong style="color: #166534; font-weight: 700;"><i class="fa-solid fa-truck-fast"></i> FREE SHIPPING ($0.00)</strong>
-      </div>
-
-      <div class="drawer-total-row drawer-final-row">
-        <span>Estimated Total:</span>
-        <strong id="drawerTotalValue" style="color: var(--accent-gold); font-size: 1.25rem;">$0.00</strong>
-      </div>
-
-      <!-- B2B Wholesale Payment Method Preference (PayPal & Card vs USA ACH) -->
-      <div class="payment-preference-container">
-        <label class="payment-preference-label">
-          <i class="fa-solid fa-credit-card" style="color: var(--accent-gold);"></i>
-          <span>Choose Payment Preference</span>
-        </label>
+        <div class="drawer-total-row">
+          <span>Raw Subtotal:</span>
+          <strong id="drawerSubtotal">$0.00</strong>
+        </div>
         
-        <div class="payment-options-grid">
-          <!-- Method 1: PayPal & Direct Credit/Debit Card -->
-          <label class="payment-option-card active" for="payMethodPayPal" id="cardOptionLabel">
-            <input type="radio" name="paymentPreference" id="payMethodPayPal" value="paypal_card" checked onchange="handlePaymentPrefChange()">
-            <div class="payment-option-content">
-              <div class="payment-option-header">
-                <span class="payment-option-title">
-                  <i class="fa-brands fa-paypal" style="color: #0079C1;"></i>
-                  <span>PayPal & Cards</span>
-                </span>
-                <span class="payment-badge-instant">Instant Online</span>
-              </div>
-              <p class="payment-option-desc">Pay directly via Visa, Mastercard, AMEX, Discover, or PayPal balance.</p>
-            </div>
-          </label>
-
-          <!-- Method 2: USA Domestic Bank Transfer (ACH / Fedwire) for Bulk Wholesale -->
-          <label class="payment-option-card" for="payMethodAchWire" id="achOptionLabel">
-            <input type="radio" name="paymentPreference" id="payMethodAchWire" value="ach_wire" onchange="handlePaymentPrefChange()">
-            <div class="payment-option-content">
-              <div class="payment-option-header">
-                <span class="payment-option-title"><i class="fa-solid fa-building-columns" style="color: #25D366;"></i> USA Local Bank ACH</span>
-                <span class="payment-badge-zero-fee" id="achBadgeText">0% Fee (Wholesale)</span>
-              </div>
-              <p class="payment-option-desc">Official B2B Commercial Proforma Invoice with Citi Bank USA routing for fee-free ACH.</p>
-            </div>
-          </label>
+        <!-- Tiered Discount Row -->
+        <div id="drawerDiscountRow" class="drawer-total-row discount-row" style="display: none;">
+          <span>Volume Discount <span id="drawerDiscountRate"></span>:</span>
+          <strong id="drawerDiscountVal" style="color: #166534;">-$0.00</strong>
         </div>
 
-        <!-- Dynamic PayPal Smart Buttons Section -->
-        <div id="paypalButtonsSection" class="paypal-buttons-wrapper" style="margin-top: 12px;">
-          <div id="paypal-button-container"></div>
+        <!-- Free Shipping Notice -->
+        <div class="drawer-total-row shipping-row">
+          <span>Insured Freight:</span>
+          <strong style="color: #166534; font-weight: 700;"><i class="fa-solid fa-truck-fast"></i> FREE SHIPPING ($0.00)</strong>
         </div>
+
+        <div class="drawer-total-row drawer-final-row">
+          <span>Estimated Total:</span>
+          <strong id="drawerTotalValue" style="color: var(--accent-gold); font-size: 1.25rem;">$0.00</strong>
+        </div>
+
+        <!-- B2B Wholesale Payment Method Preference (PayPal & Card vs USA ACH) -->
+        <div class="payment-preference-container">
+          <label class="payment-preference-label">
+            <i class="fa-solid fa-credit-card" style="color: var(--accent-gold);"></i>
+            <span>Choose Payment Preference</span>
+          </label>
+          
+          <div class="payment-options-grid">
+            <!-- Method 1: PayPal & Direct Credit/Debit Card -->
+            <label class="payment-option-card active" for="payMethodPayPal" id="cardOptionLabel">
+              <input type="radio" name="paymentPreference" id="payMethodPayPal" value="paypal_card" checked onchange="handlePaymentPrefChange()">
+              <div class="payment-option-content">
+                <div class="payment-option-header">
+                  <span class="payment-option-title">
+                    <i class="fa-brands fa-paypal" style="color: #0079C1;"></i>
+                    <span>PayPal & Cards</span>
+                  </span>
+                  <span class="payment-badge-instant">Instant Online</span>
+                </div>
+                <p class="payment-option-desc">Pay directly via Visa, Mastercard, AMEX, Discover, or PayPal balance.</p>
+              </div>
+            </label>
+
+            <!-- Method 2: USA Domestic Bank Transfer (ACH / Fedwire) for Bulk Wholesale -->
+            <label class="payment-option-card" for="payMethodAchWire" id="achOptionLabel">
+              <input type="radio" name="paymentPreference" id="payMethodAchWire" value="ach_wire" onchange="handlePaymentPrefChange()">
+              <div class="payment-option-content">
+                <div class="payment-option-header">
+                  <span class="payment-option-title"><i class="fa-solid fa-building-columns" style="color: #25D366;"></i> USA Local Bank ACH</span>
+                  <span class="payment-badge-zero-fee" id="achBadgeText">0% Fee (Wholesale)</span>
+                </div>
+                <p class="payment-option-desc">Official B2B Commercial Proforma Invoice with Citi Bank USA routing for fee-free ACH.</p>
+              </div>
+            </label>
+          </div>
+
+          <!-- Dynamic PayPal Smart Buttons Section -->
+          <div id="paypalButtonsSection" class="paypal-buttons-wrapper" style="margin-top: 12px;">
+            <div id="paypal-button-container"></div>
+          </div>
+        </div>
+
+        <!-- Direct WhatsApp Order Button -->
+        <button id="whatsappOrderBtn" class="btn-primary-large whatsapp-order-submit-btn" onclick="submitOrderViaWhatsApp()" style="width: 100%; margin-top: 10px; margin-bottom: 8px;">
+          <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i>
+          <span>Send Order to WhatsApp (ZBM)</span>
+        </button>
+
+        <button id="clearInquiryBtn" style="font-size: 0.74rem; color: var(--text-muted); text-align: center; margin-top: 4px; background: none; border: none; cursor: pointer; text-decoration: underline; width: 100%;">
+          Clear All Selected Formulations
+        </button>
       </div>
-
-      <!-- Direct WhatsApp Order Button -->
-      <button id="whatsappOrderBtn" class="btn-primary-large whatsapp-order-submit-btn" onclick="submitOrderViaWhatsApp()" style="width: 100%; margin-top: 10px; margin-bottom: 8px;">
-        <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i>
-        <span>Send Order to WhatsApp (ZBM)</span>
-      </button>
-
-      <button id="clearInquiryBtn" style="font-size: 0.74rem; color: var(--text-muted); text-align: center; margin-top: 4px; background: none; border: none; cursor: pointer; text-decoration: underline; width: 100%;">
-        Clear All Selected Formulations
-      </button>
     </div>
   </aside>
 
