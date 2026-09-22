@@ -18,14 +18,6 @@
   let currentAudienceFilter = 'all';
   let inquiryCart = JSON.parse(localStorage.getItem('zbm_sample_kit_cart') || '[]');
 
-  // Visualizer Studio State
-  let visualizerPkg = 'dropper';
-  let visualizerEffect = 'gold';
-  let currentBrandPreset = 'zbm';
-  let customLogoImg = null;
-  let visualizerAnimFrame = null;
-  let animTime = 0;
-
   // DOM Elements Cache
   const kitsGrid = document.getElementById('kitsGrid');
   const searchInput = document.getElementById('searchInput');
@@ -51,16 +43,6 @@
   const drawerTotalValue = document.getElementById('drawerTotalValue');
   const whatsappOrderBtn = document.getElementById('whatsappOrderBtn');
   const clearInquiryBtn = document.getElementById('clearInquiryBtn');
-
-  // Visualizer Elements
-  const visualizerModal = document.getElementById('visualizerModal');
-  const openVisualizerBtn = document.getElementById('openVisualizerBtn');
-  const closeVisualizerBtn = document.getElementById('closeVisualizerBtn');
-  const brandCanvas = document.getElementById('brandCanvas');
-  const brandLogoInput = document.getElementById('brandLogoInput');
-  const customUploadContainer = document.getElementById('customUploadContainer');
-  const downloadMockupBtn = document.getElementById('downloadMockupBtn');
-  const resetVisualizerBtn = document.getElementById('resetVisualizerBtn');
 
   // Cert Modal
   const certModal = document.getElementById('certModal');
@@ -710,92 +692,6 @@
     }
   }
 
-  // ========================================================================
-  // 7. 3D BRAND STUDIO VISUALIZER
-  // ========================================================================
-  window.openVisualizer = function() {
-    if (visualizerModal) {
-      visualizerModal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-      if (window.lenis) window.lenis.stop();
-      startVisualizerAnimation();
-    }
-  };
-
-  window.closeVisualizer = function() {
-    if (visualizerModal) {
-      visualizerModal.classList.remove('active');
-      document.body.style.overflow = '';
-      if (window.lenis) window.lenis.start();
-      if (visualizerAnimFrame) cancelAnimationFrame(visualizerAnimFrame);
-    }
-  };
-
-  function startVisualizerAnimation() {
-    if (!brandCanvas) return;
-    const ctx = brandCanvas.getContext('2d');
-
-    const render = () => {
-      animTime += 0.02;
-      ctx.clearRect(0, 0, brandCanvas.width, brandCanvas.height);
-
-      // Base Studio Gradient
-      const grad = ctx.createRadialGradient(450, 450, 100, 450, 450, 450);
-      grad.addColorStop(0, '#FFFFFF');
-      grad.addColorStop(1, '#F3F0EA');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, brandCanvas.width, brandCanvas.height);
-
-      // Travertine Stone Pedestal
-      ctx.save();
-      ctx.fillStyle = '#E5DFD5';
-      ctx.beginPath();
-      ctx.roundRect(250, 680, 400, 70, 10);
-      ctx.fill();
-      ctx.restore();
-
-      // Floating Bottle Simulation
-      const floatY = Math.sin(animTime) * 12;
-      ctx.save();
-      ctx.translate(450, 420 + floatY);
-
-      // Bottle Body
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-      ctx.strokeStyle = '#D1CAC0';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.roundRect(-100, -180, 200, 360, 20);
-      ctx.fill();
-      ctx.stroke();
-
-      // Gold Collar
-      ctx.fillStyle = '#DFC090';
-      ctx.fillRect(-45, -230, 90, 50);
-
-      // Cap / Dropper
-      ctx.fillStyle = '#FFFFFF';
-      ctx.beginPath();
-      ctx.roundRect(-30, -290, 60, 60, 10);
-      ctx.fill();
-
-      // Logo on Bottle
-      ctx.fillStyle = '#1C1B1A';
-      ctx.font = '800 24px "Plus Jakarta Sans", sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(currentBrandPreset === 'custom' ? 'YOUR BRAND' : 'ZANDRA', 0, 0);
-      ctx.font = '600 12px "Plus Jakarta Sans", sans-serif';
-      ctx.fillStyle = '#8C877E';
-      ctx.fillText('PRIVATE LABEL • USA', 0, 25);
-
-      ctx.restore();
-
-      visualizerAnimFrame = requestAnimationFrame(render);
-    };
-
-    if (visualizerAnimFrame) cancelAnimationFrame(visualizerAnimFrame);
-    render();
-  }
-
   // Regulatory Cert Modal
   window.openCertModal = function(type) {
     if (!certModal || !certModalContent) return;
@@ -1029,9 +925,6 @@
       });
     }
 
-    if (closeVisualizerBtn) closeVisualizerBtn.addEventListener('click', closeVisualizer);
-    if (openVisualizerBtn) openVisualizerBtn.addEventListener('click', openVisualizer);
-
     if (closeCertModalBtn) closeCertModalBtn.addEventListener('click', closeCertModal);
     if (certModal) {
       certModal.addEventListener('click', e => {
@@ -1071,7 +964,6 @@
       if (e.key === 'Escape') {
         closeInquiryDrawer();
         closeKitSpecsModal();
-        closeVisualizer();
         closeCertModal();
         window.closeMobileNav();
       }

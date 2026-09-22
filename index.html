@@ -409,12 +409,6 @@
           </button>
         </div>
 
-        <!-- 3D Brand Studio Trigger -->
-        <button id="openVisualizerBtn" class="btn-header desktop-only" title="Open 3D Brand Studio & Preview Your Brand">
-          <i class="fa-solid fa-cube" style="color: var(--accent-gold);"></i>
-          <span class="desktop-text">3D Studio</span>
-        </button>
-
         <!-- Sample Basket Trigger -->
         <button id="openDrawerBtn" class="btn-header primary" title="View Sample Basket & Checkout">
           <i class="fa-solid fa-bag-shopping"></i>
@@ -481,10 +475,6 @@
         <button class="btn-mobile-nav-action" onclick="openInquiryDrawer(); closeMobileNav();">
           <i class="fa-solid fa-bag-shopping" style="color: var(--accent-gold);"></i>
           <span>Open Sample Basket</span>
-        </button>
-        <button class="btn-mobile-nav-action" onclick="openVisualizer(); closeMobileNav();">
-          <i class="fa-solid fa-cube" style="color: var(--accent-gold);"></i>
-          <span>3D Brand Studio</span>
         </button>
         <button class="btn-mobile-nav-action" onclick="openAuthModal('signin'); closeMobileNav();">
           <i class="fa-regular fa-circle-user" style="color: var(--accent-gold);"></i>
@@ -658,8 +648,8 @@
         <div class="step-card spotlight-card bento-card">
           <div class="step-badge">3</div>
           <h3>Rebrand with Your Logo</h3>
-          <p>Preview your branding in our 3D Anti-Gravity Studio. Choose custom silkscreen printing, gold hot-stamping, or luxury labels.</p>
-          <span class="step-highlight"><i class="fa-solid fa-cube"></i> Interactive 3D Studio</span>
+          <p>Submit your brand logo and artwork. Our turnkey engineering team provides custom silkscreen printing, gold hot-stamping, and luxury waterproof labels.</p>
+          <span class="step-highlight"><i class="fa-solid fa-wand-magic-sparkles"></i> Turnkey Packaging & Labeling</span>
         </div>
 
         <!-- Step 4 -->
@@ -753,8 +743,8 @@
   </section>
 
   <!-- Comprehensive Kit Specs Detail Modal -->
-  <div id="kitSpecsModal" class="modal-overlay">
-    <div class="specs-modal-card">
+  <div id="kitSpecsModal" class="modal-overlay" data-lenis-prevent>
+    <div class="specs-modal-card" data-lenis-prevent>
       <button id="closeKitSpecsModalBtn" class="modal-close-btn" title="Close Specifications Modal">
         <i class="fa-solid fa-xmark"></i>
       </button>
@@ -764,89 +754,8 @@
     </div>
   </div>
 
-  <!-- Interactive 3D Anti-Gravity Brand Visualizer Studio Modal -->
-  <div id="visualizerModal" class="modal-overlay">
-    <div class="modal-card" style="max-width: 980px;">
-      <button id="closeVisualizerBtn" class="modal-close-btn" title="Close Studio">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <div class="visualizer-grid">
-        <!-- Left: Live 3D Floating Packaging Canvas -->
-        <div class="visualizer-stage-wrap">
-          <canvas id="brandCanvas" width="700" height="700"></canvas>
-          <div class="floating-callout" style="bottom: 14px; left: 14px; font-size: 0.72rem;">
-            <i class="fa-solid fa-arrows-up-down-left-right"></i>
-            <span>Interactive 3D Anti-Gravity View</span>
-          </div>
-        </div>
-
-        <!-- Right: Brand Controls & Logo Upload -->
-        <div class="visualizer-controls">
-          <div>
-            <h3 class="control-title">3D Brand Visualizer</h3>
-            <p class="control-subtitle">
-              Preview the <strong>ZANDRA BEAUTY MATRIX (ZBM)</strong> branding or upload your custom logo to see it floating weightlessly in 3D.
-            </p>
-          </div>
-
-          <!-- Brand Logo Presets (ZBM vs Zandra vs Upload) -->
-          <div class="control-group">
-            <label class="control-label">Brand Logo Option (ZBM Presets or Custom)</label>
-            <div class="pkg-type-buttons">
-              <button class="pkg-type-btn active brand-preset-btn" data-brand="zbm">
-                <img src="assets/images/brand/zbm_emblem_logo.png" style="height: 16px; object-fit: contain;">
-                ZBM Emblem
-              </button>
-              <button class="pkg-type-btn brand-preset-btn" data-brand="zandra">
-                <img src="assets/images/brand/zandra_full_logo.png" style="height: 12px; object-fit: contain;">
-                Zandra Beauty Matrix
-              </button>
-              <button class="pkg-type-btn brand-preset-btn" data-brand="custom">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-                Upload Logo
-              </button>
-            </div>
-          </div>
-
-          <!-- Packaging Form Selector -->
-          <div class="control-group">
-            <label class="control-label">Select Packaging Archetype</label>
-            <div class="pkg-type-buttons">
-              <button class="pkg-type-btn active" data-pkg="dropper">Frosted Dropper (Serum)</button>
-              <button class="pkg-type-btn" data-pkg="tube">Matte Tube (Cleanser)</button>
-              <button class="pkg-type-btn" data-pkg="jar">Luxury Glass Jar (Cream)</button>
-              <button class="pkg-type-btn" data-pkg="pump">Pump Dispenser (Lotion)</button>
-              <button class="pkg-type-btn" data-pkg="soap">Botanical Soap Bar</button>
-            </div>
-          </div>
-
-          <!-- Custom Logo Upload Box -->
-          <div class="control-group" id="customUploadContainer" style="display: none;">
-            <label class="control-label">Upload Custom Client Logo (PNG / SVG)</label>
-            <div class="upload-box" onclick="document.getElementById('brandLogoInput').click()">
-              <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.8rem; color: var(--accent-gold); margin-bottom: 6px;"></i>
-              <p style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary);">Click or drag & drop custom logo here</p>
-              <p style="font-size: 0.72rem; color: var(--text-muted);">Transparent PNG or SVG recommended</p>
-              <input type="file" id="brandLogoInput" accept="image/png, image/svg+xml, image/jpeg" style="display: none;">
-            </div>
-          </div>
-
-          <!-- Studio Actions -->
-          <div style="display: flex; gap: 12px; margin-top: 14px;">
-            <button id="downloadMockupBtn" class="btn-primary-large">
-              <i class="fa-solid fa-download"></i>
-              <span>Download Branded Mockup</span>
-            </button>
-            <button id="resetVisualizerBtn" class="btn-secondary-large">Reset</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Wholesale Inquiry Spec Sheet & Sample Cart Drawer (PayPal & Direct WhatsApp Engine) -->
-  <aside id="inquiryDrawer" class="drawer">
+  <aside id="inquiryDrawer" class="drawer" data-lenis-prevent>
     <div class="drawer-header">
       <h3>
         <i class="fa-solid fa-bag-shopping" style="color: var(--accent-gold);"></i>
@@ -858,7 +767,7 @@
     </div>
 
     <!-- Scrollable Unified Drawer Area -->
-    <div class="drawer-scroll-container">
+    <div class="drawer-scroll-container" data-lenis-prevent id="drawerScrollContainer">
       <div id="drawerBody" class="drawer-body">
         <!-- Dynamic Cart Items Injected Here via app.js -->
       </div>
@@ -1259,7 +1168,7 @@
           <li><a href="javascript:void(0)" onclick="openCertModal('iso')">ISO 9001:2015 Standards</a></li>
           <li><a href="javascript:void(0)" onclick="openCertModal('gmp')">WHO-GMP Facility</a></li>
           <li><a href="javascript:void(0)" onclick="openCertModal('fssai')">Clean Botanical Safety</a></li>
-          <li><a href="javascript:void(0)" onclick="openVisualizer()">3D Brand Studio</a></li>
+          <li><a href="#turnkey-process">Turnkey 4-Step Process</a></li>
         </ul>
       </div>
 
