@@ -366,8 +366,8 @@
         <div class="user-profile-menu">
           <button id="userProfileBtn" class="btn-header logged-in" onclick="toggleUserDropdown(event)" title="Logged in as ${currentUser.name}">
             <i class="fa-solid fa-circle-user" style="color: #25D366; font-size: 1.15rem;"></i>
-            <span class="user-name-label">${displayName}</span>
-            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            <span class="user-name-label desktop-text">${displayName}</span>
+            <i class="fa-solid fa-chevron-down dropdown-arrow desktop-text"></i>
           </button>
           <div id="userDropdownMenu" class="user-dropdown-card" style="display: none;">
             <div class="user-dropdown-header">
@@ -401,7 +401,7 @@
       authHeaderContainer.innerHTML = `
         <button id="openAuthModalBtn" class="btn-header auth-trigger-btn" onclick="openAuthModal('signin')" title="Sign In or Register B2B Account">
           <i class="fa-regular fa-circle-user" style="color: var(--accent-gold); font-size: 1.15rem;"></i>
-          <span>Sign In</span>
+          <span class="desktop-text">Sign In</span>
         </button>
       `;
     }
