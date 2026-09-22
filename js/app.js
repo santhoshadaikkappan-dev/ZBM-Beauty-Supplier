@@ -710,15 +710,16 @@
     }
 
     certModalContent.innerHTML = `
-      <div style="text-align: center; margin-bottom: 20px;">
-        <i class="fa-solid fa-certificate" style="font-size: 2.8rem; color: var(--accent-gold); margin-bottom: 12px;"></i>
-        <h3 style="font-size: 1.4rem; font-weight: 800; color: var(--text-primary);">${title}</h3>
-        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin-top: 8px;">${desc}</p>
+      <div style="text-align: center; margin-bottom: 24px;">
+        <i class="fa-solid fa-certificate" style="font-size: 3.2rem; color: #DFC090; margin-bottom: 16px; display: inline-block;"></i>
+        <h3 style="font-size: 1.55rem; font-family: var(--font-display, 'Syne', sans-serif); font-weight: 800; color: #F7F5F0; margin-bottom: 12px; line-height: 1.3;">${title}</h3>
+        <p style="font-size: 0.92rem; color: #D5D0C7; line-height: 1.65; max-width: 500px; margin: 0 auto;">${desc}</p>
       </div>
-      <div style="display: flex; gap: 10px; justify-content: center;">
-        <button class="btn-primary" onclick="closeCertModal()">Acknowledge & Close</button>
-        <a href="https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Hello ZBM, please share official ' + title + ' verification sheets')}" target="_blank" class="btn-secondary">
-          <i class="fa-brands fa-whatsapp"></i> Request Full PDF Dossier
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 10px;">
+        <button class="btn-primary-large" onclick="closeCertModal()" style="min-width: 170px;">Acknowledge & Close</button>
+        <a href="https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Hello ZBM, please share official ' + title + ' verification sheets')}" target="_blank" class="btn-secondary-large" style="min-width: 200px; text-decoration: none;">
+          <i class="fa-brands fa-whatsapp" style="color: #25D366; font-size: 1.1rem;"></i>
+          <span>Request Full PDF Dossier</span>
         </a>
       </div>
     `;

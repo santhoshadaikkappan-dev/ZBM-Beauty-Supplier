@@ -1486,9 +1486,11 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 }
 
 .modal-card {
-  background: #FFFFFF;
+  background: rgba(14, 14, 14, 0.95);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-modal);
+  box-shadow: 0 30px 80px -10px rgba(0, 0, 0, 0.95), 0 0 40px rgba(223, 192, 144, 0.12);
   width: 100%;
   max-width: 1050px;
   max-height: 90vh;
@@ -1496,7 +1498,8 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
   position: relative;
   transform: translateY(20px) scale(0.98);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(223, 192, 144, 0.25);
+  color: #F7F5F0;
 }
 
 .modal-overlay.active .modal-card {
@@ -1507,22 +1510,25 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
   position: absolute;
   top: 20px;
   right: 20px;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: var(--radius-full);
-  background: var(--bg-subtle);
-  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #F7F5F0;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
   z-index: 10;
+  cursor: pointer;
   transition: var(--transition-fast);
 }
 
 .modal-close-btn:hover {
-  background: #1C1B1A;
-  color: #FFFFFF;
+  background: rgba(223, 192, 144, 0.2);
+  border-color: #DFC090;
+  color: #DFC090;
 }
 
 .modal-grid {
@@ -3297,9 +3303,10 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 .auth-modal-card {
   max-width: 480px !important;
   padding: 32px 36px !important;
-  background: #FFFFFF !important;
-  border: 1px solid var(--border-light) !important;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25) !important;
+  background: rgba(14, 14, 14, 0.96) !important;
+  border: 1px solid rgba(223, 192, 144, 0.28) !important;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9) !important;
+  color: #F7F5F0;
 }
 
 .auth-modal-header {
@@ -3315,9 +3322,10 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 
 .auth-modal-title {
   font-size: 1.25rem;
+  font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: 0.05em;
-  color: var(--text-primary);
+  color: #F7F5F0;
   margin-bottom: 2px;
 }
 
@@ -3331,11 +3339,11 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 .auth-tabs-nav {
   display: flex;
   gap: 6px;
-  background: var(--bg-subtle);
+  background: rgba(255, 255, 255, 0.04);
   padding: 4px;
   border-radius: var(--radius-sm);
   margin-bottom: 20px;
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .auth-tab-btn {
@@ -3357,9 +3365,10 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 }
 
 .auth-tab-btn.active {
-  background: #FFFFFF;
-  color: var(--text-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: rgba(223, 192, 144, 0.15);
+  color: #DFC090;
+  border: 1px solid rgba(223, 192, 144, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .auth-form {
@@ -3377,7 +3386,7 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 .auth-form-group label {
   font-size: 0.76rem;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: #E2DFD8;
 }
 
 .auth-hint {
@@ -3403,12 +3412,12 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 .auth-input {
   width: 100%;
   padding: 10px 38px 10px 36px;
-  border: 1px solid var(--border-medium);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-sm);
   font-size: 0.84rem;
   font-family: inherit;
-  background: #FFFFFF;
-  color: var(--text-primary);
+  background: rgba(22, 22, 22, 0.85);
+  color: #F7F5F0;
   transition: all var(--transition-fast);
 }
 
@@ -3439,9 +3448,9 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
   align-items: flex-start;
   gap: 8px;
   font-size: 0.72rem;
-  background: #F0FDF4;
-  border: 1px solid #BBF7D0;
-  color: #166534;
+  background: rgba(37, 211, 102, 0.12);
+  border: 1px solid rgba(37, 211, 102, 0.28);
+  color: #4ADE80;
   padding: 8px 12px;
   border-radius: var(--radius-xs);
   line-height: 1.4;
