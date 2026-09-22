@@ -5195,6 +5195,28 @@ input, select {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
   }
 
+  /* Strictly hide WhatsApp & 3D Studio & all desktop elements in mobile header */
+  .header .desktop-only,
+  .header-actions .desktop-only,
+  .header .whatsapp-dm-btn,
+  .header #openVisualizerBtn,
+  .header .departments-dropdown-container,
+  .btn-header.desktop-only,
+  .btn-header.whatsapp-dm-btn,
+  #openVisualizerBtn {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    left: -9999px !important;
+  }
+
   .btn-header i {
     font-size: 0.95rem !important;
     margin: 0 !important;
@@ -5606,33 +5628,52 @@ input, select {
   /* Full-width Stacked Touch Buttons (No Side-by-Side Squeeze) */
   .kit-card-actions {
     grid-template-columns: 1fr !important;
-    gap: 8px !important;
+    gap: 10px !important;
     display: flex !important;
     flex-direction: column !important;
+    margin-top: 14px !important;
   }
 
   .btn-add-kit {
     width: 100% !important;
-    height: 44px !important;
-    padding: 0 14px !important;
-    font-size: 0.88rem !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    padding: 0 16px !important;
+    font-size: 1.02rem !important;
     font-weight: 800 !important;
+    letter-spacing: 0.02em !important;
     border-radius: var(--radius-sm) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    gap: 10px !important;
+    background: linear-gradient(135deg, #1C1B1A 0%, #2A2622 100%) !important;
+    color: #DFC090 !important;
+    border: 1.5px solid #DFC090 !important;
+    box-shadow: 0 4px 16px rgba(223, 192, 144, 0.28), 0 2px 6px rgba(0,0,0,0.3) !important;
+    text-transform: none !important;
+  }
+
+  .btn-add-kit i {
+    font-size: 1.1rem !important;
+    color: #DFC090 !important;
   }
 
   .btn-specs-kit {
     width: 100% !important;
-    height: 38px !important;
-    padding: 0 14px !important;
-    font-size: 0.8rem !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 16px !important;
+    font-size: 0.86rem !important;
     font-weight: 700 !important;
     border-radius: var(--radius-sm) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    gap: 8px !important;
+    background: #FAF8F5 !important;
+    color: var(--text-primary) !important;
+    border: 1.5px solid var(--border-medium) !important;
   }
 
   /* 9. Specifications Modal on Mobile */

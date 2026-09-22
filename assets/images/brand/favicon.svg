@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Luxury Obsidian Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E1C1A"/>
+      <stop offset="50%" stop-color="#141312"/>
+      <stop offset="100%" stop-color="#0A0908"/>
+    </linearGradient>
+
+    <!-- Metallic Champagne Gold Gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F7E7CE"/>
+      <stop offset="30%" stop-color="#DFC090"/>
+      <stop offset="70%" stop-color="#C59E65"/>
+      <stop offset="100%" stop-color="#E8D1B0"/>
+    </linearGradient>
+
+    <!-- Subtle Gold Border Glow Gradient -->
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DFC090" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#9E7E52" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#DFC090" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <!-- Soft Radial Highlight -->
+    <radialGradient id="ambientGlow" cx="50%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#DFC090" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#141312" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Base Rounded Container -->
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#bgGrad)"/>
+  
+  <!-- Subtle Ambient Glow -->
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#ambientGlow)"/>
+
+  <!-- Luxury Gold Border Ring -->
+  <rect x="24" y="24" width="464" height="464" rx="100" fill="none" stroke="url(#borderGrad)" stroke-width="14"/>
+  <rect x="36" y="36" width="440" height="440" rx="88" fill="none" stroke="#DFC090" stroke-width="2" stroke-opacity="0.35"/>
+
+  <!-- Iconic Luxury Serif 'Z' Emblem -->
+  <!-- M130,140 L370,140 ... -->
+  <path d="M 124 142 
+           C 124 135 130 130 138 130 
+           L 364 130 
+           C 376 130 384 140 380 152 
+           L 358 196 
+           C 355 202 348 206 341 204 
+           C 334 202 331 195 333 188 
+           L 338 176 
+           L 214 176 
+           L 368 334 
+           C 376 342 380 351 380 362 
+           L 380 370 
+           C 380 377 374 382 366 382 
+           L 136 382 
+           C 124 382 116 372 120 360 
+           L 142 316 
+           C 145 310 152 306 159 308 
+           C 166 310 169 317 167 324 
+           L 162 336 
+           L 292 336 
+           L 136 176 
+           C 128 168 124 157 124 146 
+           Z" 
+        fill="url(#goldGrad)" 
+        filter="drop-shadow(0 6px 14px rgba(0,0,0,0.6))"/>
+
+  <!-- High-End Sparkle Accent (Top-Right) -->
+  <path d="M 390 105 
+           Q 390 125 410 125 
+           Q 390 125 390 145 
+           Q 390 125 370 125 
+           Q 390 125 390 105 Z" 
+        fill="#FFFFFF" 
+        opacity="0.95"/>
+  <circle cx="390" cy="125" r="3" fill="#DFC090"/>
+</svg>
