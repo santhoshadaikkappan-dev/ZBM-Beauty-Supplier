@@ -395,6 +395,7 @@
     if (inquiryDrawer) {
       inquiryDrawer.classList.add('open');
       document.body.style.overflow = 'hidden';
+      if (window.lenis) window.lenis.stop();
       renderPayPalButtons();
     }
   };
@@ -403,6 +404,7 @@
     if (inquiryDrawer) {
       inquiryDrawer.classList.remove('open');
       document.body.style.overflow = '';
+      if (window.lenis) window.lenis.start();
     }
   };
 
@@ -428,8 +430,9 @@
     if (visibleCountEl) visibleCountEl.innerText = filteredKits.length;
 
     kitsGrid.innerHTML = filteredKits.map(kit => {
+      const isBeam = kit.id === 'celebrity-vault' || kit.id === 'brand-founder';
       return `
-        <article class="kit-card" data-id="${kit.id}">
+        <article class="kit-card bento-card spotlight-card ${isBeam ? 'border-beam-card' : ''}" data-id="${kit.id}">
           <div class="kit-image-wrapper">
             <img src="${kit.image}" alt="${kit.title}" class="kit-card-img" loading="lazy">
             <div class="kit-badge-top-left">${kit.badge}</div>
@@ -470,11 +473,11 @@
               </div>
 
               <div class="kit-card-actions">
-                <button class="btn-primary-large btn-add-kit" onclick="addKitToCart('${kit.id}')">
+                <button class="btn-primary-large btn-add-kit btn-magnetic" onclick="addKitToCart('${kit.id}')">
                   <i class="fa-solid fa-cart-plus"></i>
                   <span>Order Sample Kit ($99)</span>
                 </button>
-                <button class="btn-secondary-large btn-specs-kit" onclick="openKitSpecsModal('${kit.id}')">
+                <button class="btn-secondary-large btn-specs-kit btn-magnetic" onclick="openKitSpecsModal('${kit.id}')">
                   <i class="fa-solid fa-list-check"></i>
                   <span>View All ${kit.itemCount} Specs</span>
                 </button>
@@ -490,6 +493,7 @@
 
   // Interactive 3D Card Tilt
   function attach3DKitTilt() {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     const cards = document.querySelectorAll('.kit-card');
     cards.forEach(card => {
       card.addEventListener('mousemove', e => {
@@ -581,12 +585,14 @@
 
     kitSpecsModal.classList.add('active');
     document.body.style.overflow = 'hidden';
+    if (window.lenis) window.lenis.stop();
   };
 
   window.closeKitSpecsModal = function() {
     if (kitSpecsModal) {
       kitSpecsModal.classList.remove('active');
       document.body.style.overflow = '';
+      if (window.lenis) window.lenis.start();
     }
   };
 
@@ -627,6 +633,14 @@
     renderKitCards();
   }
 
+  function updatePillIndicator(activePill) {
+    const indicator = document.getElementById('pillSliderIndicator');
+    if (!indicator || !activePill) return;
+    indicator.style.left = `${activePill.offsetLeft}px`;
+    indicator.style.width = `${activePill.offsetWidth}px`;
+    indicator.style.opacity = '1';
+  }
+
   window.resetKitFilters = function() {
     currentAudienceFilter = 'all';
     if (searchInput) searchInput.value = '';
@@ -634,22 +648,37 @@
     if (clearSearchBtn) clearSearchBtn.style.display = 'none';
     if (mobileClearSearchBtn) mobileClearSearchBtn.style.display = 'none';
     
+    let allBtn = null;
     document.querySelectorAll('.audience-pill').forEach(btn => {
-      btn.classList.toggle('active', btn.getAttribute('data-audience') === 'all');
+      const isAll = btn.getAttribute('data-audience') === 'all';
+      btn.classList.toggle('active', isAll);
+      if (isAll) allBtn = btn;
     });
 
+    if (allBtn) updatePillIndicator(allBtn);
     applyKitFilters();
   };
 
   function setupAudienceFilterPills() {
     const pills = document.querySelectorAll('.audience-pill');
+    const initialActive = document.querySelector('.audience-pill.active');
+    if (initialActive) {
+      setTimeout(() => updatePillIndicator(initialActive), 120);
+    }
+
     pills.forEach(pill => {
       pill.addEventListener('click', () => {
         pills.forEach(p => p.classList.remove('active'));
         pill.classList.add('active');
         currentAudienceFilter = pill.getAttribute('data-audience');
+        updatePillIndicator(pill);
         applyKitFilters();
       });
+    });
+
+    window.addEventListener('resize', () => {
+      const active = document.querySelector('.audience-pill.active');
+      if (active) updatePillIndicator(active);
     });
   }
 
@@ -688,6 +717,7 @@
     if (visualizerModal) {
       visualizerModal.classList.add('active');
       document.body.style.overflow = 'hidden';
+      if (window.lenis) window.lenis.stop();
       startVisualizerAnimation();
     }
   };
@@ -696,6 +726,7 @@
     if (visualizerModal) {
       visualizerModal.classList.remove('active');
       document.body.style.overflow = '';
+      if (window.lenis) window.lenis.start();
       if (visualizerAnimFrame) cancelAnimationFrame(visualizerAnimFrame);
     }
   };
@@ -797,19 +828,160 @@
     `;
     certModal.classList.add('active');
     document.body.style.overflow = 'hidden';
+    if (window.lenis) window.lenis.stop();
   };
 
   window.closeCertModal = function() {
     if (certModal) {
       certModal.classList.remove('active');
       document.body.style.overflow = '';
+      if (window.lenis) window.lenis.start();
     }
   };
 
   // ========================================================================
-  // 8. INITIALIZATION & BINDINGS
+  // 8. MOTION & KINETIC INTERACTION ENGINES (Lenis, GSAP, Spotlight, Magnet)
+  // ========================================================================
+  function initLenis() {
+    if (typeof Lenis === 'undefined') return;
+    try {
+      const lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 1.0,
+        touchMultiplier: 1.5,
+        infinite: false
+      });
+      window.lenis = lenis;
+
+      if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => {
+          lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+      } else {
+        function raf(time) {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+      }
+    } catch (e) {
+      console.warn('Lenis init warning:', e);
+    }
+  }
+
+  function initSpotlightCards() {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    document.addEventListener('mousemove', (e) => {
+      const spotlights = document.querySelectorAll('.spotlight-card');
+      spotlights.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0 && rect.left < window.innerWidth && rect.right > 0) {
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          card.style.setProperty('--mouse-x', `${x}px`);
+          card.style.setProperty('--mouse-y', `${y}px`);
+        }
+      });
+    }, { passive: true });
+  }
+
+  function initMagneticButtons() {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    document.addEventListener('mousemove', (e) => {
+      const buttons = document.querySelectorAll('.btn-magnetic');
+      buttons.forEach(btn => {
+        const rect = btn.getBoundingClientRect();
+        const btnCenterX = rect.left + rect.width / 2;
+        const btnCenterY = rect.top + rect.height / 2;
+        const dist = Math.hypot(e.clientX - btnCenterX, e.clientY - btnCenterY);
+        
+        if (dist < 60) {
+          const deltaX = (e.clientX - btnCenterX) * 0.28;
+          const deltaY = (e.clientY - btnCenterY) * 0.28;
+          btn.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        } else {
+          if (btn.style.transform && btn.style.transform !== 'translate(0px, 0px)') {
+            btn.style.transform = 'translate(0px, 0px)';
+          }
+        }
+      });
+    }, { passive: true });
+  }
+
+  function initHeroBottle3D() {
+    const bottleContainer = document.querySelector('.hero-floating-container');
+    if (!bottleContainer || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    window.addEventListener('mousemove', (e) => {
+      const xPercent = (e.clientX / window.innerWidth - 0.5) * 16;
+      const yPercent = (e.clientY / window.innerHeight - 0.5) * 16;
+      bottleContainer.style.transform = `perspective(1200px) rotateY(${xPercent}deg) rotateX(${-yPercent}deg)`;
+    }, { passive: true });
+  }
+
+  function initGSAPAnimations() {
+    if (typeof gsap === 'undefined') return;
+
+    // Kinetic title line reveal
+    gsap.from('.kinetic-line', {
+      duration: 1.1,
+      y: 40,
+      opacity: 0,
+      stagger: 0.16,
+      ease: 'power3.out',
+      clearProps: 'all'
+    });
+
+    gsap.from('.hero-subtitle', {
+      duration: 0.9,
+      y: 25,
+      opacity: 0,
+      delay: 0.35,
+      ease: 'power2.out',
+      clearProps: 'all'
+    });
+
+    gsap.from('.hero-cta-group', {
+      duration: 0.9,
+      y: 20,
+      opacity: 0,
+      delay: 0.5,
+      ease: 'power2.out',
+      clearProps: 'all'
+    });
+
+    if (typeof ScrollTrigger !== 'undefined') {
+      gsap.utils.toArray('.step-card, .trust-badge-card').forEach(el => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 88%',
+            toggleActions: 'play none none none'
+          },
+          y: 30,
+          opacity: 0,
+          duration: 0.75,
+          ease: 'power2.out',
+          clearProps: 'transform'
+        });
+      });
+    }
+  }
+
+  // ========================================================================
+  // 9. INITIALIZATION & BINDINGS
   // ========================================================================
   function init() {
+    initLenis();
+    initSpotlightCards();
+    initMagneticButtons();
+    initHeroBottle3D();
+    initGSAPAnimations();
     initAmbientLayer();
     updateInquiryUI();
     renderKitCards();
@@ -874,6 +1046,7 @@
       if (drawer) drawer.classList.add('open');
       if (backdrop) backdrop.classList.add('open');
       document.body.style.overflow = 'hidden';
+      if (window.lenis) window.lenis.stop();
     };
 
     window.closeMobileNav = function() {
@@ -882,6 +1055,7 @@
       if (drawer) drawer.classList.remove('open');
       if (backdrop) backdrop.classList.remove('open');
       document.body.style.overflow = '';
+      if (window.lenis) window.lenis.start();
     };
 
     const openMobileNavBtn = document.getElementById('openMobileNavBtn');
