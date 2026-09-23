@@ -10,7 +10,8 @@
   // Core Trade Configuration
   const WHATSAPP_PHONE = '919344087944';
   const KIT_PRICE = 99.00;
-  const SHIPPING_FEE = 29.00;
+  const BASE_SHIPPING_FEE = 29.00;
+  const ADDITIONAL_SHIPPING_FEE = 12.00;
 
   // State Management
   const allKits = typeof ZBM_SAMPLE_KITS !== 'undefined' ? ZBM_SAMPLE_KITS : [];
@@ -50,7 +51,7 @@
   const certModalContent = document.getElementById('certModalContent');
 
   // ========================================================================
-  // 1. CART ENGINE (Fixed $99 Kit + $29 Freight)
+  // 1. CART ENGINE (Progressive Freight: $29 first kit + $12 per add'l kit)
   // ========================================================================
   window.calculateCartTotals = function() {
     let totalKits = 0;
@@ -59,7 +60,10 @@
     });
 
     const rawSubtotal = Math.round(totalKits * KIT_PRICE * 100) / 100;
-    const shippingFee = totalKits > 0 ? SHIPPING_FEE : 0.00;
+    // Progressive shipping: $29 for first kit, +$12 for each additional kit (e.g. 4 kits = $29 + $12*3 = $65)
+    const shippingFee = totalKits > 0 
+      ? Math.round((BASE_SHIPPING_FEE + (totalKits - 1) * ADDITIONAL_SHIPPING_FEE) * 100) / 100 
+      : 0.00;
     const finalTotal = Math.round((rawSubtotal + shippingFee) * 100) / 100;
 
     return {
@@ -208,6 +212,19 @@
     if (drawerShippingVal) drawerShippingVal.innerText = `$${totals.shippingFee.toFixed(2)}`;
     if (drawerTotalValue) drawerTotalValue.innerText = `$${totals.finalTotal.toFixed(2)}`;
 
+    const drawerShippingBreakdown = document.getElementById('drawerShippingBreakdown');
+    if (drawerShippingBreakdown) {
+      if (totals.totalQty > 1) {
+        const extraFee = (totals.totalQty - 1) * ADDITIONAL_SHIPPING_FEE;
+        const extraCount = totals.totalQty - 1;
+        drawerShippingBreakdown.innerText = `($29 first kit + $${extraFee} for ${extraCount} add'l kit${extraCount > 1 ? 's' : ''})`;
+      } else if (totals.totalQty === 1) {
+        drawerShippingBreakdown.innerText = `($29 base express freight)`;
+      } else {
+        drawerShippingBreakdown.innerText = '';
+      }
+    }
+
     renderPayPalButtons();
   }
 
@@ -340,7 +357,7 @@
 
     msg += `--------------------------------------------------\n`;
     msg += `*Kits Subtotal:* $${totals.rawSubtotal.toFixed(2)} USD\n`;
-    msg += `*Insured Express Worldwide Freight:* $${totals.shippingFee.toFixed(2)} USD\n`;
+    msg += `*Insured Express Worldwide Freight:* $${totals.shippingFee.toFixed(2)} USD${totals.totalQty > 1 ? ` ($29 base + $12/additional kit)` : ''}\n`;
     msg += `*TOTAL PAYABLE:* $${totals.finalTotal.toFixed(2)} USD\n`;
     msg += `--------------------------------------------------\n`;
     msg += `*Included in Every Discovery Box:*\n`;
@@ -450,7 +467,7 @@
                   <span class="kit-price-curr">USD / Kit</span>
                 </div>
                 <div class="kit-shipping-note">
-                  <i class="fa-solid fa-plane-departure" style="color: #25D366;"></i> +$29.00 Insured Express Freight
+                  <i class="fa-solid fa-plane-departure" style="color: #25D366;"></i> +$29.00 Insured Freight (+$12/add'l kit)
                 </div>
               </div>
 
@@ -506,7 +523,7 @@
           <img src="${kit.image}" alt="${kit.title}" class="specs-modal-img">
           <div class="specs-modal-pricing-card">
             <div class="price-big">$${kit.price.toFixed(2)} USD</div>
-            <div class="price-ship"><i class="fa-solid fa-truck-fast"></i> +$29.00 Insured Worldwide Freight</div>
+            <div class="price-ship"><i class="fa-solid fa-truck-fast"></i> +$29.00 Insured Freight (+$12/additional kit)</div>
             <button class="btn-primary-large" style="width: 100%; margin-top: 10px;" onclick="addKitToCart('${kit.id}'); closeKitSpecsModal();">
               <i class="fa-solid fa-cart-plus"></i> Order This Discovery Kit ($99)
             </button>

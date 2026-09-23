@@ -805,8 +805,8 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
   height: 38px;
   min-width: 38px;
   border-radius: 50%;
-  background: #FFFFFF;
-  border: 1px solid var(--border-light);
+  background: rgba(22, 22, 22, 0.85);
+  border: 1px solid var(--border-medium);
   color: var(--text-primary);
   font-size: 0.85rem;
   cursor: pointer;
@@ -1855,7 +1855,7 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
   height: 62px;
   border-radius: var(--radius-xs);
   object-fit: cover;
-  background: #FFFFFF;
+  background: #141414;
   border: 1px solid var(--border-light);
   flex-shrink: 0;
 }
@@ -2169,9 +2169,9 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
   .mobile-search-inner {
     height: 38px !important;
     border-radius: var(--radius-full) !important;
-    background: #FFFFFF !important;
-    border: 1px solid var(--border-medium) !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+    background: rgba(18, 18, 18, 0.92) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4) !important;
   }
 
   .mobile-search-inner:focus-within {
@@ -2263,8 +2263,8 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 
   .benefit-item {
     padding: 10px 8px !important;
-    background: #FFFFFF !important;
-    border: 1px solid var(--border-light) !important;
+    background: rgba(18, 18, 18, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     border-radius: 12px !important;
     display: flex !important;
     flex-direction: column !important;
@@ -3041,33 +3041,35 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
    WHATSAPP B2B DIRECT ORDER & DRAWER BUYER FORM
    ========================================================================== */
 .drawer-buyer-form {
-  background: #FDFBF7;
-  border: 1px solid var(--border-light);
+  background: rgba(18, 18, 18, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: var(--radius-sm);
-  padding: 12px;
+  padding: 14px;
   margin-bottom: 12px;
 }
 
 .drawer-input {
   width: 100%;
-  padding: 7px 10px;
-  border: 1px solid var(--border-medium);
+  padding: 8px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-xs);
-  font-size: 0.76rem;
+  font-size: 0.78rem;
   font-family: inherit;
-  background: #FFFFFF;
-  color: var(--text-primary);
+  background: rgba(10, 10, 10, 0.85);
+  color: #F5F3EF;
   transition: all var(--transition-fast);
 }
 
 .drawer-input:focus {
   outline: none;
   border-color: var(--accent-gold);
+  background: rgba(16, 16, 16, 0.95);
   box-shadow: 0 0 0 2px rgba(223, 192, 144, 0.25);
+  color: #FFFFFF;
 }
 
 .drawer-input::placeholder {
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .whatsapp-order-submit-btn {
@@ -3101,23 +3103,23 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 }
 
 .drawer-shipping-alert.tier-info {
-  background: #EFF6FF;
-  border: 1px solid #BFDBFE;
-  color: #1E40AF;
+  background: rgba(30, 58, 138, 0.25);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #93C5FD;
 }
 
 .drawer-shipping-alert.tier-discount {
-  background: #ECFDF5;
-  border: 1px solid #A7F3D0;
-  color: #065F46;
+  background: rgba(6, 78, 59, 0.25);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #6EE7B7;
 }
 
 .discount-row strong {
-  color: #166534 !important;
+  color: #34D399 !important;
 }
 
 .shipping-row strong {
-  color: #166534 !important;
+  color: var(--accent-gold) !important;
 }
 
 
@@ -3185,10 +3187,12 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
   top: calc(100% + 8px);
   right: 0;
   width: 280px;
-  background: #FFFFFF;
-  border: 1px solid var(--border-light);
+  background: rgba(16, 16, 16, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-md);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(223, 192, 144, 0.08);
   padding: 16px;
   z-index: 300;
   animation: dropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -3275,10 +3279,10 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 .user-logout-btn {
   width: 100%;
   padding: 8px 12px;
-  background: #FEF2F2;
-  border: 1px solid #FECACA;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: var(--radius-xs);
-  color: #991B1B;
+  color: #F87171;
   font-family: inherit;
   font-size: 0.78rem;
   font-weight: 700;
@@ -3291,8 +3295,9 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 }
 
 .user-logout-btn:hover {
-  background: #FEE2E2;
-  border-color: #F87171;
+  background: rgba(239, 68, 68, 0.22);
+  border-color: #EF4444;
+  color: #FEF2F2;
 }
 
 /* Auth Modal Card & Tabs */
@@ -3642,9 +3647,10 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 }
 
 .auth-tab-btn.active {
-  background: #FFFFFF;
-  color: var(--text-primary);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #DFC090 0%, #C59E65 100%);
+  color: #080808;
+  font-weight: 800;
+  box-shadow: 0 2px 10px rgba(223, 192, 144, 0.3);
 }
 
 .toggle-password-btn {
@@ -3873,7 +3879,7 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 
 .departments-dropdown-trigger:hover {
   border-color: var(--accent-gold);
-  background: #FFFFFF;
+  background: rgba(26, 26, 26, 0.9);
 }
 
 .departments-dropdown-menu {
@@ -3881,10 +3887,12 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
   top: calc(100% + 8px);
   left: 0;
   width: 280px;
-  background: #FFFFFF;
-  border: 1px solid var(--border-medium);
+  background: rgba(16, 16, 16, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-md);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(223, 192, 144, 0.08);
   padding: 8px 0;
   z-index: 120;
   opacity: 0;
@@ -4116,8 +4124,8 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 .dept-showcase-card:hover {
   transform: translateY(-4px);
   border-color: var(--accent-gold);
-  background: #FFFFFF;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  background: rgba(26, 26, 26, 0.95);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(223, 192, 144, 0.1);
 }
 
 .dept-card-top {
@@ -4566,9 +4574,6 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
   background: rgba(223, 192, 144, 0.12);
   color: var(--accent-gold);
   border-color: rgba(223, 192, 144, 0.35);
-  font-weight: 700;
-}
-  border-color: rgba(158, 126, 82, 0.3);
   font-weight: 700;
 }
 
@@ -5510,13 +5515,6 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
     align-items: flex-start !important;
     gap: 4px !important;
   }
-    border: 1px solid var(--border-light) !important;
-    border-radius: 12px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 4px !important;
-  }
 
   .benefit-icon {
     width: 28px !important;
@@ -5938,12 +5936,13 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 
   .drawer-scroll-container {
     flex: 1 1 auto !important;
+    min-height: 0 !important;
     height: calc(100% - 65px) !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
     touch-action: pan-y !important;
     overscroll-behavior-y: contain !important;
-    padding: 16px 14px 180px !important; /* Huge clearance to comfortably scroll down to PayPal & WhatsApp checkout */
+    padding: 16px 14px 180px !important; /* Generous clearance to comfortably scroll down to PayPal & WhatsApp checkout */
   }
 
   .drawer-body {
