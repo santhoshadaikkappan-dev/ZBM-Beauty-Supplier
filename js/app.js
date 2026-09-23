@@ -55,11 +55,17 @@
   // ========================================================================
   window.calculateCartTotals = function() {
     let totalKits = 0;
+    let rawSubtotal = 0;
     inquiryCart.forEach(item => {
-      totalKits += (parseInt(item.qty, 10) || 1);
+      const q = (parseInt(item.qty, 10) || 1);
+      const masterKit = allKits.find(k => k.id === item.id);
+      const itemPrice = masterKit ? masterKit.price : (typeof item.price === 'number' ? item.price : KIT_PRICE);
+      item.price = itemPrice;
+      totalKits += q;
+      rawSubtotal += q * itemPrice;
     });
 
-    const rawSubtotal = Math.round(totalKits * KIT_PRICE * 100) / 100;
+    rawSubtotal = Math.round(rawSubtotal * 100) / 100;
     // Progressive shipping: $29 for first kit, +$12 for each additional kit (e.g. 4 kits = $29 + $12*3 = $65)
     const shippingFee = totalKits > 0 
       ? Math.round((BASE_SHIPPING_FEE + (totalKits - 1) * ADDITIONAL_SHIPPING_FEE) * 100) / 100 
@@ -81,11 +87,12 @@
     const existingIdx = inquiryCart.findIndex(item => item.id === kitId);
     if (existingIdx > -1) {
       inquiryCart[existingIdx].qty += 1;
+      inquiryCart[existingIdx].price = kit.price;
     } else {
       inquiryCart.push({
         id: kit.id,
         name: kit.title,
-        price: KIT_PRICE,
+        price: kit.price,
         image: kit.image,
         itemCount: kit.itemCount,
         audience: kit.audience,
@@ -172,7 +179,9 @@
     }
 
     drawerBody.innerHTML = inquiryCart.map((item, idx) => {
-      const lineTotal = item.qty * KIT_PRICE;
+      const masterKit = allKits.find(k => k.id === item.id);
+      const unitPrice = masterKit ? masterKit.price : (typeof item.price === 'number' ? item.price : KIT_PRICE);
+      const lineTotal = item.qty * unitPrice;
       return `
         <div class="drawer-item">
           <img src="${item.image}" alt="${item.name}" class="drawer-item-img">
@@ -181,7 +190,7 @@
             <div class="drawer-item-sub"><i class="fa-solid fa-users-viewfinder"></i> ${item.audience}</div>
             <div class="drawer-item-badge"><i class="fa-solid fa-flask"></i> ${item.itemCount} Physical Formulations Included</div>
             <div class="drawer-item-pricing-row">
-              <span class="drawer-unit-price">$${KIT_PRICE.toFixed(2)} USD</span>
+              <span class="drawer-unit-price">$${unitPrice.toFixed(2)} USD</span>
               <span class="drawer-tier-badge">Sample Discovery Box</span>
             </div>
             <div class="drawer-item-subtotal">Line Total: <strong>$${lineTotal.toFixed(2)} USD</strong></div>
@@ -276,15 +285,19 @@
         },
         createOrder: function(data, actions) {
           const liveTotals = calculateCartTotals();
-          const itemsPayload = inquiryCart.map(item => ({
-            name: `${item.name} (${item.itemCount} Formulations)`,
-            unit_amount: {
-              currency_code: 'USD',
-              value: KIT_PRICE.toFixed(2)
-            },
-            quantity: item.qty.toString(),
-            category: 'PHYSICAL_GOODS'
-          }));
+          const itemsPayload = inquiryCart.map(item => {
+            const masterKit = allKits.find(k => k.id === item.id);
+            const unitPrice = masterKit ? masterKit.price : (typeof item.price === 'number' ? item.price : KIT_PRICE);
+            return {
+              name: `${item.name} (${item.itemCount} Formulations)`,
+              unit_amount: {
+                currency_code: 'USD',
+                value: unitPrice.toFixed(2)
+              },
+              quantity: item.qty.toString(),
+              category: 'PHYSICAL_GOODS'
+            };
+          });
 
           return actions.order.create({
             intent: 'CAPTURE',
@@ -346,13 +359,16 @@
     msg += `*Brand / LLC:* ${buyerBrand}\n`;
     msg += `*Status:* ${paymentStatus || 'INVOICE_REQUEST (Unpaid)'}\n`;
     msg += `--------------------------------------------------\n`;
-    msg += `*SELECTED SAMPLE KITS ($99 USD Each):*\n\n`;
+    msg += `*SELECTED SAMPLE DISCOVERY KITS:*\n\n`;
 
     inquiryCart.forEach((item, idx) => {
+      const masterKit = allKits.find(k => k.id === item.id);
+      const unitPrice = masterKit ? masterKit.price : (typeof item.price === 'number' ? item.price : KIT_PRICE);
       msg += `${idx + 1}. *${item.name}*\n`;
       msg += `   • Audience: ${item.audience}\n`;
       msg += `   • Contents: ${item.itemCount} Physical Formulations\n`;
-      msg += `   • Quantity: ${item.qty} kit(s) x $${KIT_PRICE} = $${(item.qty * KIT_PRICE).toFixed(2)} USD\n\n`;
+      msg += `   • Price: $${unitPrice.toFixed(2)} USD / kit\n`;
+      msg += `   • Quantity: ${item.qty} kit(s) x $${unitPrice.toFixed(2)} = $${(item.qty * unitPrice).toFixed(2)} USD\n\n`;
     });
 
     msg += `--------------------------------------------------\n`;
@@ -474,7 +490,7 @@
               <div class="kit-card-actions">
                 <button class="btn-primary-large btn-add-kit btn-magnetic" onclick="addKitToCart('${kit.id}')">
                   <i class="fa-solid fa-cart-plus"></i>
-                  <span>Order Sample Kit ($99)</span>
+                  <span>Order Sample Kit ($${Math.round(kit.price)})</span>
                 </button>
                 <button class="btn-secondary-large btn-specs-kit btn-magnetic" onclick="openKitSpecsModal('${kit.id}')">
                   <i class="fa-solid fa-list-check"></i>
@@ -525,7 +541,7 @@
             <div class="price-big">$${kit.price.toFixed(2)} USD</div>
             <div class="price-ship"><i class="fa-solid fa-truck-fast"></i> +$29.00 Insured Freight (+$12/additional kit)</div>
             <button class="btn-primary-large" style="width: 100%; margin-top: 10px;" onclick="addKitToCart('${kit.id}'); closeKitSpecsModal();">
-              <i class="fa-solid fa-cart-plus"></i> Order This Discovery Kit ($99)
+              <i class="fa-solid fa-cart-plus"></i> Order This Discovery Kit ($${Math.round(kit.price)})
             </button>
             <a href="https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent('Hello ZBM, I have questions about ' + kit.title)}" target="_blank" class="btn-whatsapp-outline" style="width: 100%; margin-top: 8px;">
               <i class="fa-brands fa-whatsapp"></i> Inquire via WhatsApp

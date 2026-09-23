@@ -232,9 +232,9 @@ const ZBM_SAMPLE_KITS = [
     tagline: "Pharma-Grade L-Glutathione, 24K Pure Gold Flakes & Blue-Pea Butterfly Elixirs",
     badge: "Ultra-Luxury VIP Tier",
     icon: "fa-crown",
-    price: 99.00,
+    price: 299.00,
     shipping: 29.00,
-    total: 128.00,
+    total: 328.00,
     image: "assets/images/kits/kit_celebrity_vault.jpg",
     itemCount: 7,
     highlights: [
