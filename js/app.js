@@ -103,6 +103,18 @@
     saveCart();
     updateInquiryUI();
     openInquiryDrawer();
+
+    // Meta Pixel AddToCart Event
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'AddToCart', {
+        content_name: kit.title,
+        content_category: 'Discovery Sample Kits',
+        content_ids: [kit.id],
+        content_type: 'product',
+        value: kit.price,
+        currency: 'USD'
+      });
+    }
   };
 
   window.changeCartQty = function(idx, delta) {
@@ -323,6 +335,17 @@
         },
         onApprove: function(data, actions) {
           return actions.order.capture().then(function(details) {
+            const liveTotals = calculateCartTotals();
+            if (typeof window.fbq === 'function') {
+              window.fbq('track', 'Purchase', {
+                value: liveTotals.finalTotal,
+                currency: 'USD',
+                num_items: liveTotals.totalQty,
+                content_type: 'product',
+                transaction_id: details.id
+              });
+            }
+
             const payerName = details.payer && details.payer.name ? details.payer.name.given_name : 'Valued Partner';
             alert(`Payment Successful! Thank you, ${payerName}.\n\nTransaction ID: ${details.id}\nYour unbranded Discovery Sample Box with Certificate of Analysis (COA) is being prepared for express dispatch.`);
             
@@ -383,6 +406,20 @@
     msg += `✓ Official B2B Commercial Proforma Quotation for Bulk Scale-Up (50 to 1,000+ units)\n\n`;
     msg += `Please confirm shipping dispatch and provide Citi Bank ACH routing or tracking.`;
 
+    // Meta Pixel Contact & Lead Events
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'Contact', {
+        content_name: 'WhatsApp Trade Desk Order',
+        value: totals.finalTotal,
+        currency: 'USD'
+      });
+      window.fbq('track', 'Lead', {
+        content_name: 'B2B Discovery Kit Order',
+        value: totals.finalTotal,
+        currency: 'USD'
+      });
+    }
+
     const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(msg)}`;
     window.open(waUrl, '_blank');
   };
@@ -412,6 +449,18 @@
       document.body.style.overflow = 'hidden';
       if (window.lenis) window.lenis.stop();
       renderPayPalButtons();
+
+      // Meta Pixel InitiateCheckout Event
+      if (typeof window.fbq === 'function') {
+        const liveTotals = calculateCartTotals();
+        if (liveTotals.totalQty > 0) {
+          window.fbq('track', 'InitiateCheckout', {
+            num_items: liveTotals.totalQty,
+            value: liveTotals.finalTotal,
+            currency: 'USD'
+          });
+        }
+      }
     }
   };
 
@@ -599,6 +648,18 @@
     kitSpecsModal.classList.add('active');
     document.body.style.overflow = 'hidden';
     if (window.lenis) window.lenis.stop();
+
+    // Meta Pixel ViewContent Event
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'ViewContent', {
+        content_name: kit.title,
+        content_category: 'Discovery Sample Kits',
+        content_ids: [kit.id],
+        content_type: 'product',
+        value: kit.price,
+        currency: 'USD'
+      });
+    }
   };
 
   window.closeKitSpecsModal = function() {
