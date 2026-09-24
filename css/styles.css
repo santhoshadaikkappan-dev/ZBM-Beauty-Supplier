@@ -5059,22 +5059,16 @@ h1, h2, h3, .brand-title, .hero-title, .kits-section-title, .specs-title, .turnk
 .manifest-actives {
   font-size: 0.78rem;
   color: #D1CEC7;
-  max-width: 220px;
-  line-height: 1.35;
-}
-
-.manifest-pkg {
-  font-size: 0.76rem;
-  color: #B5B2AA;
-  white-space: nowrap;
+  max-width: 300px;
+  line-height: 1.4;
 }
 
 .manifest-note {
   font-size: 0.76rem;
   color: #4ADE80;
   font-weight: 600;
-  max-width: 240px;
-  line-height: 1.35;
+  max-width: 340px;
+  line-height: 1.4;
 }
 
 /* ==========================================================================

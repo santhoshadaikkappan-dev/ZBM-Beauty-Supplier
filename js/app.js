@@ -577,7 +577,6 @@
                 <th>Formulation Name</th>
                 <th>Volume</th>
                 <th>Key Bio-Actives</th>
-                <th>Packaging Format</th>
                 <th>Clinical / Service Application</th>
               </tr>
             </thead>
@@ -588,7 +587,6 @@
                   <td><strong>${f.name}</strong><div class="manifest-cat">${f.category}</div></td>
                   <td><span class="manifest-weight">${f.weight}</span></td>
                   <td><div class="manifest-actives">${f.actives}</div></td>
-                  <td><span class="manifest-pkg"><i class="fa-solid fa-box"></i> ${f.pkg}</span></td>
                   <td><div class="manifest-note">${f.note}</div></td>
                 </tr>
               `).join('')}
